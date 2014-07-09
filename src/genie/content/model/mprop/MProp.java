@@ -12,7 +12,7 @@ import modlan.report.Severity;
 import java.util.Collection;
 
 /**
- * Created by midvorki on 7/7/14.
+ * Created by dvorkinista on 7/7/14.
  */
 public class MProp extends SubStructItem
 {

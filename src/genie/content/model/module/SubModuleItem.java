@@ -4,7 +4,7 @@ import genie.engine.model.Cat;
 import genie.engine.model.Item;
 
 /**
- * Created by midvorki on 7/6/14.
+ * Created by dvorkinista on 7/6/14.
  */
 public class SubModuleItem extends Item
 {

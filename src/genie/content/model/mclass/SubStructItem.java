@@ -2,10 +2,9 @@ package genie.content.model.mclass;
 
 import genie.content.model.module.SubModuleItem;
 import genie.engine.model.Cat;
-import genie.engine.model.Item;
 
 /**
- * Created by midvorki on 7/7/14.
+ * Created by dvorkinista on 7/7/14.
  */
 public class SubStructItem extends SubModuleItem
 {

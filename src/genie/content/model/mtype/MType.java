@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Created by midvorki on 7/7/14.
+ * Created by dvorkinista on 7/7/14.
  */
 public class MType extends SubModuleItem
 {

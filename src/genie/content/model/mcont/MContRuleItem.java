@@ -1,13 +1,10 @@
 package genie.content.model.mcont;
 
-import genie.content.model.module.Module;
-import genie.engine.model.Cardinality;
 import genie.engine.model.Cat;
-import genie.engine.model.Item;
 import genie.engine.model.RelatorCat;
 
 /**
- * Created by midvorki on 7/8/14.
+ * Created by dvorkinista on 7/8/14.
  */
 public abstract class MContRuleItem
 		extends MContItem

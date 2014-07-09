@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Created by midvorki on 7/6/14.
+ * Created by dvorkinista on 7/6/14.
  *
  * This class represents a managed class model item.
  */

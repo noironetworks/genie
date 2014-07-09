@@ -5,7 +5,7 @@ import genie.engine.parse.model.ProcessorTree;
 import genie.engine.parse.modlan.ParseDirective;
 
 /**
- * Created by midvorki on 3/22/14.
+ * Created by dvorkinista on 3/22/14.
  */
 public class ParseRegistry
 {

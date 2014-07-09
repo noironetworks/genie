@@ -3,7 +3,7 @@ package genie.content.model.mtype;
 import modlan.report.Severity;
 
 /**
- * Created by midvorki on 7/7/14.
+ * Created by dvorkinista on 7/7/14.
  */
 public enum Language
 {
