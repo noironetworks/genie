@@ -2,14 +2,14 @@ package genie.content.model.mprop;
 
 import genie.content.model.mclass.MClass;
 import genie.content.model.mclass.SubStructItem;
+import genie.content.model.mconst.MConst;
 import genie.content.model.mtype.MType;
-import genie.engine.model.Cardinality;
-import genie.engine.model.Cat;
-import genie.engine.model.Relator;
-import genie.engine.model.RelatorCat;
+import genie.engine.model.*;
 import modlan.report.Severity;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Created by dvorkinista on 7/7/14.
@@ -92,7 +92,7 @@ public class MProp extends SubStructItem
 	 * Associates type with the property. Only works with base property definitions (BY DESIGN - MD)
 	 * @param aInTypeGName global name of the type
 	 */
-	public void addType(String aInTypeGName)
+	public void addMType(String aInTypeGName)
 	{
 		if (isBase())
 		{
@@ -122,7 +122,7 @@ public class MProp extends SubStructItem
 	 * @param aInIsBaseType specifies whether to retrieve the base type or the immediate type that the base property uses
 	 * @return property data type
 	 */
-	public MType getType(boolean aInIsBaseType)
+	public MType getMType(boolean aInIsBaseType)
 	{
 		MProp lBaseProp = getBase();
 		Relator lRel = lBaseProp.getTypeRelator();
@@ -144,9 +144,9 @@ public class MProp extends SubStructItem
 	 * Retrieves all types, including all the subtypes... Added in order of distance to this property
 	 * @param aOut types found
 	 */
-	public void getTypes(Collection<MType> aOut)
+	public void getMTypes(Collection<MType> aOut)
 	{
-		getType(false).getSupertypes(aOut,true);
+		getMType(false).getSupertypes(aOut,true);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -235,6 +235,78 @@ public class MProp extends SubStructItem
 			if (null != lThisProp)
 			{
 				aOut.add(lThisProp);
+			}
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// CONSTANT APIs
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * finds constant defined under this property or, if specified, any of the target overridden property, by name
+	 * @param aInName name of the constant to be retrieved.
+	 * @param aInCheckSuperProps identifies that target overridden properties are to be checked
+	 * @return constant matching the name
+	 */
+	public MConst findMConst(String aInName, boolean aInCheckSuperProps)
+	{
+		MConst lConst = null;
+		for (MProp lThisProp = this;
+		     null != lThisProp && null == lConst;
+		     lThisProp = aInCheckSuperProps ? lThisProp.getOverridden(false) : null)
+		{
+			lConst = lThisProp.getMConst(aInName);
+			if (null == lConst && lThisProp.isBase())
+			{
+				lThisProp.getMType(false).findMConst(aInName,true);
+			}
+		}
+		return lConst;
+	}
+
+	/**
+	 * retrieves constant defined under this property by name
+	 * @param aInName name of the constant to be retrieved.
+	 * @return Constant associated with the name passed in that is defined under this property
+	 */
+	public MConst getMConst(String aInName)
+	{
+		return (MConst) getChildItem(MConst.MY_CAT, aInName);
+	}
+
+	/**
+	 * retrieves all constants defined under this property
+	 * @param aOut  All constants defined under this property
+	 */
+	public void getMConst(Map<String, MConst> aOut)
+	{
+		Collection<Item> lItems = new LinkedList<Item>();
+		getChildItems(MConst.MY_CAT,lItems);
+		for (Item lItem : lItems)
+		{
+			if (!aOut.containsKey(lItem.getLID().getName()))
+			{
+				aOut.put(lItem.getLID().getName(), (MConst) lItem);
+			}
+		}
+	}
+
+	/**
+	 * retrieves all constants defined under this property or, if specified, any of the target overridden properties
+	 * @param aOut  All constants defined under this property or, if specified, any of the target overridden properties
+	 * @param aInCheckSuperProps identifies that overridden properties are to be checked
+	 */
+	public void findMConst(Map<String, MConst> aOut, boolean aInCheckSuperProps)
+	{
+		for (MProp lThisProp = this;
+		     null != lThisProp;
+		     lThisProp = aInCheckSuperProps ? lThisProp.getOverridden(false) : null)
+		{
+			getMConst(aOut);
+			if (lThisProp.isBase())
+			{
+				lThisProp.getMType(false).findMConst(aOut,true);
 			}
 		}
 	}

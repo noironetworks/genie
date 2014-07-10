@@ -1,5 +1,6 @@
 package genie.content.model.mtype;
 
+import genie.content.model.mconst.MConst;
 import genie.content.model.module.Module;
 import genie.content.model.module.SubModuleItem;
 import genie.engine.model.*;
@@ -7,6 +8,7 @@ import modlan.report.Severity;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Created by dvorkinista on 7/7/14.
@@ -288,6 +290,69 @@ public class MType extends SubModuleItem
 		}
 
 		return lTh;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// CONSTANT APIs
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * retrieves constant defined under this type by name
+	 * @param aInName name of the constant to be retrieved.
+	 * @return Constant associated with the name passed in that is defined under this type
+	 */
+	public MConst getMConst(String aInName)
+	{
+		return (MConst) getChildItem(MConst.MY_CAT, aInName);
+	}
+
+	/**
+	 * finds constant defined under this type or, if specified, any of the supertypes, by name
+	 * @param aInName name of the constant to be retrieved.
+	 * @param aInCheckSuperTypes identifies that supertypes are to be checked
+	 * @return
+	 */
+	public MConst findMConst(String aInName, boolean aInCheckSuperTypes)
+	{
+		MConst lConst = null;
+		for (MType lThisType = this;
+		     null != lThisType && null == lConst;
+		     lThisType = aInCheckSuperTypes ? lThisType.getSupertype() : null)
+		{
+			lConst = lThisType.getMConst(aInName);
+		}
+		return lConst;
+	}
+	/**
+	 * retrieves all constants defined under this type
+	 * @param aOut  All constants defined under this type
+	 */
+	public void getMConst(Map<String, MConst> aOut)
+	{
+		Collection<Item> lItems = new LinkedList<Item>();
+		getChildItems(MConst.MY_CAT,lItems);
+		for (Item lItem : lItems)
+		{
+			if (!aOut.containsKey(lItem.getLID().getName()))
+			{
+				aOut.put(lItem.getLID().getName(), (MConst) lItem);
+			}
+		}
+	}
+
+	/**
+	 * retrieves all constants defined under this type or, if specified, any of the supertypes
+	 * @param aOut  All constants defined under this type or, if specified, any of the supertypes
+	 * @param aInCheckSuperTypes identifies that supertypes are to be checked
+	 */
+	public void findMConst(Map<String, MConst> aOut, boolean aInCheckSuperTypes)
+	{
+		for (MType lThisType = this;
+		     null != lThisType;
+		     lThisType = aInCheckSuperTypes ? lThisType.getSupertype() : null)
+		{
+			getMConst(aOut);
+		}
 	}
 
 	private final boolean isBuiltIn;
