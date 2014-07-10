@@ -92,7 +92,7 @@ public class MProp extends SubStructItem
 	 * Associates type with the property. Only works with base property definitions (BY DESIGN - MD)
 	 * @param aInTypeGName global name of the type
 	 */
-	public void addMType(String aInTypeGName)
+	public void addType(String aInTypeGName)
 	{
 		if (isBase())
 		{
@@ -122,7 +122,7 @@ public class MProp extends SubStructItem
 	 * @param aInIsBaseType specifies whether to retrieve the base type or the immediate type that the base property uses
 	 * @return property data type
 	 */
-	public MType getMType(boolean aInIsBaseType)
+	public MType getType(boolean aInIsBaseType)
 	{
 		MProp lBaseProp = getBase();
 		Relator lRel = lBaseProp.getTypeRelator();
@@ -144,9 +144,9 @@ public class MProp extends SubStructItem
 	 * Retrieves all types, including all the subtypes... Added in order of distance to this property
 	 * @param aOut types found
 	 */
-	public void getMTypes(Collection<MType> aOut)
+	public void getTypes(Collection<MType> aOut)
 	{
-		getMType(false).getSupertypes(aOut,true);
+		getType(false).getSupertypes(aOut,true);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -249,17 +249,17 @@ public class MProp extends SubStructItem
 	 * @param aInCheckSuperProps identifies that target overridden properties are to be checked
 	 * @return constant matching the name
 	 */
-	public MConst findMConst(String aInName, boolean aInCheckSuperProps)
+	public MConst findConst(String aInName, boolean aInCheckSuperProps)
 	{
 		MConst lConst = null;
 		for (MProp lThisProp = this;
 		     null != lThisProp && null == lConst;
 		     lThisProp = aInCheckSuperProps ? lThisProp.getOverridden(false) : null)
 		{
-			lConst = lThisProp.getMConst(aInName);
+			lConst = lThisProp.getConst(aInName);
 			if (null == lConst && lThisProp.isBase())
 			{
-				lThisProp.getMType(false).findMConst(aInName,true);
+				lThisProp.getType(false).findConst(aInName,true);
 			}
 		}
 		return lConst;
@@ -270,7 +270,7 @@ public class MProp extends SubStructItem
 	 * @param aInName name of the constant to be retrieved.
 	 * @return Constant associated with the name passed in that is defined under this property
 	 */
-	public MConst getMConst(String aInName)
+	public MConst getConst(String aInName)
 	{
 		return (MConst) getChildItem(MConst.MY_CAT, aInName);
 	}
@@ -279,7 +279,7 @@ public class MProp extends SubStructItem
 	 * retrieves all constants defined under this property
 	 * @param aOut  All constants defined under this property
 	 */
-	public void getMConst(Map<String, MConst> aOut)
+	public void getConst(Map<String, MConst> aOut)
 	{
 		Collection<Item> lItems = new LinkedList<Item>();
 		getChildItems(MConst.MY_CAT,lItems);
@@ -297,16 +297,16 @@ public class MProp extends SubStructItem
 	 * @param aOut  All constants defined under this property or, if specified, any of the target overridden properties
 	 * @param aInCheckSuperProps identifies that overridden properties are to be checked
 	 */
-	public void findMConst(Map<String, MConst> aOut, boolean aInCheckSuperProps)
+	public void findConst(Map<String, MConst> aOut, boolean aInCheckSuperProps)
 	{
 		for (MProp lThisProp = this;
 		     null != lThisProp;
 		     lThisProp = aInCheckSuperProps ? lThisProp.getOverridden(false) : null)
 		{
-			getMConst(aOut);
+			getConst(aOut);
 			if (lThisProp.isBase())
 			{
-				lThisProp.getMType(false).findMConst(aOut,true);
+				lThisProp.getType(false).findConst(aOut,true);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package genie.content.model.mcont;
 
 import genie.content.model.mclass.MClass;
+import genie.content.model.module.Module;
 import genie.engine.model.Cardinality;
 import genie.engine.model.Cat;
 import genie.engine.model.RelatorCat;

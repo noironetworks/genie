@@ -26,23 +26,32 @@ public class MConst extends Item
 
 	public MConst(
 			MProp aInParent,
-			String aInName)
+			String aInName,
+			ConstAction aInAction)
 	{
-		this((Item) aInParent, aInName);
+		this((Item) aInParent, aInName, aInAction);
 	}
 
 	public MConst(
 			MType aInParent,
-			String aInName)
+			String aInName,
+			ConstAction aInAction)
 	{
-		this((Item)aInParent, aInName);
+		this((Item)aInParent, aInName, aInAction);
 	}
 
 	private MConst(
 			Item aInParent,
-			String aInName)
+			String aInName,
+			ConstAction aInAction)
 	{
 		super(MY_CAT, aInParent, aInName);
+		action = (null == aInAction) ? ConstAction.VALUE : aInAction;
+	}
+
+	public ConstAction getAction()
+	{
+		return action;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +68,7 @@ public class MConst extends Item
 				lType = lType.getSupertype();
 				if (null != lType)
 				{
-					lType.findMConst(getLID().getName(), true);
+					lType.findConst(getLID().getName(), true);
 				}
 				else
 				{
@@ -80,7 +89,7 @@ public class MConst extends Item
 				lProp = lProp.getOverridden(false);
 				if (null != lProp)
 				{
-					lProp.findMConst(getLID().getName(), true);
+					lProp.findConst(getLID().getName(), true);
 				}
 				else
 				{
@@ -120,10 +129,10 @@ public class MConst extends Item
 	// TYPE API
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public MType getMType(boolean aInIsBaseType)
+	public MType getType(boolean aInIsBaseType)
 	{
 		Item lParent = getParent();
-		MType lType =  lParent instanceof MType ? (MType) lParent : ((MProp) lParent).getMType(false);
+		MType lType =  lParent instanceof MType ? (MType) lParent : ((MProp) lParent).getType(false);
 		if (null == lType)
 		{
 			Severity.DEATH.report(
@@ -139,7 +148,7 @@ public class MConst extends Item
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// PROP API
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public MProp getMProp(boolean aInBaseProp)
+	public MProp getProp(boolean aInBaseProp)
 	{
 		Item lParent = getParent();
 
@@ -159,4 +168,6 @@ public class MConst extends Item
 			return null;
 		}
 	}
+
+	private final ConstAction action;
 }

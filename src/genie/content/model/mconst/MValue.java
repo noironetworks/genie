@@ -23,19 +23,19 @@ public class MValue extends Item
 		return value;
 	}
 
-	public MConst getMConst()
+	public MConst getConst()
 	{
 		return (MConst) getParent();
 	}
 
-	public MType getMType()
+	public MType getType()
 	{
-		return getMConst().getMType(false);
+		return getConst().getType(false);
 	}
 
-	public MType getBaseMType()
+	public MType getBaseType()
 	{
-		return getMType().getBase();
+		return getType().getBase();
 	}
 
 	private String value;
