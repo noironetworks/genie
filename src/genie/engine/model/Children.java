@@ -11,137 +11,137 @@ import java.util.TreeMap;
  */
 public class Children
 {
-	/**
-	 * checks if there are no registered children in this tracker
-	 * @return true if there are no child nodes
-	 */
-	public boolean isEmpty()
-	{
-		return null == children || children.isEmpty();
-	}
+    /**
+     * checks if there are no registered children in this tracker
+     * @return true if there are no child nodes
+     */
+    public boolean isEmpty()
+    {
+        return null == children || children.isEmpty();
+    }
 
-	public Collection<CatEntry> getList()
-	{
-		return isEmpty() ? CatEntry.EMPTY_COL : children.values();
-	}
+    public Collection<CatEntry> getList()
+    {
+        return isEmpty() ? CatEntry.EMPTY_COL : children.values();
+    }
 
-	public Map<Cat, CatEntry> getMap()
-	{
-		return isEmpty() ? CatEntry.EMPTY_CAT_MAP : children;
-	}
+    public Map<Cat, CatEntry> getMap()
+    {
+        return isEmpty() ? CatEntry.EMPTY_CAT_MAP : children;
+    }
 
-	/**
-	 * retrieves category tracker for passed in category
-	 * @param aIn model category
-	 * @return corresponding tracker
-	 */
-	public CatEntry getEntry(Cat aIn)
-	{
-		return getEntry(aIn, false);
-	}
+    /**
+     * retrieves category tracker for passed in category
+     * @param aIn model category
+     * @return corresponding tracker
+     */
+    public CatEntry getEntry(Cat aIn)
+    {
+        return getEntry(aIn, false);
+    }
 
-	public Node getNode(Cat aInCat, String aInName)
-	{
-		CatEntry lEntry = getEntry(aInCat);
-		return null == lEntry ? null : lEntry.get(aInName);
-	}
+    public Node getNode(Cat aInCat, String aInName)
+    {
+        CatEntry lEntry = getEntry(aInCat);
+        return null == lEntry ? null : lEntry.get(aInName);
+    }
 
-	public Item getItem(Cat aInCat, String aInName)
-	{
-		Node lNode = getNode(aInCat, aInName);
-		return null == lNode ? null : lNode.getItem();
-	}
+    public Item getItem(Cat aInCat, String aInName)
+    {
+        Node lNode = getNode(aInCat, aInName);
+        return null == lNode ? null : lNode.getItem();
+    }
 
-	public void getItem(Cat aInCat, Collection<Item> aOut)
-	{
-		CatEntry lEntry = getEntry(aInCat);
-		if (null != lEntry)
-		{
-			lEntry.getItem(aOut);
-		}
-	}
+    public void getItem(Cat aInCat, Collection<Item> aOut)
+    {
+        CatEntry lEntry = getEntry(aInCat);
+        if (null != lEntry)
+        {
+            lEntry.getItem(aOut);
+        }
+    }
 
-	public void getNodes(Cat aInCat, Collection<Node> aOut)
-	{
-		CatEntry lEntry = getEntry(aInCat);
-		if (null != lEntry)
-		{
-			lEntry.getNodes(aOut);
-		}
-	}
+    public void getNodes(Cat aInCat, Collection<Node> aOut)
+    {
+        CatEntry lEntry = getEntry(aInCat);
+        if (null != lEntry)
+        {
+            lEntry.getNodes(aOut);
+        }
+    }
 
-	/**
-	 * retrieves and optionally creates category tracker for passed in category
-	 * @param aIn model category
-	 * @param aInCreateIfDoesNotExist indicates whether to create a category tracker if one does not exist
-	 * @return category tracker
-	 */
-	private CatEntry getEntry(Cat aIn, boolean aInCreateIfDoesNotExist)
-	{
-		if (null == children)
-		{
-			if (aInCreateIfDoesNotExist)
-			{
-				synchronized (this)
-				{
-					if (null == children)
-					{
-						children = new TreeMap<Cat, CatEntry>();
-					}
-				}
-			}
-		}
-		CatEntry lPerCat = null;
-		if (null != children)
-		{
-			synchronized (children)
-			{
-				lPerCat = children.get(aIn);
-				if (aInCreateIfDoesNotExist)
-				{
-					if (null == lPerCat)
-					{
-						lPerCat = new CatEntry(aIn, name, false);
-						children.put(aIn, lPerCat);
-						//System.out.println(this + ".getEntry(" + aIn + "," + aInCreateIfDoesNotExist + "): put: " + lPerCat);
-					}
-				}
-			}
-		}
-		//System.out.println(this + ".getEntry():" + lPerCat + " :: ALL CHILDREN: " + children.keySet());
-		return lPerCat;
-	}
+    /**
+     * retrieves and optionally creates category tracker for passed in category
+     * @param aIn model category
+     * @param aInCreateIfDoesNotExist indicates whether to create a category tracker if one does not exist
+     * @return category tracker
+     */
+    private CatEntry getEntry(Cat aIn, boolean aInCreateIfDoesNotExist)
+    {
+        if (null == children)
+        {
+            if (aInCreateIfDoesNotExist)
+            {
+                synchronized (this)
+                {
+                    if (null == children)
+                    {
+                        children = new TreeMap<Cat, CatEntry>();
+                    }
+                }
+            }
+        }
+        CatEntry lPerCat = null;
+        if (null != children)
+        {
+            synchronized (children)
+            {
+                lPerCat = children.get(aIn);
+                if (aInCreateIfDoesNotExist)
+                {
+                    if (null == lPerCat)
+                    {
+                        lPerCat = new CatEntry(aIn, name, false);
+                        children.put(aIn, lPerCat);
+                        //System.out.println(this + ".getEntry(" + aIn + "," + aInCreateIfDoesNotExist + "): put: " + lPerCat);
+                    }
+                }
+            }
+        }
+        //System.out.println(this + ".getEntry():" + lPerCat + " :: ALL CHILDREN: " + children.keySet());
+        return lPerCat;
+    }
 
-	/**
-	 * registered passed in node to this tracker
-	 * @param aIn node to be added/registered
-	 */
-	public void add(Node aIn)
-	{
-		getEntry(aIn.getCat(), true).add(aIn);
-	}
+    /**
+     * registered passed in node to this tracker
+     * @param aIn node to be added/registered
+     */
+    public void add(Node aIn)
+    {
+        getEntry(aIn.getCat(), true).add(aIn);
+    }
 
-	/**
-	 * scalar id allocator
-	 * @param aInCat category to which name corresponds
-	 * @param aInLName name for which ID is allocated
-	 * @return allocated id
-	 */
-	public int allocateId(Cat aInCat, String aInLName)
-	{
-		return getEntry(aInCat, true).allocateId(aInLName);
-	}
+    /**
+     * scalar id allocator
+     * @param aInCat category to which name corresponds
+     * @param aInLName name for which ID is allocated
+     * @return allocated id
+     */
+    public int allocateId(Cat aInCat, String aInLName)
+    {
+        return getEntry(aInCat, true).allocateId(aInLName);
+    }
 
-	public Children(String aInName)
-	{
-		name = aInName;
-	}
+    public Children(String aInName)
+    {
+        name = aInName;
+    }
 
-	public String toString()
-	{
-		return "children[of " + name + "]";
-	}
+    public String toString()
+    {
+        return "children[of " + name + "]";
+    }
 
-	private TreeMap<Cat, CatEntry> children = null;
-	String name;
+    private TreeMap<Cat, CatEntry> children = null;
+    String name;
 }

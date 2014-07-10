@@ -8,13 +8,13 @@ import genie.engine.model.Cat;
  */
 public class SubStructItem extends SubModuleItem
 {
-	protected SubStructItem(Cat aInCat,MClass aInParent, String aInLName)
-	{
-		super(aInCat, aInParent, aInLName);
-	}
+    protected SubStructItem(Cat aInCat,MClass aInParent, String aInLName)
+    {
+        super(aInCat, aInParent, aInLName);
+    }
 
-	public MClass getMClass()
-	{
-		return MClass.getMClass(this);
-	}
+    public MClass getMClass()
+    {
+        return MClass.getMClass(this);
+    }
 }

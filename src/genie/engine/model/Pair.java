@@ -6,22 +6,22 @@ package genie.engine.model;
 public class Pair<F, S>
 {
 
-	private final F first;
-	private final S second;
+    private final F first;
+    private final S second;
 
-	public Pair(F aInFirst, S aInSecond)
-	{
-		this.first = aInFirst;
-		this.second = aInSecond;
-	}
+    public Pair(F aInFirst, S aInSecond)
+    {
+        this.first = aInFirst;
+        this.second = aInSecond;
+    }
 
-	public F getFirst()
-	{
-		return first;
-	}
+    public F getFirst()
+    {
+        return first;
+    }
 
-	public S getSecond()
-	{
-		return second;
-	}
+    public S getSecond()
+    {
+        return second;
+    }
 }

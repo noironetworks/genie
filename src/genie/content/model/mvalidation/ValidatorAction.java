@@ -7,42 +7,42 @@ import modlan.report.Severity;
  */
 public enum ValidatorAction
 {
-	ADD("add"),
-	CLOBBER("clobber"),
-	REMOVE("remove"),
-	;
+    ADD("add"),
+    CLOBBER("clobber"),
+    REMOVE("remove"),
+    ;
 
-	private ValidatorAction(String aIn)
-	{
-		name = aIn;
-	}
+    private ValidatorAction(String aIn)
+    {
+        name = aIn;
+    }
 
-	public String getName()
-	{
-		return name;
-	}
+    public String getName()
+    {
+        return name;
+    }
 
-	public String toString()
-	{
-		return name;
-	}
+    public String toString()
+    {
+        return name;
+    }
 
-	public static ValidatorAction get(String aIn)
-	{
-		for (ValidatorAction lVA : ValidatorAction.values())
-		{
-			if (aIn.equalsIgnoreCase(lVA.getName()))
-			{
-				return lVA;
-			}
-		}
-		Severity.DEATH.report(
-				"ValidatorAction",
-				"get validator action for name",
-				"no such validator action",
-				"no support for " + aIn + "; actions supported: " + ValidatorAction.values());
+    public static ValidatorAction get(String aIn)
+    {
+        for (ValidatorAction lVA : ValidatorAction.values())
+        {
+            if (aIn.equalsIgnoreCase(lVA.getName()))
+            {
+                return lVA;
+            }
+        }
+        Severity.DEATH.report(
+                "ValidatorAction",
+                "get validator action for name",
+                "no such validator action",
+                "no support for " + aIn + "; actions supported: " + ValidatorAction.values());
 
-		return null;
-	}
-	private final String name;
+        return null;
+    }
+    private final String name;
 }

@@ -7,25 +7,25 @@ import modlan.report.Severity;
  */
 public class Doer extends Thread
 {
-	public Doer(int aInId, Chnl aInChnl)
+    public Doer(int aInId, Chnl aInChn          )
 	{
-		super("DOER(" + aInId + ")");
-		id = aInId;
-		chnl = aInChnl;
+		super("DOER(" + aI       Id + ")       );
+		id = a        Id;
+		chnl = aI          Chnl;
 	}
 
-	public void run()
+	public v                id run()
 	{
-		while (!chnl.isDeath())
+		whi          e (!chnl.isD                                                 ath())
 		{
 			Task lTask = chnl.poll();
-			if (null != lTask)
+			                f                 null != lTask)
 			{
 				try
 				{
-					Severity.INFO.report(toString(), "run", "task", "BEGIN: " + lTask);
-					lTask.run();
-					Severity.INFO.report(toString(), "run", "task", "END:" + lTask);
+					Severity.INFO.r                                                                                     port(toString(), "run", "task", "BE        N: " + lTask);
+					lT          sk.run();
+			        Severity.INFO.report(t    String(), "run", "task", "END:" + lTask);
 				}
 				finally
 				{

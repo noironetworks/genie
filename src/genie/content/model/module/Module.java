@@ -8,35 +8,35 @@ import genie.engine.model.Item;
  */
 public class Module extends Item
 {
-	public static final Cat MY_CAT = Cat.getCreate("module");
+    public static final Cat MY_CAT = Cat.getCreate("module");
 
-	public static Module get(String aInName)
-	{
-		return get(aInName, false);
-	}
-	public static Module get(String aInName, boolean aInCreateIfNotFound)
-	{
-		Module lModule = (Module) MY_CAT.getItem(aInName);
-		if (null == lModule && aInCreateIfNotFound)
-		{
-			synchronized (MY_CAT)
-			{
-				if (null == MY_CAT.getItem(aInName))
-				{
-					lModule = new Module(aInName);
-				}
-			}
-		}
-		return lModule;
-	}
+    public static Module get(String aInName)
+    {
+        return get(aInName, false);
+    }
+    public static Module get(String aInName, boolean aInCreateIfNotFound)
+    {
+        Module lModule = (Module) MY_CAT.getItem(aInName);
+        if (null == lModule && aInCreateIfNotFound)
+        {
+            synchronized (MY_CAT)
+            {
+                if (null == MY_CAT.getItem(aInName))
+                {
+                    lModule = new Module(aInName);
+                }
+            }
+        }
+        return lModule;
+    }
 
-	private Module(String aInLName)
-	{
-		super(MY_CAT, null, aInLName);
-	}
+    private Module(String aInLName)
+    {
+        super(MY_CAT, null, aInLName);
+    }
 
-	public static Module getModule(Item aIn)
-	{
-		return (Module) aIn.getAncestorOfCat(Module.MY_CAT);
-	}
+    public static Module getModule(Item aIn)
+    {
+        return (Module) aIn.getAncestorOfCat(Module.MY_CAT);
+    }
 }

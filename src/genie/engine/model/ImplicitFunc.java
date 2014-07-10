@@ -6,18 +6,18 @@ package genie.engine.model;
 public interface ImplicitFunc
 {
 
-	public void postExplicitCb();
+    public void postExplicitCb();
 
-	public void preProcessCb();
+    public void preProcessCb();
 
-	public void preImplicitProcessCb();
+    public void preImplicitProcessCb();
 
-	public void implicitProcessCb();
+    public void implicitProcessCb();
 
-	public void postImplicitProcessCb();
+    public void postImplicitProcessCb();
 
-	public void postProcessCb();
+    public void postProcessCb();
 
-	public void postInitCb();
+    public void postInitCb();
 
 }

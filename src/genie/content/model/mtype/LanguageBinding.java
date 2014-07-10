@@ -7,12 +7,12 @@ import genie.engine.model.Cat;
  */
 public class LanguageBinding extends SubTypeItem
 {
-	public static final Cat MY_CAT = Cat.getCreate("type:language-binding");
+    public static final Cat MY_CAT = Cat.getCreate("type:language-binding");
 
-	public LanguageBinding(
-			MType aInType, Language aInLang)
-	{
-		super(MY_CAT, aInType, aInLang.getName());
-	}
+    public LanguageBinding(
+            MType aInType, Language aInLang)
+    {
+        super(MY_CAT, aInType, aInLang.getName());
+    }
 
 }

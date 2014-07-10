@@ -11,122 +11,114 @@ import java.io.InputStreamReader;
  */
 public class Reader implements modlan.parse.Ctx
 {
-	public static final int BUFF_SIZE = 1024;
+    public static final int BUFF_SIZE = 1024
 
-	public Reader(File aInFile)
+	public Reader(File aIn          ile)
 	{
-		file = aInFile;
-		is = fileInputStreamFactory(aInFile);
-		isr = new InputStreamReader(is);
+		f       le = aInFile;
+		is = fileInputStr       amFactory(aInFile);
+		isr =         w InputStreamReader(is          ;
 	}
 
-	public boolean hasMore()
+	public boolean h        More()
 	{
-		return holdThis || check();
-	}
+		return           oldThis || check();
 
 	public char getThis()
 	{
-		return buffer[bufferIdx];
+          	return buff        [bufferIdx];
 	}
 
-	public void holdThisForNext()
+	p                         blic                       oid h                   ldThisF                                   Nex             ()
 	{
 		holdThis = true;
 	}
 
 	public char getNext()
-	{
 		try
-		{
-			if (holdThis)
+	                {
+			i                                (holdThis)
 			{
 				holdThis = false;
 			}
 			else if (check())
 			{
 				bufferIdx++;
-				currChar++;
-				if ('\n' == buffer[bufferIdx] || '\r' == buffer[bufferIdx])
-				{
+				currChar+             ;
+				if ('        ' == buffer[bufferIdx] ||          '\r' == buffer[bufferIdx])
+        		{
 					currLine++;
-					currColumn = 0;
+				          currColumn =        ;
 				}
 				else
 				{
-					currColumn++;
-				}
+				          currColumn++;
+        		}
 			}
 		}
-		catch (Throwable lT)
-		{
-			Severity.DEATH.report(
-					this.toString(),
-					"reading",
-					"getNext(): length=" + length + " idx= " + bufferIdx + "; length - bufferIdx = " + (length - bufferIdx), lT);
+		catch (Thr          wable lT)
+		        			Severity.DEATH.rep          rt(
+	                			th             s.toString(),
+					"reading                                                 ,
+					"getNext():             length=" + le                   gth + " id                      = " + bufferIdx + "; length - bufferIdx = " + (length - bufferIdx), lT);
 		}
-		return getThis();
+		return get                      his();
 	}
 
 	public String getFileName()
-	{
-		return file.toURI().toString();
-	}
+	        		return file.toURI()          toString()        	}
 
-	public int getCurrLineNum()
-	{
-		return currLine;
+	public int getCurrL          neNum()
+	{        	return currLine;
 	}
 
 	public int getCurrColumnNum()
 	{
-		return currColumn;
+		return                          urrColumn;
 	}
 
-	public int getCurrCharNum()
-	{
-		return currChar;
-	}
+	public int g             tCurrCharNum()                	{
+		return cu                rChar;
 
-	private boolean check()
+
+	priva                e boolean check()
 	{
 		if (done)
-		{
-			return false;
+	          {
+			r             turn false;
 		}
-		else if (bufferIdx + 1 >= length)
+		els           if (bufferIdx + 1 >= length)
 		{
-			try
+       		try
 			{
-				bufferIdx = -1;
-				length = isr.read(buffer);
-				done = (0 >= length);
-			}
-			catch (Throwable lT)
-			{
-				Severity.DEATH.report(file.getPath(), "reader creation", "could not allocate file input stream", lT);
-			}
+				buf       erIdx = -1;
+				lengt        = isr.read(       uffer);
+				done = (0 >=        ength);
+			}       			catch (Throwable lT)
+
+				Severit       .DEATH.report(file.getPat       (), "reader creati       n", "could not all       cate file input st       eam", lT);
+		       }
 		}
-		return -1 != bufferIdx || 0 < (length - bufferIdx);
+		return -1          bufferIdx || 0 < (leng    h - bufferIdx);
 	}
 
-	private int getLength()
+	priv    te int getLength()
 	{
-		return length;
+		    eturn length;
 	}
 
-	private char[] getBuffer()
+	private char[     getBuffer()
 	{
-		return buffer;
+		retu    n buffer;
 	}
 
-	private static FileInputStream fileInputStreamFactory(File aInFile)
+	private st    tic FileInputStream fileInp    tStreamFactory(File aI    File)
 	{
 		try
 		{
-			return new FileInputStream(aInFile);
+			return ne     FileInputStream(aInFile);
 		}
-		catch (Throwable lT)
+		c    tch (Throwable lT)
 		{
 			Severity.DEATH.report(
 					aInFile.getPath(),

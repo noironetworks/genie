@@ -9,34 +9,34 @@ import genie.engine.model.Item;
  */
 public class MValue extends Item
 {
-	public static final Cat MY_CAT = Cat.getCreate("mconst:value");
-	public static final String NAME = "value";
+    public static final Cat MY_CAT = Cat.getCreate("mconst:value");
+    public static final String NAME = "value";
 
-	public MValue(MConst aInConst, String aInValue)
-	{
-		super(MY_CAT,aInConst,NAME);
-		value = aInValue;
-	}
+    public MValue(MConst aInConst, String aInValue)
+    {
+        super(MY_CAT,aInConst,NAME);
+        value = aInValue;
+    }
 
-	public String getValue()
-	{
-		return value;
-	}
+    public String getValue()
+    {
+        return value;
+    }
 
-	public MConst getConst()
-	{
-		return (MConst) getParent();
-	}
+    public MConst getConst()
+    {
+        return (MConst) getParent();
+    }
 
-	public MType getType()
-	{
-		return getConst().getType(false);
-	}
+    public MType getType()
+    {
+        return getConst().getType(false);
+    }
 
-	public MType getBaseType()
-	{
-		return getType().getBase();
-	}
+    public MType getBaseType()
+    {
+        return getType().getBase();
+    }
 
-	private String value;
+    private String value;
 }

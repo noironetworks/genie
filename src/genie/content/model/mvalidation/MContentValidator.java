@@ -8,10 +8,15 @@ import genie.engine.model.Item;
  */
 public class MContentValidator extends MConstraint
 {
-	public static final Cat MY_CAT = Cat.getCreate("mvalidator:mcontent");
+    public static final Cat MY_CAT = Cat.getCreate("mvalidator:mcontent");
 
-	public MContentValidator(MValidator aInParent, String aInName, ValidatorAction aInActionOrNull)
-	{
-		super(MY_CAT, aInParent, aInName, aInActionOrNull);
-	}
+    public MContentValidator(MValidator aInParent, String aInName, ValidatorAction aInActionOrNull)
+    {
+        super(MY_CAT, aInParent, aInName, aInActionOrNull);
+    }
+
+    public MContentValidator getSuper()
+    {
+        return (MContentValidator) getSuperConstraint();
+    }
 }

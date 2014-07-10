@@ -6,19 +6,19 @@ package genie.engine.model;
 public interface Validatable
 {
 
-	/**
-	 * invokes pre-validation functionality
-	 */
-	void preValidateCb();
+    /**
+     * invokes pre-validation functionality
+     */
+    void preValidateCb();
 
-	/**
-	 * invokes validation functionality
-	 */
-	void validateCb();
+    /**
+     * invokes validation functionality
+     */
+    void validateCb();
 
-	/**
-	 * invokes post-validation functionality
-	 */
-	void postValidateCb();
+    /**
+     * invokes post-validation functionality
+     */
+    void postValidateCb();
 
 }

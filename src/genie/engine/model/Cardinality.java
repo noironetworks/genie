@@ -5,7 +5,7 @@ package genie.engine.model;
  */
 public enum Cardinality
 {
-	SINGLE,
-	MULTI,
-	;
+    SINGLE,
+    MULTI,
+    ;
 }

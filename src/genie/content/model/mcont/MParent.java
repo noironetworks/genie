@@ -22,33 +22,33 @@ import genie.engine.model.RelatorCat;
  */
 public class MParent extends MContRuleItem
 {
-	public static final Cat MY_CAT = Cat.getCreate("mcont:mparent");
-	public static final RelatorCat TARGET_CAT = RelatorCat.getCreate("mcont:mparent:parentref", Cardinality.SINGLE);
+    public static final Cat MY_CAT = Cat.getCreate("mcont:mparent");
+    public static final RelatorCat TARGET_CAT = RelatorCat.getCreate("mcont:mparent:parentref", Cardinality.SINGLE);
 
-	MParent(
-			MContained aInChild,
-			String aInParentGname)
-	{
-		super(MY_CAT, aInChild, TARGET_CAT, aInParentGname);
-	}
+    MParent(
+            MContained aInChild,
+            String aInParentGname)
+    {
+        super(MY_CAT, aInChild, TARGET_CAT, aInParentGname);
+    }
 
-	public MContained getContained()
-	{
-		return (MContained) getParent();
-	}
+    public MContained getContained()
+    {
+        return (MContained) getParent();
+    }
 
-	public MClass getContainedClass()
-	{
-		return getContained().getTarget();
-	}
+    public MClass getContainedClass()
+    {
+        return getContained().getTarget();
+    }
 
-	public MContainer getMContainer()
-	{
-		return MContainer.get(getLID().getName());
-	}
+    public MContainer getMContainer()
+    {
+        return MContainer.get(getLID().getName());
+    }
 
-	public MChild getMChild()
-	{
-		return getMContainer().getMChild(getContained().getLID().getName());
-	}
+    public MChild getMChild()
+    {
+        return getMContainer().getMChild(getContained().getLID().getName());
+    }
 }

@@ -99,9 +99,9 @@ public enum State
         return blankIncl;
     }
 
-	public Incl getSpecialIncl()
+    public Incl getSpecialIncl          )
 	{
-		return getBlankIncl();
+		return getB        nkIncl();
 	}
 
 	public String getBeginCb()

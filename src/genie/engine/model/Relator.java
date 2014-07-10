@@ -15,482 +15,482 @@ import java.util.LinkedList;
  */
 public class Relator extends Item
 {
-	public Relator getFromRelator()
-	{
-		switch (getType())
-		{
-			case TO:
+    public Relator getFromRelator()
+    {
+        switch (getType())
+        {
+            case TO:
 
-				return ((Relator) getParent());
+                return ((Relator) getParent());
 
-			case FROM:
-			default:
+            case FROM:
+            default:
 
-				return this;
-		}
-	}
+                return this;
+        }
+    }
 
-	public Relator getToRelator()
-	{
-		//System.out.println(this + ".getToRelator()");
-		if (Cardinality.SINGLE == getCardinality())
-		{
-			switch (getType())
-			{
-				case TO:
+    public Relator getToRelator()
+    {
+        //System.out.println(this + ".getToRelator()");
+        if (Cardinality.SINGLE == getCardinality())
+        {
+            switch (getType())
+            {
+                case TO:
 
-					return this;
+                    return this;
 
-				case FROM:
-				default:
-					Children lChildren = getNode().getChildren();
-					//System.out.println(this + ".getToRelator(): children:" + lChildren);
-					if (null != lChildren)
-					{
-						//System.out.println(this + ".getToRelator(): children:" + lChildren.getList());
+                case FROM:
+                default:
+                    Children lChildren = getNode().getChildren();
+                    //System.out.println(this + ".getToRelator(): children:" + lChildren);
+                    if (null != lChildren)
+                    {
+                        //System.out.println(this + ".getToRelator(): children:" + lChildren.getList());
 
-						CatEntry lCatEntry = lChildren.getEntry(complCat); // HERE'S THE PROBLEM....
-						if (null != lCatEntry)
-						{
-							Collection<Node> lNodes = lCatEntry.getList();
-							switch (lNodes.size())
-							{
-								case 1:
-								{
-									return (Relator) lNodes.iterator().next().getItem();
-								}
+                        CatEntry lCatEntry = lChildren.getEntry(complCat); // HERE'S THE PROBLEM....
+                        if (null != lCatEntry)
+                        {
+                            Collection<Node> lNodes = lCatEntry.getList();
+                            switch (lNodes.size())
+                            {
+                                case 1:
+                                {
+                                    return (Relator) lNodes.iterator().next().getItem();
+                                }
 
-								case 0:
+                                case 0:
 
-									Severity.DEATH.report(
-											this.toString(),
-											"to-relator retrieval",
-											"data not found",
-											"node " + getNode() + " 0 instances of children with category " + invItemCat);
-									break;
+                                    Severity.DEATH.report(
+                                            this.toString(),
+                                            "to-relator retrieval",
+                                            "data not found",
+                                            "node " + getNode() + " 0 instances of children with category " + invItemCat);
+                                    break;
 
-								default:
+                                default:
 
-									Severity.DEATH.report(
-											this.toString(),
-											"to-relator retrieval",
-											"ambiguous data",
-											"node " + getNode() + " too many instances of children with category " +
-											invItemCat + ":" + lNodes);
+                                    Severity.DEATH.report(
+                                            this.toString(),
+                                            "to-relator retrieval",
+                                            "ambiguous data",
+                                            "node " + getNode() + " too many instances of children with category " +
+                                            invItemCat + ":" + lNodes);
 
-									break;
-							}
+                                    break;
+                            }
 
-						}
-						else
-						{
-							Severity.DEATH.report(
-									this.toString(),
-									"to-relator retrieval",
-									"data not found",
-									"node " + getNode() + " has no children (null entry) with category " + invItemCat +
-									"; getMap() : " +
-									lChildren.getMap().keySet() +
-							        " children: " + lChildren);
-						}
-					}
-					else
-					{
-						Severity.DEATH.report(
-								this.toString(),
-								"to-relator retrieval",
-								"data not found",
-								"node " + getNode() + " has no children");
-					}
-			}
-		}
-		else
-		{
-			Severity.DEATH.report(
-					this.toString(),
-					"to-relator retrieval",
-					"cardinality is multi",
-					"unavaible for cardinality of multi");
-		}
-		return null;
-	}
+                        }
+                        else
+                        {
+                            Severity.DEATH.report(
+                                    this.toString(),
+                                    "to-relator retrieval",
+                                    "data not found",
+                                    "node " + getNode() + " has no children (null entry) with category " + invItemCat +
+                                    "; getMap() : " +
+                                    lChildren.getMap().keySet() +
+                                    " children: " + lChildren);
+                        }
+                    }
+                    else
+                    {
+                        Severity.DEATH.report(
+                                this.toString(),
+                                "to-relator retrieval",
+                                "data not found",
+                                "node " + getNode() + " has no children");
+                    }
+            }
+        }
+        else
+        {
+            Severity.DEATH.report(
+                    this.toString(),
+                    "to-relator retrieval",
+                    "cardinality is multi",
+                    "unavaible for cardinality of multi");
+        }
+        return null;
+    }
 
-	public void getToRelators(Collection<Relator> aOut)
-	{
-		//System.out.println(this + ".getToRelator()");
-		switch (getType())
-		{
-			case TO:
+    public void getToRelators(Collection<Relator> aOut)
+    {
+        //System.out.println(this + ".getToRelator()");
+        switch (getType())
+        {
+            case TO:
 
-				aOut.add(this);
+                aOut.add(this);
 
-			case FROM:
-			default:
-				Children lChildren = getNode().getChildren();
-				//System.out.println(this + ".getToRelator(): children:" + lChildren);
-				if (null != lChildren)
-				{
-					//System.out.println(this + ".getToRelator(): children:" + lChildren.getList());
+            case FROM:
+            default:
+                Children lChildren = getNode().getChildren();
+                //System.out.println(this + ".getToRelator(): children:" + lChildren);
+                if (null != lChildren)
+                {
+                    //System.out.println(this + ".getToRelator(): children:" + lChildren.getList());
 
-					CatEntry lCatEntry = lChildren.getEntry(complCat); // HERE'S THE PROBLEM....
-					if (null != lCatEntry)
-					{
-						Collection<Node> lNodes = lCatEntry.getList();
-						switch (lNodes.size())
-						{
-							case 0:
+                    CatEntry lCatEntry = lChildren.getEntry(complCat); // HERE'S THE PROBLEM....
+                    if (null != lCatEntry)
+                    {
+                        Collection<Node> lNodes = lCatEntry.getList();
+                        switch (lNodes.size())
+                        {
+                            case 0:
 
-								Severity.DEATH.report(
-										this.toString(),
-										"to-relator retrieval",
-										"data not found",
-										"node " + getNode() + " 0 instances of children with category " + invItemCat);
-								break;
+                                Severity.DEATH.report(
+                                        this.toString(),
+                                        "to-relator retrieval",
+                                        "data not found",
+                                        "node " + getNode() + " 0 instances of children with category " + invItemCat);
+                                break;
 
-							default:
+                            default:
 
-								for (Node lThis : lNodes)
-								{
-									aOut.add((Relator) lThis.getItem());
-								}
-								break;
-						}
+                                for (Node lThis : lNodes)
+                                {
+                                    aOut.add((Relator) lThis.getItem());
+                                }
+                                break;
+                        }
 
-					}
-					else
-					{
-						Severity.DEATH.report(
-								this.toString(),
-								"to-relator retrieval",
-								"data not found",
-								"node " + getNode() + " has no children (null entry) with category " + invItemCat +
-								"; getMap() : " +
-								lChildren.getMap().keySet() +
-								" children: " + lChildren);
-					}
-				}
-				else
-				{
-					Severity.DEATH.report(
-							this.toString(),
-							"to-relator retrieval",
-							"data not found",
-							"node " + getNode() + " has no children");
-				}
-		}
-	}
-
-
-	/**
-	 * Find the source of the relationship.
-	 * @return a node that is the source of the relationship.
-	 */
-	public Node getFromNode()
-	{
-		Relator lRel = getFromRelator();
-		return null == lRel ? null : lRel.getTargetNode();
-	}
-
-	/**
-	 * Find item of the node that is source of this relationship.
-	 * @return item corresponding to the node that is the source of this relationship
-	 */
-	public Item getFromItem()
-	{
-		Relator lRel = getFromRelator();
-		return null == lRel ? null : lRel.getTargetItem();
-	}
-
-	/**
-	 * For a relationship that has singularity of singleton,
-	 * find the destination/target of the relationship. If this
-	 * relationship is not Singular, an exception is thrown.
-	 *
-	 * @return a node that is the destination/target of the relationship.
-	 */
-	public Node getToNode()
-	{
-		Relator lRel = getToRelator();
-		return null == lRel ? null : lRel.getTargetNode();
-	}
-
-	/**
-	 * Same as @getToNode. For a relationship that has singularity of singleton,
-	 * find the destination/target of the relationship. If this
-	 * relationship is not Singular, an exception is thrown.
-	 *
-	 * @return item that corresponds to resolved node..
-	 */
-	public Item getToItem()
-	{
-		Relator lRel = getToRelator();
-		return null == lRel ? null : lRel.getTargetItem();
-	}
-
-	/**
-	 * For any relationship (singular or multi),
-	 * find the set of destination/target nodes of this relationship.
-	 *
-	 * @return a collection of nodes that are the destination/target of this relationship.
-	 */
-	public Collection<Node> getToNodes()
-	{
-		LinkedList<Node> lRet = new LinkedList<Node>();
-		getToNodes(lRet);
-		return lRet;
-	}
-
-	/**
-	 For any relationship (singular or multi),
-	 * find the set of destination/target nodes of this relationship.
-	 *
-	 * @param aOut a collection of nodes that are the destination/target of this relationship.
-	 */
-	public void getToNodes(Collection<Node> aOut)
-	{
-		Node lStartNode = null;
-		switch (getType())
-		{
-			case TO:
-			{
-				lStartNode = getNode().getParent();
-
-				break;
-			}
-			case FROM:
-			default:
-			{
-				lStartNode = getNode();
-
-			}
-		}
-		Collection<Node> lNodes = lStartNode.getChildren().getEntry(complCat).getList();
-		for (Node lThisNode : lNodes)
-		{
-			Node lThatNode = ((Relator)lThisNode.getItem()).getTargetNode();
-			if (null != lThatNode)
-			{
-				aOut.add(lThatNode);
-			}
-			else
-			{
-				Severity.DEATH.report(this.toString(),"relationship: retrieval of to nodes", "target node unresolvable", "target: " + itemGName);
-			}
-		}
-	}
-
-	/**
-	 * For any relationship (singular or multi),
-	 * find the set of destination/target item nodes of this relationship.
-	 *
-	 * @return a collection of item objects that are the destination/target of this relationship.
-	 */
-	public Collection<Item> getToItems()
-	{
-		LinkedList<Item> lRet = new LinkedList<Item>();
-		getToItems(lRet);
-		return lRet;
-	}
+                    }
+                    else
+                    {
+                        Severity.DEATH.report(
+                                this.toString(),
+                                "to-relator retrieval",
+                                "data not found",
+                                "node " + getNode() + " has no children (null entry) with category " + invItemCat +
+                                "; getMap() : " +
+                                lChildren.getMap().keySet() +
+                                " children: " + lChildren);
+                    }
+                }
+                else
+                {
+                    Severity.DEATH.report(
+                            this.toString(),
+                            "to-relator retrieval",
+                            "data not found",
+                            "node " + getNode() + " has no children");
+                }
+        }
+    }
 
 
-	public boolean hasTo()
-	{
-		Node lStartNode = null;
-		switch (getType())
-		{
-			case TO:
+    /**
+     * Find the source of the relationship.
+     * @return a node that is the source of the relationship.
+     */
+    public Node getFromNode()
+    {
+        Relator lRel = getFromRelator();
+        return null == lRel ? null : lRel.getTargetNode();
+    }
 
-				return true;
+    /**
+     * Find item of the node that is source of this relationship.
+     * @return item corresponding to the node that is the source of this relationship
+     */
+    public Item getFromItem()
+    {
+        Relator lRel = getFromRelator();
+        return null == lRel ? null : lRel.getTargetItem();
+    }
 
-			case FROM:
-			default:
+    /**
+     * For a relationship that has singularity of singleton,
+     * find the destination/target of the relationship. If this
+     * relationship is not Singular, an exception is thrown.
+     *
+     * @return a node that is the destination/target of the relationship.
+     */
+    public Node getToNode()
+    {
+        Relator lRel = getToRelator();
+        return null == lRel ? null : lRel.getTargetNode();
+    }
 
-				return hasChildren();
-		}
-	}
+    /**
+     * Same as @getToNode. For a relationship that has singularity of singleton,
+     * find the destination/target of the relationship. If this
+     * relationship is not Singular, an exception is thrown.
+     *
+     * @return item that corresponds to resolved node..
+     */
+    public Item getToItem()
+    {
+        Relator lRel = getToRelator();
+        return null == lRel ? null : lRel.getTargetItem();
+    }
 
-	public void getToItems(Collection<Item> aOut)
-	{
-		Node lStartNode = null;
-		switch (getType())
-		{
-			case TO:
+    /**
+     * For any relationship (singular or multi),
+     * find the set of destination/target nodes of this relationship.
+     *
+     * @return a collection of nodes that are the destination/target of this relationship.
+     */
+    public Collection<Node> getToNodes()
+    {
+        LinkedList<Node> lRet = new LinkedList<Node>();
+        getToNodes(lRet);
+        return lRet;
+    }
 
-				lStartNode = getNode().getParent();
+    /**
+     For any relationship (singular or multi),
+     * find the set of destination/target nodes of this relationship.
+     *
+     * @param aOut a collection of nodes that are the destination/target of this relationship.
+     */
+    public void getToNodes(Collection<Node> aOut)
+    {
+        Node lStartNode = null;
+        switch (getType())
+        {
+            case TO:
+            {
+                lStartNode = getNode().getParent();
 
-				break;
+                break;
+            }
+            case FROM:
+            default:
+            {
+                lStartNode = getNode();
 
-			case FROM:
-			default:
-			{
-				lStartNode = getNode();
+            }
+        }
+        Collection<Node> lNodes = lStartNode.getChildren().getEntry(complCat).getList();
+        for (Node lThisNode : lNodes)
+        {
+            Node lThatNode = ((Relator)lThisNode.getItem()).getTargetNode();
+            if (null != lThatNode)
+            {
+                aOut.add(lThatNode);
+            }
+            else
+            {
+                Severity.DEATH.report(this.toString(),"relationship: retrieval of to nodes", "target node unresolvable", "target: " + itemGName);
+            }
+        }
+    }
 
-			}
-		}
-		Collection<Node> lNodes = lStartNode.getChildren().getEntry(complCat).getList();
-		for (Node lThisNode : lNodes)
-		{
-			Item lThatItem = ((Relator)lThisNode.getItem()).getTargetItem();
-			if (null != lThatItem)
-			{
-				aOut.add(lThatItem);
-			}
-			else
-			{
-				Severity.DEATH.report(this.toString(),"relationship: retrieval of to item", "target item unresolvable", "target: " + itemGName);
-			}
-		}
-	}
+    /**
+     * For any relationship (singular or multi),
+     * find the set of destination/target item nodes of this relationship.
+     *
+     * @return a collection of item objects that are the destination/target of this relationship.
+     */
+    public Collection<Item> getToItems()
+    {
+        LinkedList<Item> lRet = new LinkedList<Item>();
+        getToItems(lRet);
+        return lRet;
+    }
 
 
-	/**
-	 * get the node that corresponds to this relator instance.
-	 * @return node that corresponds to this relator instance.
-	 */
-	public Node getTargetNode()
-	{
-		return itemCat.getNodes().get(itemGName);
-	}
+    public boolean hasTo()
+    {
+        Node lStartNode = null;
+        switch (getType())
+        {
+            case TO:
 
-	/**
-	 * get the item that corresponds to this relator instance.
-	 * @return item that corresponds to this relator instance.
-	 */
-	public Item getTargetItem()
-	{
-		return itemCat.getNodes().getItem(itemGName);
-	}
+                return true;
 
-	/**
-	 * Accessor of the relator category for this relator
-	 * @return category of this relator
-	 */
-	public RelatorCat getRelatorCat()
-	{
-		return (RelatorCat) getNode().getCat();
-	}
+            case FROM:
+            default:
 
-	/**
-	 * Accessor of complimentary category for this relator
-	 * @return category of complimentary crelator (as in TO for FROM or FROM for TO)
-	 */
-	public RelatorCat getComplCat()
-	{
-		return complCat;
-	}
+                return hasChildren();
+        }
+    }
 
-	/**
-	 * cardinality accessor. this information is derived form the category object.
-	 * @return cardinality of the relationship presented by this relator
-	 */
-	public Cardinality getCardinality()
-	{
-		return getRelatorCat().getCardinality();
-	}
+    public void getToItems(Collection<Item> aOut)
+    {
+        Node lStartNode = null;
+        switch (getType())
+        {
+            case TO:
 
-	/**
-	 * type accessor. this information is derived form the category object.
-	 * @return type identifying from/two nature of this relator
-	 */
-	public RelatorCat.Type getType()
-	{
-		return getRelatorCat().getType();
-	}
+                lStartNode = getNode().getParent();
 
-	/**
-	 * direction accessor. this information is derived form the category object.
-	 * @return identifies whether this relator is direct or inverse.
-	 */
-	public RelatorCat.Direction getDirection()
-	{
-		return getRelatorCat().getDirection();
-	}
+                break;
 
-	/**
-	 * Stringifier
-	 * @return debug string for this Relator
-	 */
-	public String toString()
-	{
-		StringBuilder lSb = new StringBuilder();
-		lSb.append("item:rel");
-		lSb.append('(');
-		toIdentString(lSb);
-		lSb.append(')');
-		return lSb.toString();
-	}
+            case FROM:
+            default:
+            {
+                lStartNode = getNode();
 
-	/**
-	 * formatter for the debug identity string
-	 * @param aInSb string builder into which identity information is recorded.
-	 */
-	public void toIdentString(StringBuilder aInSb)
-	{
-		aInSb.append(itemGName);
-		if (null != getNode())
-		{
-			aInSb.append("->");
-			aInSb.append(getCat().getName());
-			aInSb.append('[');
-			aInSb.append(getRelatorCat().getCardinality());
-			aInSb.append(':');
-			aInSb.append(getRelatorCat().getDirection());
-			aInSb.append(':');
-			aInSb.append(getRelatorCat().getType());
-			aInSb.append(']');
-		}
-	}
+            }
+        }
+        Collection<Node> lNodes = lStartNode.getChildren().getEntry(complCat).getList();
+        for (Node lThisNode : lNodes)
+        {
+            Item lThatItem = ((Relator)lThisNode.getItem()).getTargetItem();
+            if (null != lThatItem)
+            {
+                aOut.add(lThatItem);
+            }
+            else
+            {
+                Severity.DEATH.report(this.toString(),"relationship: retrieval of to item", "target item unresolvable", "target: " + itemGName);
+            }
+        }
+    }
 
-	/**
-	 * validation of the resolvability of the target object
-	 */
-	public void validateCb()
-	{
-		super.validateCb();
-		Node lTargetNode = getTargetNode();
-		Severity.INFO.report(this.toString(), "validate", "validating", "resolves to: " + lTargetNode);
-		if (null == lTargetNode)
-		{
-			Severity.DEATH.report(this.toString(), "validate", "unresolvable target", itemGName + " in cat " + itemCat);
-		}
-	}
 
-	/**
-	 * Constructor
-	 * @param aInCat model category of the relationship
-	 * @param aInParent parent relator (in case of TO)
-	 * @param aInLName relator name
-	 * @param aInItemCat category of item pointed from
-	 * @param aInInvItemCat category of item pointed to
-	 * @param aInItemGName global name of the object pointed by
-	 */
-	public Relator(
-			RelatorCat aInCat,
-			RelatorCat aInComplCat,
-			Relator aInParent,
-			String aInLName,
-			Cat aInItemCat,
-			Cat aInInvItemCat,
-			String aInItemGName)
-	{
-		super(aInCat, aInParent, aInLName);
-		complCat = aInComplCat;
-		itemCat = aInItemCat;
-		invItemCat = aInInvItemCat;
-		itemGName = aInItemGName;
+    /**
+     * get the node that corresponds to this relator instance.
+     * @return node that corresponds to this relator instance.
+     */
+    public Node getTargetNode()
+    {
+        return itemCat.getNodes().get(itemGName);
+    }
 
-		/**System.out.println("> " + this + " : RELATOR CONSTRUCTED: " +
-		                   (null == aInParent ? "" : (" TO {" + aInParent + "}")) +
-		                   " itemCat=" + itemCat + ", invItemCat=" + invItemCat + " !! \n");**/
+    /**
+     * get the item that corresponds to this relator instance.
+     * @return item that corresponds to this relator instance.
+     */
+    public Item getTargetItem()
+    {
+        return itemCat.getNodes().getItem(itemGName);
+    }
 
-		if (Cat.isValidated())
-		{
-			validateCb();
-		}
-	}
+    /**
+     * Accessor of the relator category for this relator
+     * @return category of this relator
+     */
+    public RelatorCat getRelatorCat()
+    {
+        return (RelatorCat) getNode().getCat();
+    }
 
-	private final Cat itemCat;
-	private final Cat invItemCat;
-	private final RelatorCat complCat;
-	private final String itemGName;
+    /**
+     * Accessor of complimentary category for this relator
+     * @return category of complimentary crelator (as in TO for FROM or FROM for TO)
+     */
+    public RelatorCat getComplCat()
+    {
+        return complCat;
+    }
+
+    /**
+     * cardinality accessor. this information is derived form the category object.
+     * @return cardinality of the relationship presented by this relator
+     */
+    public Cardinality getCardinality()
+    {
+        return getRelatorCat().getCardinality();
+    }
+
+    /**
+     * type accessor. this information is derived form the category object.
+     * @return type identifying from/two nature of this relator
+     */
+    public RelatorCat.Type getType()
+    {
+        return getRelatorCat().getType();
+    }
+
+    /**
+     * direction accessor. this information is derived form the category object.
+     * @return identifies whether this relator is direct or inverse.
+     */
+    public RelatorCat.Direction getDirection()
+    {
+        return getRelatorCat().getDirection();
+    }
+
+    /**
+     * Stringifier
+     * @return debug string for this Relator
+     */
+    public String toString()
+    {
+        StringBuilder lSb = new StringBuilder();
+        lSb.append("item:rel");
+        lSb.append('(');
+        toIdentString(lSb);
+        lSb.append(')');
+        return lSb.toString();
+    }
+
+    /**
+     * formatter for the debug identity string
+     * @param aInSb string builder into which identity information is recorded.
+     */
+    public void toIdentString(StringBuilder aInSb)
+    {
+        aInSb.append(itemGName);
+        if (null != getNode())
+        {
+            aInSb.append("->");
+            aInSb.append(getCat().getName());
+            aInSb.append('[');
+            aInSb.append(getRelatorCat().getCardinality());
+            aInSb.append(':');
+            aInSb.append(getRelatorCat().getDirection());
+            aInSb.append(':');
+            aInSb.append(getRelatorCat().getType());
+            aInSb.append(']');
+        }
+    }
+
+    /**
+     * validation of the resolvability of the target object
+     */
+    public void validateCb()
+    {
+        super.validateCb();
+        Node lTargetNode = getTargetNode();
+        Severity.INFO.report(this.toString(), "validate", "validating", "resolves to: " + lTargetNode);
+        if (null == lTargetNode)
+        {
+            Severity.DEATH.report(this.toString(), "validate", "unresolvable target", itemGName + " in cat " + itemCat);
+        }
+    }
+
+    /**
+     * Constructor
+     * @param aInCat model category of the relationship
+     * @param aInParent parent relator (in case of TO)
+     * @param aInLName relator name
+     * @param aInItemCat category of item pointed from
+     * @param aInInvItemCat category of item pointed to
+     * @param aInItemGName global name of the object pointed by
+     */
+    public Relator(
+            RelatorCat aInCat,
+            RelatorCat aInComplCat,
+            Relator aInParent,
+            String aInLName,
+            Cat aInItemCat,
+            Cat aInInvItemCat,
+            String aInItemGName)
+    {
+        super(aInCat, aInParent, aInLName);
+        complCat = aInComplCat;
+        itemCat = aInItemCat;
+        invItemCat = aInInvItemCat;
+        itemGName = aInItemGName;
+
+        /**System.out.println("> " + this + " : RELATOR CONSTRUCTED: " +
+                           (null == aInParent ? "" : (" TO {" + aInParent + "}")) +
+                           " itemCat=" + itemCat + ", invItemCat=" + invItemCat + " !! \n");**/
+
+        if (Cat.isValidated())
+        {
+            validateCb();
+        }
+    }
+
+    private final Cat itemCat;
+    private final Cat invItemCat;
+    private final RelatorCat complCat;
+    private final String itemGName;
 }

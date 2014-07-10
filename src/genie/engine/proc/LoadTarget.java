@@ -14,24 +14,23 @@ import java.io.File;
 public class LoadTarget
 {
 
-	public LoadTarget(Dsptchr aInDisp, ProcessorTree aInPTree, String aInPaths[], String aInSuffix)
+    public LoadTarget(Dsptchr aInDisp, ProcessorTree aInPTree, String aInPaths[], String aInSuffi          )
 	{
-		disp = aInDisp;
-		pTree = aInPTree;
-		paths = aInPaths;
+		disp       = aInDisp;
+		       Tree = aInPTr       e;
+		paths = aI       Paths;
 		suffix = aInSuffix;
-		if (null == paths || 0 == paths.length)
+		if (                ull == paths || 0                            == paths.length)
 		{
-			listers = new Lister[]{};
+			li          ters = new Lister[]{};
 		}
-		else
+		els
 		{
-			listers = new Lister[paths.length];
-			for (int i = 0; i < paths.length; i++)
-			{
-				final int lThisI = i;
-				disp.trigger(
-						new Task()
+			l             sters                                                                                                                            = new Lister                         paths.length];
+			for (int i = 0; i                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          < paths.length; i++)
+    		{
+				final int lThisI = i;    				disp.trigger(
+						n    w Task()
 						{
 							@Override
 							public void run()

@@ -8,17 +8,17 @@ import genie.engine.model.Item;
  */
 public class SubModuleItem extends Item
 {
-	protected SubModuleItem(
-			Cat aInCat,
-			Item aInParent,
-			String aInLName
-			)
-	{
-		super(aInCat, aInParent, aInLName);
-	}
+    protected SubModuleItem(
+            Cat aInCat,
+            Item aInParent,
+            String aInLName
+            )
+    {
+        super(aInCat, aInParent, aInLName);
+    }
 
-	public Module getModule()
-	{
-		return Module.getModule(this);
-	}
+    public Module getModule()
+    {
+        return Module.getModule(this);
+    }
 }

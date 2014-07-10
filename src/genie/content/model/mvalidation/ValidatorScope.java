@@ -5,6 +5,6 @@ package genie.content.model.mvalidation;
  */
 public enum ValidatorScope
 {
-	PROPERTY,
-	TYPE
+    PROPERTY,
+    TYPE
 }

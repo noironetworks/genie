@@ -66,15 +66,15 @@ augment
 
 
 tenant-override john
-	contract-define UC666
-		clause
-			mutual end-point 10.10.6.6
-			mutual end-point 10.10.6.8
-			add subject whatever
+    contract-define UC666
+        clause
+            mutual end-point 10.10.6.6
+            mutual end-point 10.10.6.8
+            add subject whatever
 
-		subject whatever
-			classifier append 6666
-			action HighQoS
+        subject whatever
+            classifier append 6666
+            action HighQoS
 
 ########################################################################################################
 
@@ -99,21 +99,21 @@ tenant dave
 
 
 tenant-override *
-	contract-override *
+    contract-override *
 
-	    add-subject "foo"
-	        classifier append blahblah
-	        action go-crazy
+        add-subject "foo"
+            classifier append blahblah
+            action go-crazy
 
-	    add-subject "boohoo"
-	        classifier append cheers
-	        action go-mild
+        add-subject "boohoo"
+            classifier append cheers
+            action go-mild
 
-	    clause
-		    peer-end-point match(that are marked as crazy)
-		    add-subject 6666 actions: prepend knock-yourself-out-set
-		    add-subject "boohoo"
-		    remove-subject icmp
+        clause
+            peer-end-point match(that are marked as crazy)
+            add-subject 6666 actions: prepend knock-yourself-out-set
+            add-subject "boohoo"
+            remove-subject icmp
 
 
 

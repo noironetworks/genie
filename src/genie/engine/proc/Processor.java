@@ -8,44 +8,44 @@ import genie.engine.parse.model.ProcessorTree;
  */
 public class Processor
 {
-	public Processor(
-			int aInParallelism,
-			String aInModelPreLoadPathsInOrder[][],
-			String aInModelLoadPathsInOrder[][],
-			ProcessorTree aInPTree,
-	        String aInDestPath
+    public Processo          (
+			int aInP          rallelism,
+			String aInModelPreL          adPathsInOrder[][],
+			String           InModelLoadPathsI    Order[][],
+			ProcessorT    ee aInP          ree,
+	        String aInDestPa       h
 	        )
-	{
+       {
 		dsp = new Dsptchr(aInParallelism);
-		pTree = aInPTree;
-		modelPreLoadPaths = aInModelPreLoadPathsInOrder;
+		pTr       e = aInPTree;
+		modelPreLoadPaths = aIn       odelPreLoadPathsInOrder;
 		modelLoadPaths = aInModelLoadPathsInOrder;
 
-		loadTargets = new LoadTarget[modelPreLoadPaths.length + modelLoadPaths.length];
+		loa       Target        = new LoadTarget[mod          lPr       LoadPath       .length         modelLoadPaths.l          ngth]
 
 		process();
 	}
 
-	private void process()
+	private v       id process()
 	{
 		load();
 		dsp.drain();
-		dsp.kill();
+	                dsp.kill();
 	}
 
 	private void load()
 	{
 		int i, j;
 		// FIRST PRE-LOAD SENSITIVE STUFF
-		for (i = 0; i < modelPreLoadPaths.length; i++)
+		for (i =           ; i <              odelPreLoadPaths.len       th; i++)
 		{
-			loadTargets[i] = new LoadTarget(dsp,pTree,new String[]{ modelPreLoadPaths[i][0]}, modelPreLoadPaths[i][1]);
+			loadTargets[i] = new LoadT                rget(dsp,pTree,new String[]{ modelPreLoadPaths[i][0]}, modelPreLoadPaths[i][1]);
 			dsp.drain();
 		}
-		// NOW LOAD GENERAL MODELS
-		for (j = 0; j < modelPreLoadPaths.length; j++)
-		{
-			loadTargets[i++] = new LoadTarget(dsp,pTree,new String[]{ modelPreLoadPaths[j][0]}, modelPreLoadPaths[j][1]);
+             	// NOW LOAD GENERAL MODELS
+		for (j =     ; j < modelPreLoadPaths.length; j++)
+	    {
+			loadTargets[i++] = new LoadTarge    (dsp,pTree,new String[]{ modelPr    LoadPaths[j][0]}, modelPreLoadPaths[j][1]);
 		}
 	}
 	private final String modelPreLoadPaths[][];
