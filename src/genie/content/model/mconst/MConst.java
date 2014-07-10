@@ -17,9 +17,6 @@ public class MConst extends Item
 
 	public static final Cat MY_CAT = Cat.getCreate("mconst");
 
-	// TODO: ADD SUPPORT FOR
-	// TODO:        ACTION: VALUE | REMOVE | TRANSIENT(<target-constant>) |
-
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// CONSTRUCTION
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,6 +51,50 @@ public class MConst extends Item
 		return action;
 	}
 
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// TYPE API
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	public MType getType(boolean aInIsBaseType)
+	{
+		Item lParent = getParent();
+		MType lType =  lParent instanceof MType ? (MType) lParent : ((MProp) lParent).getType(false);
+		if (null == lType)
+		{
+			Severity.DEATH.report(
+					this.toString(),
+					"const type retrieval",
+					"type definition not found",
+					"no type is resolvable for constant in context of " +
+					lParent);
+		}
+		return aInIsBaseType ? lType.getBase() : lType;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// PROP API
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public MProp getProp(boolean aInBaseProp)
+	{
+		Item lParent = getParent();
+
+		if (lParent instanceof MProp)
+		{
+			return aInBaseProp ? (((MProp)lParent).getBase()) : (MProp) lParent;
+		}
+		else
+		{
+			Severity.DEATH.report(
+					this.toString(),
+					"const property retrievale",
+					"no associated property found",
+					"const is contained by " +
+					lParent);
+
+			return null;
+		}
+	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// SUPER-CONST API
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,8 +137,8 @@ public class MConst extends Item
 					Severity.DEATH.report(
 							this.toString(),
 							"retrieval of super const",
-							"no superProp",
-							"super Prop can't be found for non-base Prop " +
+							"no super prop",
+							"super Prop can't be found for non-base prop " +
 							lParent);
 				}
 			}
@@ -120,54 +161,54 @@ public class MConst extends Item
 		     null != lConst && null == lValue;
 		     lConst = aInCheckSuper ? lConst.getSuperConst() : null)
 		{
-			lValue = getValue();
+			lValue = lConst.getValue();
 		}
 		return lValue;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// TYPE API
+	// INDIRECTION API
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	public MType getType(boolean aInIsBaseType)
+	public MIndirection getIndirection()
 	{
-		Item lParent = getParent();
-		MType lType =  lParent instanceof MType ? (MType) lParent : ((MProp) lParent).getType(false);
-		if (null == lType)
-		{
-			Severity.DEATH.report(
-					this.toString(),
-					"const type retrieval",
-					"type definition not found",
-					"no type is resolvable for constant in context of " +
-			        lParent);
-		}
-		return aInIsBaseType ? lType.getBase() : lType;
+		return (action.isRequireIndirectionTargetConst()) ?
+				(MIndirection) getChildItem(MIndirection.MY_CAT,MIndirection.NAME) :
+				null;
+
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// PROP API
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public MProp getProp(boolean aInBaseProp)
+	public MIndirection findIndirection(boolean aInCheckSuper)
 	{
-		Item lParent = getParent();
-
-		if (lParent instanceof MProp)
+		MIndirection lIndir = null;
+		if (action.isRequireIndirectionTargetConst())
 		{
-			return aInBaseProp ? (((MProp)lParent).getBase()) : (MProp) lParent;
+			for (MConst lConst = this;
+			     null != lConst && null == lIndir;
+			     lConst = aInCheckSuper ? lConst.getSuperConst() : null)
+			{
+				lIndir = lConst.getIndirection();
+			}
+			if (null == lIndir)
+			{
+				Severity.DEATH.report(
+						this.toString(),
+						"retrieval of const indirection",
+						"no const indirection found",
+						"const action " + getAction() +
+						" can't be satisfied");
+			}
 		}
-		else
-		{
-			Severity.DEATH.report(
-					this.toString(),
-					"const property retrievale",
-					"no associated property found",
-					"const is contained by " +
-					lParent);
+		return lIndir;
 
-			return null;
-		}
 	}
+
+	public MConst findIndirectionConst(boolean aInCheckSuper)
+	{
+		MIndirection lInd = findIndirection(aInCheckSuper);
+		return null == lInd ? null : lInd.findTargetConst();
+	}
+
+
 
 	private final ConstAction action;
 }

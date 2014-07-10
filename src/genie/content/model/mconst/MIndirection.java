@@ -12,12 +12,21 @@ import modlan.report.Severity;
 public class MIndirection extends Item
 {
 	public static final Cat MY_CAT = Cat.getCreate("mconst:indirection");
-	public static final String NAME = "value";
+	public static final String NAME = "indirection";
 
 	public MIndirection(MConst aInConst, String aInConstName)
 	{
 		super(MY_CAT,aInConst,NAME);
 		target = aInConstName;
+		if (!aInConst.getAction().isRequireIndirectionTargetConst())
+		{
+			Severity.DEATH.report(
+					aInConst.toString(),
+					"definition of target const",
+					"can't specify target indirection",
+					"can't specify target const " + target + " for constant with action: " +
+					aInConst.getAction());
+		}
 	}
 
 	public String getTargetName()

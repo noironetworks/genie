@@ -15,7 +15,7 @@ public enum ConstAction
 	DEFAULT("default"), // acts as default value
 	;
 
-	public boolean isRequireTargetConst()
+	public boolean isRequireIndirectionTargetConst()
 	{
 		return DEFAULT == this || AUTO_TRANSITION == this;
 	}
