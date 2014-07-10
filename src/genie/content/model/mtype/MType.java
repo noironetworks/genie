@@ -3,6 +3,7 @@ package genie.content.model.mtype;
 import genie.content.model.mconst.MConst;
 import genie.content.model.module.Module;
 import genie.content.model.module.SubModuleItem;
+import genie.content.model.mvalidation.MValidator;
 import genie.engine.model.*;
 import modlan.report.Severity;
 
@@ -352,6 +353,70 @@ public class MType extends SubModuleItem
 		     lThisType = aInCheckSuperTypes ? lThisType.getSupertype() : null)
 		{
 			getConst(aOut);
+		}
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// VALIDATOR APIs
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * retrieves validator defined under this type by name
+	 * @param aInName name of the validator to be retrieved.
+	 * @return Validator associated with the name passed in that is defined under this type
+	 */
+	public MValidator getValidator(String aInName)
+	{
+		return (MValidator) getChildItem(MValidator.MY_CAT, aInName);
+	}
+
+	/**
+	 * finds validator defined under this type or, if specified, any of the supertypes, by name
+	 * @param aInName name of the validator to be retrieved.
+	 * @param aInCheckSuperTypes identifies that supertypes are to be checked
+	 * @return
+	 */
+	public MValidator findValidator(String aInName, boolean aInCheckSuperTypes)
+	{
+		MValidator lValidator = null;
+		for (MType lThisType = this;
+		     null != lThisType && null == lValidator;
+		     lThisType = aInCheckSuperTypes ? lThisType.getSupertype() : null)
+		{
+			lValidator = lThisType.getValidator(aInName);
+		}
+		return lValidator;
+	}
+	/**
+	 * retrieves all validators defined under this type
+	 * @param aOut  All validators defined under this type
+	 */
+	public void getValidator(Map<String, MValidator> aOut)
+	{
+		Collection<Item> lItems = new LinkedList<Item>();
+		getChildItems(MValidator.MY_CAT,lItems);
+		for (Item lItem : lItems)
+		{
+			if (!aOut.containsKey(lItem.getLID().getName()))
+			{
+				aOut.put(lItem.getLID().getName(), (MValidator) lItem);
+			}
+		}
+	}
+
+	/**
+	 * retrieves all validators defined under this type or, if specified, any of the supertypes
+	 * @param aOut  All validators defined under this type or, if specified, any of the supertypes
+	 * @param aInCheckSuperTypes identifies that supertypes are to be checked
+	 */
+	public void findValidator(Map<String, MValidator> aOut, boolean aInCheckSuperTypes)
+	{
+		for (MType lThisType = this;
+		     null != lThisType;
+		     lThisType = aInCheckSuperTypes ? lThisType.getSupertype() : null)
+		{
+			getValidator(aOut);
 		}
 	}
 

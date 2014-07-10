@@ -4,6 +4,7 @@ import genie.content.model.mprop.MProp;
 import genie.content.model.mtype.MType;
 import genie.engine.model.Cat;
 import genie.engine.model.Item;
+import modlan.report.Severity;
 
 /**
  * Created by midvorki on 7/10/14.
@@ -63,6 +64,101 @@ public class MValidator extends Item
 	}
 
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// TYPE API
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	public MType getType(boolean aInIsBaseType)
+	{
+		Item lParent = getParent();
+		MType lType =  ValidatorScope.TYPE == scope ? (MType) lParent : ((MProp) lParent).getType(false);
+		if (null == lType)
+		{
+			Severity.DEATH.report(
+					this.toString(),
+					"const type retrieval",
+					"type definition not found",
+					"no type is resolvable for validator in context of " +
+					lParent);
+		}
+		return aInIsBaseType ? lType.getBase() : lType;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// PROP API
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public MProp getProp(boolean aInBaseProp)
+	{
+		Item lParent = getParent();
+
+		if (ValidatorScope.PROPERTY == scope)
+		{
+			return aInBaseProp ? (((MProp)lParent).getBase()) : (MProp) lParent;
+		}
+		else
+		{
+			Severity.DEATH.report(
+					this.toString(),
+					"const property retrieval",
+					"no associated property found",
+					"validator is contained by " +
+					lParent);
+
+			return null;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// SUPER-VALIDATOR API
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	public MValidator getSuperValidator()
+	{
+		Item lParent = getParent();
+		if (ValidatorScope.TYPE == scope)
+		{
+			MType lType = (MType) lParent;
+			if (!lType.isBase())
+			{
+				lType = lType.getSupertype();
+				if (null != lType)
+				{
+					lType.findValidator(getLID().getName(), true);
+				}
+				else
+				{
+					Severity.DEATH.report(
+							this.toString(),
+							"retrieval of super validator",
+							"no super validator",
+							"super validator can't be found for non-base type " +
+							lParent);
+				}
+			}
+		}
+		else
+		{
+			MProp lProp = (MProp) lParent;
+			if (!lProp.isBase())
+			{
+				lProp = lProp.getOverridden(false);
+				if (null != lProp)
+				{
+					lProp.findValidator(getLID().getName(), true);
+				}
+				else
+				{
+					Severity.DEATH.report(
+							this.toString(),
+							"retrieval of super validator",
+							"no super prop",
+							"super validator can't be found for non-base prop " +
+							lParent);
+				}
+			}
+		}
+		return null;
+	}
 	private final ValidatorScope scope;
 	private final ValidatorAction action;
 }

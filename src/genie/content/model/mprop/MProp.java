@@ -4,6 +4,7 @@ import genie.content.model.mclass.MClass;
 import genie.content.model.mclass.SubStructItem;
 import genie.content.model.mconst.MConst;
 import genie.content.model.mtype.MType;
+import genie.content.model.mvalidation.MValidator;
 import genie.engine.model.*;
 import modlan.report.Severity;
 
@@ -307,6 +308,78 @@ public class MProp extends SubStructItem
 			if (lThisProp.isBase())
 			{
 				lThisProp.getType(false).findConst(aOut,true);
+			}
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// VALIDATOR APIs
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * finds validator defined under this property or, if specified, any of the target overridden property, by name
+	 * @param aInName name of the validator to be retrieved.
+	 * @param aInCheckSuperProps identifies that target overridden properties are to be checked
+	 * @return validator matching the name
+	 */
+	public MValidator findValidator(String aInName, boolean aInCheckSuperProps)
+	{
+		MValidator lValidator = null;
+		for (MProp lThisProp = this;
+		     null != lThisProp && null == lValidator;
+		     lThisProp = aInCheckSuperProps ? lThisProp.getOverridden(false) : null)
+		{
+			lValidator = lThisProp.getValidator(aInName);
+			if (null == lValidator && lThisProp.isBase())
+			{
+				lThisProp.getType(false).findValidator(aInName,true);
+			}
+		}
+		return lValidator;
+	}
+
+	/**
+	 * retrieves validator defined under this property by name
+	 * @param aInName name of the validator to be retrieved.
+	 * @return Validator associated with the name passed in that is defined under this property
+	 */
+	public MValidator getValidator(String aInName)
+	{
+		return (MValidator) getChildItem(MValidator.MY_CAT, aInName);
+	}
+
+	/**
+	 * retrieves all validators defined under this property
+	 * @param aOut  All validators defined under this property
+	 */
+	public void getValidator(Map<String, MValidator> aOut)
+	{
+		Collection<Item> lItems = new LinkedList<Item>();
+		getChildItems(MValidator.MY_CAT,lItems);
+		for (Item lItem : lItems)
+		{
+			if (!aOut.containsKey(lItem.getLID().getName()))
+			{
+				aOut.put(lItem.getLID().getName(), (MValidator) lItem);
+			}
+		}
+	}
+
+	/**
+	 * retrieves all validators defined under this property or, if specified, any of the target overridden properties
+	 * @param aOut  All validators defined under this property or, if specified, any of the target overridden properties
+	 * @param aInCheckSuperProps identifies that overridden properties are to be checked
+	 */
+	public void findValidator(Map<String, MValidator> aOut, boolean aInCheckSuperProps)
+	{
+		for (MProp lThisProp = this;
+		     null != lThisProp;
+		     lThisProp = aInCheckSuperProps ? lThisProp.getOverridden(false) : null)
+		{
+			getValidator(aOut);
+			if (lThisProp.isBase())
+			{
+				lThisProp.getType(false).findValidator(aOut,true);
 			}
 		}
 	}
