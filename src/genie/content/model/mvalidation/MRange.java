@@ -1,6 +1,6 @@
 package genie.content.model.mvalidation;
 
-import genie.content.model.mconst.MConst;
+import genie.content.model.mtype.MType;
 import genie.engine.model.Cat;
 import genie.engine.model.Item;
 
@@ -11,19 +11,24 @@ import java.util.Map;
 /**
  * Created by midvorki on 7/10/14.
  */
-public class MRangeBounds
+public class MRange
         extends MConstraint
 {
     public static final Cat MY_CAT = Cat.getCreate("mvalidator:mrange");
 
-    public MRangeBounds(MValidator aInParent, String aInName, ValidatorAction aInActionOrNull)
+    public MRange(MValidator aInParent, String aInName, ValidatorAction aInActionOrNull)
     {
         super(MY_CAT, aInParent, aInName, aInActionOrNull);
     }
 
-    public MRangeBounds getSuper()
+    public MType getType(boolean aInIsBaseType)
     {
-        return (MRangeBounds) getSuperConstraint();
+        return getValidator().getType(aInIsBaseType);
+    }
+
+    public MRange getSuper()
+    {
+        return (MRange) getSuperConstraint();
     }
 
     public MConstraintValue getConstraintValue(ConstraintValueType aIn)
@@ -48,7 +53,7 @@ public class MRangeBounds
     public MConstraintValue findConstraintValue(ConstraintValueType aIn, boolean aInIncludeSuper)
     {
         MConstraintValue lValue = null;
-        for (MRangeBounds lRange = this;
+        for (MRange lRange = this;
              null != lRange && null == lValue;
              lRange = aInIncludeSuper ? lRange.getSuper() : null)
         {
@@ -60,7 +65,7 @@ public class MRangeBounds
     public void findConstraintValue(Map<ConstraintValueType, MConstraintValue> aOut, boolean aInIncludeSuper)
     {
         MConstraintValue lValue = null;
-        for (MRangeBounds lRange = this;
+        for (MRange lRange = this;
              null != lRange;
              lRange = aInIncludeSuper ? lRange.getSuper() : null)
         {

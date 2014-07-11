@@ -55,11 +55,6 @@ public class MValidator extends Item
         return action;
     }
 
-    public MType getType()
-    {
-        return ValidatorScope.TYPE == scope ? (MType) getParent() : null;
-    }
-
     public MProp getProp()
     {
         return ValidatorScope.PROPERTY == scope ? (MProp) getParent() : null;
@@ -194,26 +189,26 @@ public class MValidator extends Item
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // CONTENT VALIDATOR API
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public MRangeBounds getRangeBounds(String aInName)
+    public MRange getRange(String aInName)
     {
-        return (MRangeBounds) getChildItem(MRangeBounds.MY_CAT,aInName);
+        return (MRange) getChildItem(MRange.MY_CAT,aInName);
     }
 
-    public MRangeBounds findRangeBounds(String aInName, boolean aInCheckSuper)
+    public MRange findRange(String aInName, boolean aInCheckSuper)
     {
-        MRangeBounds lRB = null;
+        MRange lRB = null;
         for (MValidator lV = this;
              null != lV && null == lRB;
              lV = aInCheckSuper ? lV.getSuperValidator() : null)
         {
-            lRB = lV.getRangeBounds(aInName);
+            lRB = lV.getRange(aInName);
         }
         return lRB;
     }
 
-    public void findRangeBounds(Map<String,MRangeBounds> aOut, boolean aInCheckSuper)
+    public void findRange(Map<String,MRange> aOut, boolean aInCheckSuper)
     {
-        MRangeBounds lRB = null;
+        MRange lRB = null;
         for (MValidator lV = this;
              null != lV && null == lRB;
              lV = aInCheckSuper ? lV.getSuperValidator() : null)

@@ -25,9 +25,13 @@ public class MConstraintValue
         return value;
     }
 
+    public MRange getRange()
+    {
+        return (MRange) getParent();
+    }
     public MValidator getValidator()
     {
-        return (MValidator) getParent();
+        return getRange().getValidator();
     }
 
     public MType getType()
