@@ -7,6 +7,7 @@ import genie.engine.model.Item;
 import modlan.report.Severity;
 import modlan.utils.Strings;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -46,18 +47,29 @@ public class MNameRule extends Item
         return lClass;
     }
 
-    // TODO:
     public void getTargetClass(Map<Ident,MClass> aOut)
     {
-        MClass lClass = null;
+        MClass lContainerClass = null;
         if (isAnyTarget)
         {
             MNamer lNamer = getNamer();
+            MClass lNamedClass = lNamer.getTargetClass();
+
+            // resolved all of the
+            lNamedClass.getContainedByClasses(aOut, true, true);
         }
         else
         {
-            lClass = getTargetClassExplicit();
-            aOut.put(lClass.getLID(), lClass);
+            lContainerClass = getTargetClassExplicit();
+            if (lContainerClass.isConcrete())
+            {
+                aOut.put(lContainerClass.getGID(),lContainerClass);
+            }
+            else
+            {
+                lContainerClass.getSubclasses(aOut, false, true);
+            }
+
         }
     }
 

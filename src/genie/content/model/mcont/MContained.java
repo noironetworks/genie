@@ -5,6 +5,7 @@ import genie.engine.model.*;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Created by dvorkinista on 7/8/14.
@@ -150,13 +151,22 @@ public class MContained
      * retrieves collection of classes that are potential parents
      * @param aOut collection of classes of potential parents
      */
-    public void getParentClasses(Collection<MClass> aOut)
+    public void getParentClasses(Map<Ident,MClass> aOut, boolean aInResolveToConcrete)
     {
         LinkedList<Item> lItems = new LinkedList<Item>();
         getChildItems(MParent.MY_CAT, lItems);
         for (Item lIt : lItems)
         {
-            aOut.add(((MParent)lIt).getTarget());
+            MParent lParent = (MParent) lIt;
+            MClass lThat = lParent.getTarget();
+            if (aInResolveToConcrete && !lThat.isConcrete())
+            {
+                lThat.getSubclasses(aOut,false,aInResolveToConcrete);
+            }
+            else
+            {
+                aOut.put(lThat.getGID(), lThat);
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import genie.engine.model.*;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Created by dvorkinista on 7/8/14.
@@ -101,13 +102,22 @@ public class MContainer
         return lMChild;
     }
 
-    public void getChildClasses(Collection<MClass> aOut)
+    public void getChildClasses(Map<Ident,MClass> aOut, boolean aInResolveToConcrete)
     {
         LinkedList<Item> lItems = new LinkedList<Item>();
-        getChildItems(MParent.MY_CAT, lItems);
+        getChildItems(MChild.MY_CAT, lItems);
         for (Item lIt : lItems)
         {
-            aOut.add(((MParent)lIt).getTarget());
+            MChild lChild = (MChild) lIt;
+            MClass lThat = lChild.getTarget();
+            if (aInResolveToConcrete && !lThat.isConcrete())
+            {
+                lThat.getSubclasses(aOut,false,aInResolveToConcrete);
+            }
+            else
+            {
+                aOut.put(lThat.getGID(), lThat);
+            }
         }
     }
 }

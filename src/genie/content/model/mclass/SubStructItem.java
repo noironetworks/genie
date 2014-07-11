@@ -15,6 +15,6 @@ public class SubStructItem extends SubModuleItem
 
     public MClass getMClass()
     {
-        return MClass.getMClass(this);
+        return MClass.getClass(this);
     }
 }
