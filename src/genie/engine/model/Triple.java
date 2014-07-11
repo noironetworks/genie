@@ -1,17 +1,19 @@
 package genie.engine.model;
 
 /**
- * Created by midvorki on 7/8/14.
+ * Created by midvorki on 7/10/14.
  */
-public class Pair<F, S>
+public class Triple<F,S,T>
 {
     private final F first;
     private final S second;
+    private final T third;
 
-    public Pair(F aInFirst, S aInSecond)
+    public Triple(F aInFirst, S aInSecond, T aInThird)
     {
         this.first = aInFirst;
         this.second = aInSecond;
+        this.third = aInThird;
     }
 
     public F getFirst()
@@ -23,4 +25,6 @@ public class Pair<F, S>
     {
         return second;
     }
+
+    public T getThird() { return third; }
 }

@@ -38,11 +38,6 @@ public class MConstraint extends Item
         return (MValidator) getAncestorOfCat(MValidator.MY_CAT);
     }
 
-    public MConstraint getBaseConstraint()
-    {
-        return (MConstraint) getAncestorOfCat(getCat());
-    }
-
     public MConstraint getSuperConstraint()
     {
         MConstraint lConstraint = null;
