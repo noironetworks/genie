@@ -15,51 +15,96 @@ public class MConst extends Item
     // CATEGORIES
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * item category for all of the constants. this is where all constants are globally registered.
+     */
     public static final Cat MY_CAT = Cat.getCreate("mconst");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // CONSTRUCTION
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Constructs a constant under a property
+     * @param aInParent property that holds the constant
+     * @param aInName name of the constant
+     * @param aInAction constant action that indicates this constant's behavior
+     */
     public MConst(
             MProp aInParent,
             String aInName,
             ConstAction aInAction)
     {
-        this((Item) aInParent, aInName, aInAction);
+        this((Item) aInParent, aInName, aInAction, ConstScope.PROPERTY);
     }
 
+    /**
+     * Constructs a constant under a atype
+     * @param aInParent type that holds the constant
+     * @param aInName name of the constant
+     * @param aInAction constant action that indicates this constant's behavior
+     */
     public MConst(
             MType aInParent,
             String aInName,
             ConstAction aInAction)
     {
-        this((Item)aInParent, aInName, aInAction);
+        this((Item)aInParent, aInName, aInAction, ConstScope.TYPE);
     }
 
+    /**
+     * private generic constructor used by other MConst constructors
+     * @param aInParent parent item that is either a type or a property
+     * @param aInName name of the constant
+     * @param aInAction constant action that indicates this constant's behavior
+     */
     private MConst(
             Item aInParent,
             String aInName,
-            ConstAction aInAction)
+            ConstAction aInAction,
+            ConstScope aInScope)
     {
         super(MY_CAT, aInParent, aInName);
         action = (null == aInAction) ? ConstAction.VALUE : aInAction;
+        scope = aInScope;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // CONSTANT SCOPE AND ACTION API
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * constant action accessor. retrieves this constant's behavioral directives
+     * @return
+     */
     public ConstAction getAction()
     {
         return action;
     }
 
-
+    /**
+     * scope accessor. identifies whether this is a type or property bound constant
+     * @return ConstScope.PROPERTY if this const is bound to property. ConstScope.TYPE if this const is bound to type.
+     */
+    public ConstScope getScope()
+    {
+        return scope;
+    }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // TYPE API
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * type accessor.
+     * retrieves the type associated with this constant. type is either a direct parent of a constant or
+     * associated with the property that contains this constant.
+     * @param aInIsBaseType identifies whether the base/built-in type should be resolved.
+     * @return type associated with this constant
+     */
     public MType getType(boolean aInIsBaseType)
     {
         Item lParent = getParent();
-        MType lType =  lParent instanceof MType ? (MType) lParent : ((MProp) lParent).getType(false);
+        MType lType =  ConstScope.TYPE == scope ? (MType) lParent : ((MProp) lParent).getType(false);
         if (null == lType)
         {
             Severity.DEATH.report(
@@ -75,11 +120,18 @@ public class MConst extends Item
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // PROP API
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * property accessor.
+     * retrieves the property that holds this constant. if the constant is not held by property, exception is thrown.
+     * @param aInBaseProp indicates whether property needs to be resolved to the base property that has type binding.
+     * @return
+     */
     public MProp getProp(boolean aInBaseProp)
     {
         Item lParent = getParent();
 
-        if (lParent instanceof MProp)
+        if (ConstScope.PROPERTY == scope)
         {
             return aInBaseProp ? (((MProp)lParent).getBase()) : (MProp) lParent;
         }
@@ -98,12 +150,18 @@ public class MConst extends Item
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // SUPER-CONST API
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * super-const accessor. resolves the constant that this constant overrides by finding a property that is defined
+     * in the super-type or super-property that has the same name as this constant.
+     * @return constant with the same name that this constant overrides
+     */
     public MConst getSuperConst()
     {
         if (ConstAction.REMOVE != getAction())
         {
             Item lParent = getParent();
-            if (lParent instanceof MType)
+            if (ConstScope.TYPE == scope)
             {
                 MType lType = (MType) lParent;
                 if (!lType.isBase())
@@ -144,19 +202,67 @@ public class MConst extends Item
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // VALUE API
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public MValue getValue()
+
+    /**
+     * checks if this constant has value
+     * @return
+     */
+    public boolean hasValue()
     {
-        return (MValue) getChildItem(MValue.MY_CAT,MValue.NAME);
+        return action.hasValue() && null != getChildItem(MValue.MY_CAT,MValue.NAME);
     }
 
-    public MValue findValue(boolean aInCheckSuper)
+    /**
+     * value accessor. retrieves value specified DIRECTLY under this constant. it DOES NOT perform any checks with any
+     * of the super-constants that this constant overrodes.
+     * @return
+     */
+    public MValue getValue()
+    {
+        return action.hasValue() ?
+                (MValue) getChildItem(MValue.MY_CAT,MValue.NAME) :
+                null;
+    }
+
+    /**
+     * value accessor/finder. retrieves value specified for this constant.
+     * this method inspects super-constants and indirections for the value corresponding to this constant.
+     * @return value corresponding to this constant
+     */
+    public MValue findValue()
     {
         MValue lValue = null;
-        for (MConst lConst = this;
-             null != lConst && null == lValue;
-             lConst = aInCheckSuper ? lConst.getSuperConst() : null)
+        if (action.hasDirectOrIndirectValue())
         {
-            lValue = lConst.getValue();
+            if (action.hasExplicitIndirection())
+            {
+                lValue = findIndirectionConst().findValue();
+                if (null == lValue)
+                {
+                    Severity.DEATH.report(
+                            this.toString(),
+                            "retrieval of const value",
+                            "no value found",
+                            "no value found for " + scope +
+                            " const with action: " + getAction().getName());
+                }
+            }
+            else
+            {
+                for (MConst lConst = this; null != lConst && null == lValue; lConst = lConst.getSuperConst())
+                {
+                    lValue = lConst.getValue();
+                }
+                if (null == lValue)
+                {
+                    Severity.DEATH.report(
+                            this.toString(),
+                            "retrieval of const value",
+                            "no value found",
+                            "no value found for " + scope +
+                            " const with action: " + getAction().getName());
+                }
+            }
         }
         return lValue;
     }
@@ -164,22 +270,41 @@ public class MConst extends Item
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // INDIRECTION API
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * checks if this constant has explicitly defined indirection
+     * @return
+     */
+    public boolean hasExplicitIndirection()
+    {
+        return action.hasExplicitIndirection() && null != getChildItem(MValue.MY_CAT,MValue.NAME);
+    }
+
+    /**
+     * constant indirection accessor. retrieves indirection directive specified DIRECTLY under this constant.
+     * it DOES NOT perform any checks with any of the super-constants that this constant overrodes.
+     * @return indirection directive found or null.
+     */
     public MIndirection getIndirection()
     {
-        return (action.isRequireIndirectionTargetConst()) ?
+        return (action.hasExplicitIndirection()) ?
                 (MIndirection) getChildItem(MIndirection.MY_CAT,MIndirection.NAME) :
                 null;
 
     }
 
-    public MIndirection findIndirection(boolean aInCheckSuper)
+    /**
+     * constant indirection directive accessor/finder. retrieves indirection specified for this property.
+     * this method inspects super-constants the target indirection corresponding to this constant.
+     * @return indirection directive corresponding to this constant
+     */
+    public MIndirection findIndirection()
     {
         MIndirection lIndir = null;
-        if (action.isRequireIndirectionTargetConst())
+        if (action.hasExplicitIndirection())
         {
             for (MConst lConst = this;
                  null != lConst && null == lIndir;
-                 lConst = aInCheckSuper ? lConst.getSuperConst() : null)
+                 lConst = lConst.getSuperConst())
             {
                 lIndir = lConst.getIndirection();
             }
@@ -197,13 +322,46 @@ public class MConst extends Item
 
     }
 
-    public MConst findIndirectionConst(boolean aInCheckSuper)
+    /**
+     * indirection target constant accessor/finder. retrieves constant associated with indirection specified
+     * in this constant.
+     * @return constant associated with indirection specified
+     */
+    public MConst findIndirectionConst()
     {
-        MIndirection lInd = findIndirection(aInCheckSuper);
-        return null == lInd ? null : lInd.findTargetConst();
+        MConst lConst = null;
+        if (action.hasExplicitIndirection())
+        {
+            MIndirection lInd = findIndirection();
+            if (null != lInd)
+            {
+                lConst = lInd.findTargetConst();
+                if (null == lConst)
+                {
+                    Severity.DEATH.report(
+                            this.toString(),
+                            "retrieval of const value",
+                            "no value found",
+                            "no value found for indirection: " + lInd +
+                            "for " + scope +
+                            " const with action: " + getAction().getName());
+                }
+            }
+            else
+            {
+                Severity.DEATH.report(
+                        this.toString(),
+                        "retrieval of indirection const",
+                        "no const found",
+                        "no indirection found for " + scope +
+                        " const with action: " + getAction().getName());
+            }
+        }
+        return lConst;
     }
 
 
 
     private final ConstAction action;
+    private final ConstScope scope;
 }
