@@ -5,7 +5,7 @@ import genie.engine.parse.model.ProcessorTree;
 import genie.engine.parse.modlan.ParseDirective;
 
 /**
- * Created by dvorkinista on 3/22/14.
+ * Created by midvorki on 3/22/14.
  */
 public class ParseRegistry
 {
@@ -85,39 +85,39 @@ public class ParseRegistry
             ParseRegistry.Node lDocRoot = new ParseRegistry.Node("doc-root");
             lPTree.addChild(lDocRoot);
             {
-                      {
-		            ParseRegistry.Node model = new ParseRegistry.Node("       odel");
-		            lDocRoot.ad       Child(mod          l);
+	            {
+		            ParseRegistry.Node model = new ParseRegistry.Node("model");
+		            lDocRoot.addChild(model);
 		            {
-			            ParseRegistry.Node class_ = new          ParseRegistry.Node("class");
-          		                        model.addChild(class_);
+			            ParseRegistry.Node class_ = new ParseRegistry.Node("class");
+			            model.addChild(class_);
 			            {
-				            ParseRe             istry.Node abstract_ = new Parse             egistry.Node("abstract");
-				            class_.addChild(abs             ract_);
+				            ParseRegistry.Node abstract_ = new ParseRegistry.Node("abstract");
+				            class_.addChild(abstract_);
 
-				            Pa             seReg                stry.Node prop = new ParseRegistry.Node("prop");
-				                           class_.addChild(pr             p);
+				            ParseRegistry.Node prop = new ParseRegistry.Node("prop");
+				            class_.addChild(prop);
 
-	          		                  {
-	    			               ParseReg       stry.Node type = new ParseRegistry.Node("type");
-					            prop.a       dChild(type);
+				            {
+					            ParseRegistry.Node type = new ParseRegistry.Node("type");
+					            prop.addChild(type);
 
 				            }
 
-		                            }
+			            }
 		            }
 	            }
 	            {
-		            Pars          Registry.Node lDvorkin = new Parse          egistry.Node("dvorkin");
-		            lDocRoot.addChild(lDvorkin)
+		            ParseRegistry.Node lDvorkin = new ParseRegistry.Node("dvorkin");
+		            lDocRoot.addChild(lDvorkin);
 		            {
-			            P          rseRegistry.Node lHeight = new ParseRegistry.Node("height");
-			                     lDvorkin.addChild(lHeight);
+			            ParseRegistry.Node lHeight = new ParseRegistry.Node("height");
+			            lDvorkin.addChild(lHeight);
 
-          		                        ParseRegistry.Node lGirth = new ParseRegistry.Node("girth"             ;
-			            lDvorkin.addC          ild(lGi       th);
+			            ParseRegistry.Node lGirth = new ParseRegistry.Node("girth");
+			            lDvorkin.addChild(lGirth);
 
-			               ParseRegistry.Node lDetails = new ParseRegistry.Node("details");
+			            ParseRegistry.Node lDetails = new ParseRegistry.Node("details");
 			            lDvorkin.addChild(lDetails);
 			            {
 				            ParseRegistry.Node lSkill = new ParseRegistry.Node("skill");

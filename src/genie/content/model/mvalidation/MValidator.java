@@ -6,6 +6,8 @@ import genie.engine.model.Cat;
 import genie.engine.model.Item;
 import modlan.report.Severity;
 
+import java.util.Map;
+
 /**
  * Created by midvorki on 7/10/14.
  *
@@ -170,9 +172,57 @@ public class MValidator extends Item
              null != lV && null == lCV;
              lV = aInCheckSuper ? lV.getSuperValidator() : null)
         {
-            lCV = lV.getContentValidator(getLID().getName());
+            lCV = lV.getContentValidator(aInName);
         }
         return lCV;
+    }
+
+    public void findContentValidator(Map<String,MContentValidator> aOut, boolean aInCheckSuper)
+    {
+        MContentValidator lCV = null;
+        for (MValidator lV = this;
+             null != lV && null == lCV;
+             lV = aInCheckSuper ? lV.getSuperValidator() : null)
+        {
+            if (!aOut.containsKey(lCV.getLID().getName()))
+            {
+                aOut.put(lCV.getLID().getName(), lCV);
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // CONTENT VALIDATOR API
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public MRangeBounds getRangeBounds(String aInName)
+    {
+        return (MRangeBounds) getChildItem(MRangeBounds.MY_CAT,aInName);
+    }
+
+    public MRangeBounds findRangeBounds(String aInName, boolean aInCheckSuper)
+    {
+        MRangeBounds lRB = null;
+        for (MValidator lV = this;
+             null != lV && null == lRB;
+             lV = aInCheckSuper ? lV.getSuperValidator() : null)
+        {
+            lRB = lV.getRangeBounds(aInName);
+        }
+        return lRB;
+    }
+
+    public void findRangeBounds(Map<String,MRangeBounds> aOut, boolean aInCheckSuper)
+    {
+        MRangeBounds lRB = null;
+        for (MValidator lV = this;
+             null != lV && null == lRB;
+             lV = aInCheckSuper ? lV.getSuperValidator() : null)
+        {
+            if (!aOut.containsKey(lRB.getLID().getName()))
+            {
+                aOut.put(lRB.getLID().getName(), lRB);
+            }
+        }
     }
 
     private final ValidatorScope scope;

@@ -5,7 +5,7 @@ package genie.engine.proc;
  */
 public enum Status
 {
-    RUNNIN    ,
-	SUS    END,
+	RUNNING,
+	SUSPEND,
 	DEATH,
 }

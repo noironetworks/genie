@@ -10,60 +10,61 @@ import java.util.Queue;
  */
 public class Chnl
 {
-    public synchronized void doneCb          )
+	public synchronized void doneCb()
 	{
-		if (0 == --p       ocCount &&
-		    Status.S                SPEND == status)
+		if (0 == --procCount &&
+		    Status.SUSPEND == status)
 		{
-			//Severity.INFO.report("PROC CHNL", "doneCb", "",           UNSUSPENDING: ALL           ASKS D             NE");
-			status = Status.RUN          ING;
-			notifyA                      l();
+			//Severity.INFO.report("PROC CHNL", "doneCb", "", "UNSUSPENDING: ALL TASKS DONE");
+			status = Status.RUNNING;
+			notifyAll();
 		}
 	}
 
-	public synchroni                      ed                                                                                                                                                                                               ask              oll()
-	        		Task lTask = null;
+	public synchronized Task poll()
+	{
+		Task lTask = null;
 
 		try
 		{
-			while (nu          l == (lTask                = queue.poll(                      ))
+			while (null == (lTask = queue.poll()))
 			{
 				if (isDeath())
 				{
 					return null;
 				}
-	             		try
+				try
 				{
-				                                        wait();
+					wait();
 				}
 				catch (InterruptedException lE)
 				{
 				}
 			}
 		}
-                                                 	finally
+		finally
 		{
 			notifyAll();
 		}
-	          if (null != lTask)
+		if (null != lTask)
 		{
-			        ocCount++;
+			procCount++;
 		}
 		return lTask;
 	}
 
-	p          blic synchronized void suspendUntilDrained()
+	public synchronized void suspendUntilDrained()
 	{
 		if (!isDeath())
 		{
 			if (0 < queue.size())
 			{
-				Severity.INFO.       eport("PROC CHNL", "suspend", "", "SUSPENDIN                 CHNL!!");
+				Severity.INFO.report("PROC CHNL", "suspend", "", "SUSPENDING CHNL!!");
 				status = Status.SUSPEND;
 			}
 			else
 			{
-				Severity.INFO.report("PROC CHNL", "suspend",                                                  ", "NO TASKS: N                                SUSPENSI       N NECESSARY!!");
+				Severity.INFO.report("PROC CHNL", "suspend", "", "NO TASKS: NO SUSPENSION NECESSARY!!");
 			}
 		}
 		else
@@ -74,15 +75,16 @@ public class Chnl
 
 	public synchronized boolean isDeath()
 	{
-	       return S        tus.DEATH == status;
+		return Status.DEATH == status;
 	}
 
-	public synchro          ized void m                rkForDeath()
+	public synchronized void markForDeath()
 	{
-		Severity.INFO.report("------------- PROC CHNL", "mark                      orDeath", "", "WILL MARK FOR DEATH............................                                                                .");
-                                                    		wh                            le              !((queue.isEmpty()) &&     0 == procCount)))
+		Severity.INFO.report("------------- PROC CHNL", "markForDeath", "", "WILL MARK FOR DEATH..............................");
+
+		while (!((queue.isEmpty()) && (0 == procCount)))
 		{
-			Severity.INFO.report("--    ---------- PROC CHNL", "markForDeath", "", "WAITING FOR QUEUE TO DRAIN????????????????");
+			Severity.INFO.report("------------- PROC CHNL", "markForDeath", "", "WAITING FOR QUEUE TO DRAIN????????????????");
 
 			try
 			{

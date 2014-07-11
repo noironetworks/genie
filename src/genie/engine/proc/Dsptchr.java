@@ -7,25 +7,27 @@ import modlan.report.Severity;
  */
 public class Dsptchr
 {
-    public Dsptchr(int aInSiz          )
+	public Dsptchr(int aInSize)
 	{
-		size       = aInSize;
-		doers         new Doer[size];
-		for (in                 i = 0; i < size; i++)
+		size = aInSize;
+		doers = new Doer[size];
+		for (int i = 0; i < size; i++)
 		{
-          		Doer lThi           = new Doer(i + 1, chnl);
+			Doer lThis = new Doer(i + 1, chnl);
 			doers[i] = lThis;
-			Severity.INFO.report(lThis.toString(), "starti          g", "ini             ialization", "doer " + (i + 1)          + " started.")        			lThis.start();          		}
+			Severity.INFO.report(lThis.toString(), "starting", "initialization", "doer " + (i + 1) + " started.");
+			lThis.start();
+		}
 	}
 
-	public void tr        ger(Task aInTask
+	public void trigger(Task aInTask)
 	{
-		chnl.put(a        Task);
+		chnl.put(aInTask);
 	}
 
-	pub    ic void drain()
+	public void drain()
 	{
-		chnl.sus    endUntilDrained();
+		chnl.suspendUntilDrained();
 	}
 
 	public void kill()

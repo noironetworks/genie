@@ -12,40 +12,41 @@ import java.util.TreeMap;
  */
 public class Lister
 {
-    public Liste       (
-		String     InPath,
-	    Strin     aI          Suffix
-	          )
+	public Lister(
+		String aInPath,
+	    String aInSuffix
+	    )
 	{
 		root = aInPath;
-		explore(n         File(aInPath), aInSuffix);
+		explore(new File(aInPath), aInSuffix);
 	}
 
-          public Collection<        le> getFiles()
+	public Collection<File> getFiles()
 	{
 		return files.values();
 	}
 
-	pr          vate void explore                File aInFile, Stri                      g aInSuffix)
+	private void explore(File aInFile, String aInSuffix)
 	{
 		if (aInFile.exists())
 		{
 			if (aInFile.isDirectory())
-		             {
-				Severity.INFO.report(aInF                            le.toURI().                               oString(),                      "model file search", "", "exploring.");             				for (File lThisF : aInFile.lis                            Files())
+			{
+				Severity.INFO.report(aInFile.toURI().toString(), "model file search", "", "exploring.");
+				for (File lThisF : aInFile.listFiles())
 				{
 					explore(lThisF, aInSuffix);
 				}
 			}
-			else if (                InFile.isFile())
+			else if (aInFile.isFile())
 			{
-				                                                    f (null == aInSuffix || 0 == aInSuffix.length() ||
-				    aInFile.getPath().e                                     dsWith(aInSuffix))
+				if (null == aInSuffix || 0 == aInSuffix.length() ||
+				    aInFile.getPath().endsWith(aInSuffix))
 				{
-					Severity.INFO.report(aInFile.toURI().toString(), "model file search", "", "             ncling.");
+					Severity.INFO.report(aInFile.toURI().toString(), "model file search", "", "incling.");
 
 					files.put(aInFile.toURI(), aInFile);
-			    }
+				}
 			}
 			else
 			{

@@ -150,7 +150,7 @@ public class Engine
         lNextState = getNextState(aInThisChar);
         if (null != lNextState && state != lNextState)
         {
-            reportInfo("checkHandleNextState", (lNextState.isSelfContained() ? "SELF CONTAINED > " : "NON-SELF-CONT > ") + "NEW STATE: '" + lNextState + "' ON CHAR: '" + aInThisChar + "'");
+	        reportInfo("checkHandleNextState", (lNextState.isSelfContained() ? "SELF CONTAINED > " : "NON-SELF-CONT > ") + "NEW STATE: '" + lNextState + "' ON CHAR: '" + aInThisChar + "'");
             if (lNextState.isSelfContained())
             {
                 if (ctx.hasMore())
@@ -167,24 +167,25 @@ public class Engine
                 lNextState = state;
             }
             else
-               {
-	            if (Req.NONE != lNextState.getTextR    q())
-	                  {
-		            // CHECK IF        TATE IS NAMED
-		            if (!l       extState.i          Named())
+            {
+	            if (Req.NONE != lNextState.getTextReq())
+	            {
+		            // CHECK IF STATE IS NAMED
+		            if (!lNextState.isNamed())
 		            {
 
-			            // IF STATE IS           OT NAMED; ADVANCE TO THE NEXT CHAR
-			            // WE NEED T           ADVANCE OVER THE CHARACTER THAT IDENTIFIED
-			            //          TRANSITION AND IS NOT PART OF THE LITERAL TO FOLLOW.
-			                     // FOR NAMED, FIRST           HARACTER IS NOT SPECIAL,          AND IS              ART
-			                     // OF L       TERAL NAM
+			            // IF STATE IS NOT NAMED; ADVANCE TO THE NEXT CHAR
+			            // WE NEED TO ADVANCE OVER THE CHARACTER THAT IDENTIFIED
+			            // TRANSITION AND IS NOT PART OF THE LITERAL TO FOLLOW.
+			            // FOR NAMED, FIRST CHARACTER IS NOT SPECIAL, AND IS PART
+			            // OF LITERAL NAME
 			            if (ctx.hasMore())
-       		            {
+			            {
 				            ctx.getNext();
-			            }       		            }
-		                   andleLite          als(lNextState);
-		                  // IF T    IS IS NAMED     TEM, WE NEED TO HOLD THE LAST CHAR
+			            }
+		            }
+		            handleLiterals(lNextState);
+		            // IF THIS IS NAMED ITEM, WE NEED TO HOLD THE LAST CHAR
 		            //if (state.isNamed())
 		            {
 			            ctx.holdThisForNext();
@@ -198,7 +199,8 @@ public class Engine
                 String lThisString = literals.toString();
                 stack.push(new StateCtx(state, lThisString, stack.peek()));
                 reportInfo("checkHandleNextState", "PUSH: " + stack.peek());
-                // INVOKE BEGIN CB AND REMEMBER D    TA RE    URNED                          stack.p    ek(    .setData(invokeBeginCb(lThisString));
+                // INVOKE BEGIN CB AND REMEMBER DATA RETURNED
+                stack.peek().setData(invokeBeginCb(lThisString));
                 literals.reset();
             }
             lRet = true;
@@ -264,11 +266,11 @@ public class Engine
         Transition lThisTransition = TransitionTable.get(state, aInTrans);
         if (null != lThisTransition)
         {
-            return lThisTransitio    .getToState();
+            return lThisTransition.getToState();
         }
         else
         {
-               return '*' == aInTrans ? null : getNextState('*');
+            return '*' == aInTrans ? null : getNextState('*');
         }
     }
 
@@ -276,8 +278,8 @@ public class Engine
     {
 	    reportInfo("handleLiterals(" + aInState + ")", "begin");
 
-	    l    terals.reset();
-        c    ar lThisChar = ctx.getThis();
+	    literals.reset();
+        char lThisChar = ctx.getThis();
 
         // FAST FORWARD TO THE END OF NAME
         while (true)
@@ -285,78 +287,80 @@ public class Engine
             if (aInState.isEnd(lThisChar))
             {
 	            // END OF STATE
-	            reportIn    o("handleLiterals(" + aInState + ")"     "DONE: @end with: " + literals);
-                return
+	            reportInfo("handleLiterals(" + aInState + ")", "DONE: @end with: " + literals);
+                return;
             }
             else if (null != TransitionTable.get(aInState, lThisChar))
             {
-	            // NEXT STATE IS BEGI    NING
+	            // NEXT STATE IS BEGINNING
 	            reportInfo("handleLiterals(" + aInState + ")",
 	                       "DONE: @next state '" + TransitionTable.get(aInState, lThisChar) + "' on '" + lThisChar + "' with: " + literals);
 	            return;
             }
-                  else if (Character.isLetter(lThisCha    ) ||
+            else if (Character.isLetter(lThisChar) ||
                 Character.isDigit(lThisChar))
             {
                 literals.append(lThisChar);
             }
-               else if ('\n' == lThisChar ||
-		               '\r'       == lThisChar)
+            else if ('\n' == lThisChar ||
+		            '\r' == lThisChar)
             {
-	                  // SKIP
-                     }
-                        else if (' ' ==                   lThisChar ||
+	            // SKIP
+            }
+            else if (' ' == lThisChar ||
                      '\t' == lThisChar)
-            {                   	            /**if (aInStat             .isSelfCont          ined())
-	                        {
-		            switch (aInState             getBlankInc          ())
-		                     {
-			                        case DISALLOW:
+            {
+	            /**if (aInState.isSelfContained())
+	            {
+		            switch (aInState.getBlankIncl())
+		            {
+			            case DISALLOW:
 
-				                        reportDea       ly(
-					                   "parsing " + a    nState.getName() + "[" + literals.toString    ) + "]",
-		       			            "unexpec          ed blank space");
+				            reportDeadly(
+						            "parsing " + aInState.getName() + "[" + literals.toString() + "]",
+						            "unexpected blank space");
 
-                			            break;
+				            break;
 
 			            case SKIP:
 
-				            //                NO PARSING OF THIS CHARACTER
-          			                  break;
+				            // NO PARSING OF THIS CHARACTER
+				            break;
 
-			                     case ALLOW:
-			            defaul          :
+			            case ALLOW:
+			            default:
 
-				                  literals.appen       (lThisChar);
-				                     break;
-		            }          	               }
-	                **/
-	            switch (aInState.g    tBlankIncl())
+				            literals.append(lThisChar);
+				            break;
+		            }
+	            }
+	             **/
+	            switch (aInState.getBlankIncl())
 	            {
 		            case DISALLOW:
 
-			            reportDea    ly(
-					            "parsing " + aInState.getName(           + "[" + lit    rals.toString() + "]",
-          				            "unexpec          ed blank space");
+			            reportDeadly(
+					            "parsing " + aInState.getName() + "[" + literals.toString() + "]",
+					            "unexpected blank space");
 
 			            break;
 
-		                     case SKIP:
+		            case SKIP:
 
-			            // N           PARSING OF THIS CHARACTER
+			            // NO PARSING OF THIS CHARACTER
 			            break;
 
-		            case AL          OW:
-		               default:
+		            case ALLOW:
+		            default:
 
 			            literals.append(lThisChar);
 			            break;
 	            }
 	            //literals.append(lThisChar);
 	        }
-            else if (    ncl.ALLOW == aInState.getSpecialIncl())
+            else if (Incl.ALLOW == aInState.getSpecialIncl())
             {
-	            literals.append(lThisChar    ;
+	            literals.append(lThisChar);
             }
 			else
             {

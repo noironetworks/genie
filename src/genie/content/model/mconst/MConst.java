@@ -100,46 +100,41 @@ public class MConst extends Item
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public MConst getSuperConst()
     {
-        Item lParent = getParent();
-        if (lParent instanceof MType)
+        if (ConstAction.REMOVE != getAction())
         {
-            MType lType = (MType) lParent;
-            if (!lType.isBase())
+            Item lParent = getParent();
+            if (lParent instanceof MType)
             {
-                lType = lType.getSupertype();
-                if (null != lType)
+                MType lType = (MType) lParent;
+                if (!lType.isBase())
                 {
-                    lType.findConst(getLID().getName(), true);
-                }
-                else
-                {
-                    Severity.DEATH.report(
-                            this.toString(),
-                            "retrieval of super const",
-                            "no supertype",
-                            "super type can't be found for non-base type " +
-                            lParent);
+                    lType = lType.getSupertype();
+                    if (null != lType)
+                    {
+                        lType.findConst(getLID().getName(), true);
+                    }
+                    else
+                    {
+                        Severity.DEATH.report(this.toString(), "retrieval of super const", "no supertype",
+                                              "super type can't be found for non-base type " + lParent);
+                    }
                 }
             }
-        }
-        else
-        {
-            MProp lProp = (MProp) lParent;
-            if (!lProp.isBase())
+            else
             {
-                lProp = lProp.getOverridden(false);
-                if (null != lProp)
+                MProp lProp = (MProp) lParent;
+                if (!lProp.isBase())
                 {
-                    lProp.findConst(getLID().getName(), true);
-                }
-                else
-                {
-                    Severity.DEATH.report(
-                            this.toString(),
-                            "retrieval of super const",
-                            "no super prop",
-                            "super Prop can't be found for non-base prop " +
-                            lParent);
+                    lProp = lProp.getOverridden(false);
+                    if (null != lProp)
+                    {
+                        lProp.findConst(getLID().getName(), true);
+                    }
+                    else
+                    {
+                        Severity.DEATH.report(this.toString(), "retrieval of super const", "no super prop",
+                                              "super Prop can't be found for non-base prop " + lParent);
+                    }
                 }
             }
         }

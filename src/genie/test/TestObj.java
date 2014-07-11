@@ -8,9 +8,9 @@ import genie.engine.model.Item;
  */
 public class TestObj extends Item
 {
-    public static final Cat CATEGORY = Cat.getCreate("test"    ;
-	public TestObj(Item aInParent, String aInL          ame)
+	public static final Cat CATEGORY = Cat.getCreate("test");
+	public TestObj(Item aInParent, String aInLName)
 	{
-		super(CATEGORY, aInPare    t, aInLName);
+		super(CATEGORY, aInParent, aInLName);
 	}
 }
