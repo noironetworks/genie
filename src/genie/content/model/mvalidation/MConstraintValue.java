@@ -29,19 +29,15 @@ public class MConstraintValue
     {
         return (MRange) getParent();
     }
+
     public MValidator getValidator()
     {
         return getRange().getValidator();
     }
 
-    public MType getType()
+    public MType getType(boolean aInIsBase)
     {
-        return getValidator().getType(false);
-    }
-
-    public MType getBaseType()
-    {
-        return getType().getBase();
+        return getValidator().getType(aInIsBase);
     }
 
     public ConstraintValueType getConstraintValueType()

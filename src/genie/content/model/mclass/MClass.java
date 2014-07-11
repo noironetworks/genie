@@ -52,7 +52,7 @@ public class MClass
      * @param aIn sub-class item like property etc..
      * @return containing class
      */
-    public static MClass getMClass(Item aIn)
+    public static MClass getClass(Item aIn)
     {
         return (MClass) aIn.getAncestorOfCat(MClass.MY_CAT);
     }
