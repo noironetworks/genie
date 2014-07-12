@@ -1,4 +1,4 @@
-package genie;
+package genie.test;
 
 import genie.content.model.mclass.MClass;
 import genie.content.model.module.Module;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by midvorki on 3/10/14.
  */
-public class Main
+public class Harness
 {
     public static void main(String [ ] args)
     {
