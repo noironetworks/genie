@@ -6,6 +6,7 @@ import genie.content.parse.modlan.ParseRegistry;
 import genie.engine.model.*;
 import genie.test.TestObj;
 import genie.engine.proc.Processor;
+import genie.test.mtype.TypeTest;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -18,10 +19,11 @@ public class Harness
 {
     public static void main(String [ ] args)
     {
+        TypeTest.run();
         //relTest();
         //objTest();
         //fileTest();
-        classRelnTest1();
+        //classRelnTest1();
         //relTest();
         //genericsTest(new LinkedList<Module>());
         //genericsTest2(new LinkedList<Integer>());

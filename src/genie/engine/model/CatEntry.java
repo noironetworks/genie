@@ -108,6 +108,30 @@ public class CatEntry
     }
 
     /**
+     * lists the items tracked by this tracker
+     * @param aOut  map of items tracked
+     */
+    public void getItems(Map<Ident,Item> aOut)
+    {
+         for (Node lNode : byId.values())
+         {
+             aOut.put(lNode.getGID(),lNode.getItem());
+         }
+    }
+
+    /**
+     * lists the items tracked by this tracker
+     * @return aOut  map of items tracked
+     */
+    public Collection<Item> getItemsList()
+    {
+        Map<Ident,Item> lMap = new TreeMap<Ident,Item>();
+        getItems(lMap);
+        return lMap.values();
+    }
+
+
+    /**
      * maps tracked nodes by name
      * @return map of nodes keyed by name
      */

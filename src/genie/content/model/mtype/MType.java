@@ -94,6 +94,22 @@ public class MType extends SubModuleItem
      */
     public void addSupertype(String aInTargetGName)
     {
+        if (isBuiltIn())
+        {
+            Severity.DEATH.report(
+                    this.toString(),
+                    "add super-type",
+                    "built-in/base type can't have super-types",
+                    "can't derive from " + aInTargetGName);
+        }
+        else if (getGID().equals(aInTargetGName))
+        {
+            Severity.DEATH.report(
+                    this.toString(),
+                    "add super-type",
+                    "can't reference self",
+                    "can't derive from self");
+        }
         SUPER_CAT.add(MY_CAT, getGID().getName(), MY_CAT, aInTargetGName);
     }
 
