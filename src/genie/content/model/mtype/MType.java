@@ -102,7 +102,7 @@ public class MType extends SubModuleItem
                     "built-in/base type can't have super-types",
                     "can't derive from " + aInTargetGName);
         }
-        else if (getGID().equals(aInTargetGName))
+        else if (getGID().getName().equals(aInTargetGName))
         {
             Severity.DEATH.report(
                     this.toString(),

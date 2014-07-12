@@ -12,42 +12,37 @@ import genie.engine.model.Item;
  */
 public class TypeTest
 {
+    public static int NUM_OF_TYPES = 10;
     public static void run()
     {
-        test1();
+        createTypeTest();
+        createTypeConstTest();
     }
-    public static void test1()
+    public static void createTypeTest()
     {
         {
             Module lModule = Module.get("test-one", true);
             {
+                for (int i = 0; i < NUM_OF_TYPES; i++)
                 {
-                    MType lType = new MType(lModule, "base-type-one", true);
-                    for (Language lLang : Language.values())
+                    int lIdx = i+1;
+                    int lRefIdx = lIdx / 2;
+
+                    MType lType = new MType(lModule, "type-" + lIdx, 0 == i);
+                    if (0 == i)
                     {
-                        new LanguageBinding(lType, lLang);
+                        for (Language lLang : Language.values())
+                        {
+                            new LanguageBinding(lType, lLang);
+                        }
+                        new TypeHint(lType);
                     }
-                    new TypeHint(lType);
-                }
-
-                {
-                    MType lType = new MType(lModule, "derived-type-one-two", false);
-                    lType.addSupertype("test-one/base-type-one");
-                }
-
-                {
-                    MType lType = new MType(lModule, "derived-type-one-three", false);
-                    lType.addSupertype("test-one/base-type-one");
-                }
-
-                {
-                    MType lType = new MType(lModule, "derived-type-one-four", false);
-                    lType.addSupertype("test-one/derived-type-one-three");
-                }
-
-                {
-                    MType lType = new MType(lModule, "derived-type-one-five", false);
-                    lType.addSupertype("test-one/derived-type-one-four");
+                    else
+                    {
+                        String lSuper = "test-one/type-" + lRefIdx;
+                        lType.addSupertype(lSuper);
+                        System.out.println(i +  "> " + lType + " : added super = " + lSuper);
+                    }
                 }
             }
 
@@ -74,6 +69,11 @@ public class TypeTest
                 }
             }
         }
+    }
+
+    static void createTypeConstTest()
+    {
+
     }
 
 }
