@@ -12,11 +12,23 @@ import java.util.Map;
 
 /**
  * Created by midvorki on 7/10/14.
+ *
+ * Name rule is a containment specific name rule, a model item that identifies: a) how an object
+ * is named in a context of one parent b) how an object is named for the rest of the containment
+ * context not explicitly specified
  */
 public class MNameRule extends Item
 {
+    /**
+     * category identifying all containment specific name rules
+     */
     public static final Cat MY_CAT = Cat.getCreate("mnamer:rule");
 
+    /**
+     * Constructor
+     * @param aInNamer a namer rule under which this containment specific rule is created
+     * @param aInContainerClassOrAny specifies specific container class or "any"/null, in case general rule is desired.
+     */
     public MNameRule(MNamer aInNamer, String aInContainerClassOrAny)
     {
         super(MY_CAT,
@@ -28,6 +40,10 @@ public class MNameRule extends Item
         isAnyTarget = Strings.isAny(aInContainerClassOrAny);
     }
 
+    /**
+     * namer rule accessor
+     * @return namer rule that contains this item
+     */
     public MNamer getNamer()
     {
         return (MNamer) getParent();
@@ -47,6 +63,10 @@ public class MNameRule extends Item
         return lClass;
     }
 
+    /**
+     * target class(s) resolver.
+     * @param aOut map of target classes
+     */
     public void getTargetClass(Map<Ident,MClass> aOut)
     {
         MClass lContainerClass = null;
