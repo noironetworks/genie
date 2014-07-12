@@ -24,9 +24,22 @@ import java.util.Map;
 public class MContainer
         extends MContItem
 {
+    /**
+     * Container category definition. Contains registry of all container definitions.
+     */
     public static final Cat MY_CAT = Cat.getCreate("mcont:mcontainer");
-    public static final RelatorCat TARGET_CAT = RelatorCat.getCreate("mcont:mcontainer:childref", Cardinality.SINGLE);
 
+    /**
+     * Container target class category definition. Contains references between containers and their represented classes.
+     */
+    public static final RelatorCat TARGET_CAT = RelatorCat.getCreate("mcont:mcontainer:parentref", Cardinality.SINGLE);
+
+    /**
+     * rule registration API. Adds or finds containment rule. This API is scoped to the package and is for internal use.
+     * @param aInParentGName name of the parent class
+     * @param aInChildGName name of the child class
+     * @return container corresponding to the parent name passed in.
+     */
     static final MContainer addRule(String aInParentGName, String aInChildGName)
     {
         MContainer lContr = MContainer.get(aInParentGName, true);
@@ -35,17 +48,32 @@ public class MContainer
         return lContr;
     }
 
+    /**
+     * Constructor.
+     * @param aInParentGname name of the the class for whom the container rule is allocated
+     */
     MContainer(String aInParentGname)
     {
         super(MY_CAT, null, TARGET_CAT, aInParentGname);
     }
 
+    /**
+     * Container instance finder
+     * @param aInGName name of the class for which "container" is to be found
+     * @return container associated with the class corresponding to the name passed in.
+     */
     public static MContainer get(String aInGName)
     {
         return (MContainer) MY_CAT.getItem(aInGName);
     }
 
-    public static MContainer get(String aInGName, boolean aInCreateIfNotFound)
+    /**
+     * retrieves or creates a container. This is an internal API used within te package.
+     * @param aInGName name of the class for which container is resolved.
+     * @param aInCreateIfNotFound specifies whether container needs to be created if not found
+     * @return container associated with a class corresponding to the name passed in
+     */
+    static MContainer get(String aInGName, boolean aInCreateIfNotFound)
     {
         MContainer lContr = get(aInGName);
         if (null == lContr && aInCreateIfNotFound)
@@ -63,13 +91,18 @@ public class MContainer
     }
 
     /**
-     * checks if there are per child rules
+     * checks if there are per child rules per this container
+     * @return true if this container has children containment rules.
      */
     public boolean hasChild()
     {
         return hasChildren(MChild.MY_CAT);
     }
 
+    /**
+     * retrieves child containment rules specified within this container.
+     * @param aOut set of child containement rules
+     */
     public void getChildren(Collection<MChild> aOut)
     {
         LinkedList<Item> lItems = new LinkedList<Item>();
@@ -80,11 +113,21 @@ public class MContainer
         }
     }
 
+    /**
+     * retrieves specific child containment rule corresponding to the class with a name passed in
+     * @param aInClassGName global name of the associated contained class
+     * @return child containment rule
+     */
     public MChild getMChild(String aInClassGName)
     {
         return (MChild) getChildItem(MChild.MY_CAT,aInClassGName);
     }
 
+    /**
+     * retrieves oro optionally creates a specific child containment rule corresponding to the class with a name passed in
+     * @param aInClassGName global name of the associated contained class
+     * @return child containment rule found or created
+     */
     public MChild getMChild(String aInClassGName, boolean aInCreateIfNotFound)
     {
         MChild lMChild = getMChild(aInClassGName);
@@ -102,6 +145,11 @@ public class MContainer
         return lMChild;
     }
 
+    /**
+     * retrieves all child classes associated with a parent
+     * @param aOut map of classes of contained/child objects
+     * @param aInResolveToConcrete specifies whether classes need to be resolved to concrete.
+     */
     public void getChildClasses(Map<Ident,MClass> aOut, boolean aInResolveToConcrete)
     {
         LinkedList<Item> lItems = new LinkedList<Item>();
