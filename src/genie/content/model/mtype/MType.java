@@ -21,6 +21,26 @@ public class MType extends SubModuleItem
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // CONSTRUCTION
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Constructor for non-built-in/non-base types.
+     *
+     * @param aInModule name of the module to which this type belongs
+     * @param aInLName name of the type
+     */
+    public MType(
+            Module aInModule,
+            String aInLName)
+    {
+        this(aInModule,aInLName,true);
+    }
+
+    /**
+     * general constructor
+     * @param aInModule name of the module to which this type belongs
+     * @param aInLName name of the type
+     * @param aInIsBuiltIn specifies whether this type is built-in
+     */
     public MType(
             Module aInModule,
             String aInLName,
@@ -35,6 +55,11 @@ public class MType extends SubModuleItem
     // TYPE RETRIEVAL APIs
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Instance accessor: finds type by name
+     * @param aInGName name of the type retrieved
+     * @return type corresponding to the name.
+     */
     public static MType get(String aInGName)
     {
         return (MType) MY_CAT.getItem(aInGName);
@@ -157,12 +182,20 @@ public class MType extends SubModuleItem
         }
     }
 
+    /**
+     * accesses built-in/non-derived/base type. synonymous with getBuiltInType()
+     * @return built-in/base type
+     */
     public MType getBase()
     {
-        return getBuiltInSupertype();
+        return getBuiltInType();
     }
 
-    public MType getBuiltInSupertype()
+    /**
+     * retrieves built-in super-type accessor.
+     * @return built-in/base type
+     */
+    public MType getBuiltInType()
     {
         if (isBuiltIn())
         {
@@ -273,7 +306,7 @@ public class MType extends SubModuleItem
     public LanguageBinding getLanguageBinding(Language aIn)
     {
         LanguageBinding lLb =
-                (LanguageBinding) getBuiltInSupertype().getChildItem(LanguageBinding.MY_CAT,aIn.getName());
+                (LanguageBinding) getBuiltInType().getChildItem(LanguageBinding.MY_CAT,aIn.getName());
 
         if (null == lLb)
         {
@@ -295,7 +328,7 @@ public class MType extends SubModuleItem
     public TypeHint getTypeHint()
     {
         TypeHint lTh =
-                (TypeHint) getBuiltInSupertype().getChildItem(TypeHint.MY_CAT,TypeHint.NAME);
+                (TypeHint) getBuiltInType().getChildItem(TypeHint.MY_CAT,TypeHint.NAME);
 
         if (null == lTh)
         {
