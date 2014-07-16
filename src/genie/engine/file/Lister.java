@@ -55,7 +55,7 @@ public class Lister
 		}
 		else
 		{
-			Severity.WARN.report(aInFile.toURI().toString(), "model file search", "no such file", "file does not seem to exist.");
+			Severity.DEATH.report(aInFile.toURI().toString(), "model file search", "no such file", "file does not seem to exist.");
 		}
 	}
 

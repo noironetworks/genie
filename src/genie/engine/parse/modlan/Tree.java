@@ -1,12 +1,14 @@
 package genie.engine.parse.modlan;
 
+import modlan.parse.Consumer;
+
 import java.util.LinkedList;
 
 /**
  * Created by midvorki on 3/15/14.
  */
 public class Tree
-        implements modlan.parse.Cons
+        implements Consumer
 {
     public Tree(ProcessorRegistry aInPreg)
     {
@@ -28,13 +30,13 @@ public class Tree
 
     public modlan.parse.Data onDocBegin(String aInName)
     {
-        System.out.println("\n\n---------> DOC:BEGIN=" + aInName);
+        System.out.println("\n\n---------> [" + root + "] DOC:BEGIN=" + aInName);
         stack.push(root);
         return root;
     }
     public modlan.parse.Data onDocEnd(String aInName)
     {
-        System.out.println("\n\n---------> DOC:END=" + aInName);
+        System.out.println("\n\n---------> [" + root + "]  DOC:END=" + aInName);
         stack.pop();
         process();
         return root;
@@ -47,7 +49,7 @@ public class Tree
         stack.push(lData);
         lData.addComments(commentBuffer);
         commentBuffer.clear();
-        System.out.println("\n\n---------> NODE:BEGIN=" + lData);
+        System.out.println("\n\n--------->  [" + lData + "] NODE:BEGIN=" + lData);
         return lData;
     }
     public modlan.parse.Data onNodeEnd(String aInName)
@@ -57,7 +59,7 @@ public class Tree
         commentBuffer.clear();
         stack.pop();
 
-        System.out.println("\n\n---------> NODE:END=" + lData);
+        System.out.println("\n\n--------->  [" + lData + "] NODE:END=" + lData);
         return lData;
     }
 
@@ -65,13 +67,13 @@ public class Tree
     {
         Node lData = stack.peek();
         lData.setQual(aIn);
-        System.out.println("\n\n---------> QUAL=" + aIn + " IN " + lData);
+        System.out.println("\n\n--------->  [" + lData + "] QUAL=" + aIn + " IN " + lData);
         return lData;
     }
 
     public modlan.parse.Data onComment(String aInLine)
     {
-        System.out.println("\n\n---------> COMMENT=" + aInLine);
+        System.out.println("\n\n--------->  [...] COMMENT=" + aInLine);
         commentBuffer.add(aInLine);
         return null;
     }
@@ -80,7 +82,7 @@ public class Tree
     {
         Node lData = stack.peek();
         lData.setValue(aInLine);
-        System.out.println("\n\n---------> TEXT=" + aInLine + " IN " + lData);
+        System.out.println("\n\n--------->  [" + lData + "] TEXT=" + aInLine + " IN " + lData);
         return lData;
     }
 
@@ -88,13 +90,13 @@ public class Tree
     {
         Node lData = stack.peek();
         lData.setValue(aInValue);
-        System.out.println("\n\n---------> VALUE=" + aInValue + " IN " + lData);
+        System.out.println("\n\n--------->  [" + lData + "] VALUE=" + aInValue + " IN " + lData);
         return lData;
     }
 
     public modlan.parse.Data onContentBegin(String aInName)
     {
-        System.out.println("\n\n---------> CONTENT:BEGIN=" + aInName);
+        System.out.println("\n\n--------->  [...] CONTENT:BEGIN=" + aInName);
         stack.peek().addComments(commentBuffer);
         commentBuffer.clear();
         return stack.peek();
@@ -102,7 +104,7 @@ public class Tree
 
     public modlan.parse.Data onContentEnd(String aInName)
     {
-        System.out.println("\n\n---------> CONTENT:END=" + aInName);
+        System.out.println("\n\n--------->  [...] CONTENT:END=" + aInName);
         stack.peek().addComments(commentBuffer);
         commentBuffer.clear();
         return stack.peek();

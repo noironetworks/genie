@@ -23,5 +23,6 @@ public class LanguageBinding extends SubTypeItem
                     "can't add " + aInType + " language binding to type: " + aInType);
         }
     }
+    // TODO: NEED TO IMPLEMENT TYPE HINT
 
 }

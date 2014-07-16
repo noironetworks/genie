@@ -8,25 +8,69 @@ import genie.test.TestObj;
 import genie.engine.proc.Processor;
 import genie.test.mtype.TypeTest;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by midvorki on 3/10/14.
  */
 public class Harness
 {
+    public static String stringexperiment(String aInType, String aIn, Map<String, String> aOut)
+    {
+        String lRet = null;
+        String[] lComponents = aIn.split(";|,");
+        System.out.println("split into: " + lComponents.length);
+        lRet = lComponents[0];
+
+        for (int i = 0; i < lComponents.length; i++)
+        {
+            String lComponent = lComponents[i];
+            String lNVPair[] = lComponent.split(":|=");
+
+            switch (lNVPair.length)
+            {
+                case 1:
+
+                    if (0 == i)
+                    {
+                        aOut.put(aInType, lNVPair[0].trim()); // NO VALUE
+                    }
+                    aOut.put(lNVPair[0].trim(), lNVPair[0].trim()); // NO VALUE
+                    break;
+
+                case 2:
+
+                    if (0 == i)
+                    {
+                        aOut.put("qual", lNVPair[0].trim()); // NO VALUE
+                    }
+                    aOut.put(lNVPair[0], lNVPair[1]);
+                    break;
+
+                default:
+
+                    // TODO: COMPLAIN
+
+            }
+        }
+        return lRet;
+    }
     public static void main(String [ ] args)
     {
-        TypeTest.run();
-        //relTest();
-        //objTest();
-        //fileTest();
-        //classRelnTest1();
-        //relTest();
-        //genericsTest(new LinkedList<Module>());
-        //genericsTest2(new LinkedList<Integer>());
+        System.out.println("\n\n\n####################################################################\n\n\n");
+        /**Map<String, String> lMap = new TreeMap<String, String>();
+        System.out.println(
+                stringexperiment("*TESTYPE*", "bob; abstract:john/smith", lMap) +
+                " ---> " +
+                lMap);**/
+         //TypeTest.run();
+         //relTest();
+         //objTest();
+         fileTest();
+         //classRelnTest1();
+         //relTest();
+         //genericsTest(new LinkedList<Module>());
+         //genericsTest2(new LinkedList<Integer>());
     }
 
     public static void genericsTest2(Collection<? extends Number> aOut)
@@ -148,15 +192,17 @@ public class Harness
 //        Dsptchr lDisp = new Dsptchr(2);
 //        final ProcessorTree lPTree = ParseRegistry.init();
 
-        String lPrePaths[][] = {{"/Users/midvorki/code/projects/genie/PREMODEL",".mod"}};
-        String lPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".mod"}};
+        //String lPrePaths[][] = {{"/Users/midvorki/code/projects/genie/PREMODEL",".mod"}};
+        //String lPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".mod"}};
+        String lPrePaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL/SYNTAX",".mod"}};
+        String lPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL/SYNTAX",".mod"}};
 
 //        String lSuffix = ".mod";
 
 //        LoadTarget lT = new LoadTarget(lDisp, lPTree, lPaths, lSuffix);
 
         new Processor(
-            88,
+            3,
             lPrePaths,
             lPaths,
             ParseRegistry.init(),

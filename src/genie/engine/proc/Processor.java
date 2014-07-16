@@ -43,9 +43,9 @@ public class Processor
 			dsp.drain();
 		}
 		// NOW LOAD GENERAL MODELS
-		for (j = 0; j < modelPreLoadPaths.length; j++)
+		for (j = 0; j < modelLoadPaths.length; j++)
 		{
-			loadTargets[i++] = new LoadTarget(dsp,pTree,new String[]{ modelPreLoadPaths[j][0]}, modelPreLoadPaths[j][1]);
+			loadTargets[i++] = new LoadTarget(dsp,pTree,new String[]{ modelLoadPaths[j][0]}, modelLoadPaths[j][1]);
 		}
 	}
 	private final String modelPreLoadPaths[][];

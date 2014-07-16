@@ -31,6 +31,7 @@ public class ParseRegistry
 
     public static ProcessorTree init()
     {
+        //Package lPkg =
         /**
          * model<name>
          * {
@@ -86,24 +87,17 @@ public class ParseRegistry
             lPTree.addChild(lDocRoot);
             {
 	            {
-		            ParseRegistry.Node model = new ParseRegistry.Node("model");
-		            lDocRoot.addChild(model);
+		            ParseRegistry.Node module = new ParseRegistry.Node("module");
+		            lDocRoot.addChild(module);
 		            {
 			            ParseRegistry.Node class_ = new ParseRegistry.Node("class");
-			            model.addChild(class_);
+			            module.addChild(class_);
 			            {
-				            ParseRegistry.Node abstract_ = new ParseRegistry.Node("abstract");
-				            class_.addChild(abstract_);
+				            ParseRegistry.Node member = new ParseRegistry.Node("member");
+				            class_.addChild(member);
 
-				            ParseRegistry.Node prop = new ParseRegistry.Node("prop");
-				            class_.addChild(prop);
-
-				            {
-					            ParseRegistry.Node type = new ParseRegistry.Node("type");
-					            prop.addChild(type);
-
-				            }
-
+                            ParseRegistry.Node override = new ParseRegistry.Node("override");
+                            class_.addChild(override);
 			            }
 		            }
 	            }

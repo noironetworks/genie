@@ -10,10 +10,10 @@ import java.util.Stack;
  */
 public class Engine
 {
-    public Engine(Ctx aInCtx, Cons aInCons)
+    public Engine(Ctx aInCtx, Consumer aInConsumer)
     {
         ctx = aInCtx;
-        cons = aInCons;
+        consumer = aInConsumer;
         initCallTbl();
     }
 
@@ -22,9 +22,9 @@ public class Engine
         return ctx;
     }
 
-    protected Cons getCons()
+    protected Consumer getConsumer()
     {
-        return cons;
+        return consumer;
     }
 
 
@@ -226,7 +226,7 @@ public class Engine
         {
             try
             {
-                return (Data) callTbl[aInState.getIdx()][0].invoke(getCons(), new Object[]{aInString});
+                return (Data) callTbl[aInState.getIdx()][0].invoke(getConsumer(), new Object[]{aInString});
             }
             catch (Throwable e)
             {
@@ -250,7 +250,7 @@ public class Engine
         {
             try
             {
-                return (Data) callTbl[aInState.getIdx()][1].invoke(getCons(), new Object[]{aInString});
+                return (Data) callTbl[aInState.getIdx()][1].invoke(getConsumer(), new Object[]{aInString});
             }
             catch (Throwable e)
             {
@@ -298,7 +298,9 @@ public class Engine
 	            return;
             }
             else if (Character.isLetter(lThisChar) ||
-                Character.isDigit(lThisChar))
+                Character.isDigit(lThisChar) ||
+                '-' == lThisChar ||
+                '_' == lThisChar)
             {
                 literals.append(lThisChar);
             }
@@ -451,7 +453,7 @@ public class Engine
             {
                 try
                 {
-                    callTbl[lThisState.getIdx()][0] = cons.getClass().getMethod(lThisState.getBeginCb(), new Class[]{String.class});
+                    callTbl[lThisState.getIdx()][0] = consumer.getClass().getMethod(lThisState.getBeginCb(), new Class[]{String.class});
                 }
                 catch(Throwable e)
                 {
@@ -463,7 +465,7 @@ public class Engine
             {
                 try
                 {
-                    callTbl[lThisState.getIdx()][1] = cons.getClass().getMethod(lThisState.getEndCb(), new Class[]{String.class});
+                    callTbl[lThisState.getIdx()][1] = consumer.getClass().getMethod(lThisState.getEndCb(), new Class[]{String.class});
                 }
                 catch(Throwable e)
                 {
@@ -475,7 +477,7 @@ public class Engine
     }
 
     private final Ctx ctx;
-    private final Cons cons;
+    private final Consumer consumer;
     private final Method callTbl[][] = {
                                            { null, null,},
                                            { null, null,},

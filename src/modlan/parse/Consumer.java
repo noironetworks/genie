@@ -3,7 +3,7 @@ package modlan.parse;
 /**
  * Created by midvorki on 3/10/14.
  */
-public interface Cons
+public interface Consumer
 {
     public Data onDocBegin(String aInName);
     public Data onDocEnd(String aInName);

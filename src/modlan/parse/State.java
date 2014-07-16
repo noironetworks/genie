@@ -22,7 +22,7 @@ public enum State
     //////////////////////////////////////////////////////////////////////////////////////////
     DOC(0, "doc", true, false, Req.NONE, Incl.SKIP, "onDocBegin", "onDocEnd", null, false),
     NODE(1, "node", false, true, Req.MANDATORY, Incl.DISALLOW, "onNodeBegin", "onNodeEnd", new char[]{'\n', '\r'}, false),
-    QUAL(2, "qualifier", false, false, Req.MANDATORY, Incl.DISALLOW, "onQual", null, new char[]{'>'}, false),
+    QUAL(2, "qualifier", false, false, Req.MANDATORY, /**Incl.DISALLOW**/Incl.ALLOW, "onQual", null, new char[]{'>'}, false),
     VALUE(3, "value", false, false, Req.OPTIONAL, Incl.ALLOW, "onValue", null, new char[]{'\n', '\r'}, false),
     CONTENT(4, "content", false, false, Req.NONE, Incl.SKIP, "onContentBegin", "onContentEnd", new char[]{'}'}, true),
     COMMENT(5, "comment", false, false, Req.OPTIONAL, Incl.ALLOW, "onComment", null, new char[]{'\n', '\r'}, false),

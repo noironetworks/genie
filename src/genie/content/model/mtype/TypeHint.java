@@ -15,4 +15,6 @@ public class TypeHint extends SubTypeItem
     {
         super(MY_CAT, aInType, NAME);
     }
+
+    // TODO: NEED TO IMPLEMENT TYPE HINT
 }
