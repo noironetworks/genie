@@ -1,0 +1,29 @@
+#
+# use=...       directs to use other node parsing rule
+# parser=...    directs to use specific java class for parsing
+node<module>
+{
+    node<type>
+    {
+        node<const>
+        node<validate>
+        {
+            node<range>
+            node<content>
+            node<size>
+        }
+    }
+    node<class>
+    {
+        node<member>
+        {
+            node<const; use=/module/type/const>
+            node<validate; use=/module/type/validate>
+        }
+    }
+    node<contained>
+    node<named>
+    {
+        node<rule>
+    }
+}
