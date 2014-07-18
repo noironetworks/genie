@@ -1,5 +1,7 @@
 package genie.content.parse.modlan;
 
+import genie.content.parse.pmeta.PNode;
+import genie.engine.parse.model.ParseNode;
 import genie.engine.parse.model.ProcessorNode;
 import genie.engine.parse.model.ProcessorTree;
 import genie.engine.parse.modlan.ParseDirective;
@@ -9,26 +11,6 @@ import genie.engine.parse.modlan.ParseDirective;
  */
 public class ParseRegistry
 {
-    public static class Node extends ProcessorNode
-    {
-        public Node(String aInName)
-        {
-            super(aInName);
-        }
-
-        public ParseDirective beginCB(genie.engine.parse.modlan.Node aIn)
-        {
-            System.out.println(this + ".beginCB(" + aIn + ") @@@@@@@@@@@@@@@@@@@@");
-            return ParseDirective.CONTINUE;
-        }
-
-        public void endCB(genie.engine.parse.modlan.Node aIn)
-        {
-            System.out.println(this + ".endCB(" + aIn + ") #####################");
-
-        }
-    }
-
     public static ProcessorTree init()
     {
         //Package lPkg =
@@ -83,38 +65,47 @@ public class ParseRegistry
          */
         ProcessorTree lPTree = new ProcessorTree();
         {
-            ParseRegistry.Node lDocRoot = new ParseRegistry.Node("doc-root");
+            ProcessorNode lDocRoot = new ParseNode("doc-root");
             lPTree.addChild(lDocRoot);
             {
+                ProcessorNode metadata = new ParseNode("metadata");
+                lDocRoot.addChild(metadata);
+                {
+                    ProcessorNode node = new PNode();
+                    metadata.addChild(node);
+                }
+
+            }
+            {
 	            {
-		            ParseRegistry.Node module = new ParseRegistry.Node("module");
+                    ParseNode module = new ParseNode("module");
 		            lDocRoot.addChild(module);
 		            {
-			            ParseRegistry.Node class_ = new ParseRegistry.Node("class");
+                        ParseNode class_ = new ParseNode("class");
 			            module.addChild(class_);
 			            {
-				            ParseRegistry.Node member = new ParseRegistry.Node("member");
+				            ParseNode member = new ParseNode("member");
 				            class_.addChild(member);
 
-                            ParseRegistry.Node override = new ParseRegistry.Node("override");
+                            ParseNode override = new ParseNode("override");
                             class_.addChild(override);
 			            }
 		            }
 	            }
 	            {
-		            ParseRegistry.Node lDvorkin = new ParseRegistry.Node("dvorkin");
+		            ParseNode lDvorkin = new ParseNode("dvorkin");
 		            lDocRoot.addChild(lDvorkin);
 		            {
-			            ParseRegistry.Node lHeight = new ParseRegistry.Node("height");
+			            ParseNode lHeight = new ParseNode("height");
 			            lDvorkin.addChild(lHeight);
 
-			            ParseRegistry.Node lGirth = new ParseRegistry.Node("girth");
+			            ParseNode lGirth = new ParseNode("girth");
 			            lDvorkin.addChild(lGirth);
 
-			            ParseRegistry.Node lDetails = new ParseRegistry.Node("details");
+			            ParseNode lDetails = new ParseNode("details");
 			            lDvorkin.addChild(lDetails);
 			            {
-				            ParseRegistry.Node lSkill = new ParseRegistry.Node("skill");
+				            ParseNode lSkill = new ParseNode("skill");
 				            lDetails.addChild(lSkill);
 			            }
 		            }

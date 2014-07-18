@@ -10,6 +10,7 @@ public class Processor
 {
 	public Processor(
 			int aInParallelism,
+            String aInMetadataLoadPathsInOrder[][],
 			String aInModelPreLoadPathsInOrder[][],
 			String aInModelLoadPathsInOrder[][],
 			ProcessorTree aInPTree,
@@ -18,10 +19,11 @@ public class Processor
 	{
 		dsp = new Dsptchr(aInParallelism);
 		pTree = aInPTree;
-		modelPreLoadPaths = aInModelPreLoadPathsInOrder;
+        metadataLoadPaths = aInMetadataLoadPathsInOrder;
+        modelPreLoadPaths = aInModelPreLoadPathsInOrder;
 		modelLoadPaths = aInModelLoadPathsInOrder;
 
-		loadTargets = new LoadTarget[modelPreLoadPaths.length + modelLoadPaths.length];
+		loadTargets = new LoadTarget[metadataLoadPaths.length + modelPreLoadPaths.length + modelLoadPaths.length];
 
 		process();
 	}
@@ -35,7 +37,13 @@ public class Processor
 
 	private void load()
 	{
-		int i, j;
+		int i, j, m;
+        // FIRST PRE-LOAD SENSITIVE STUFF
+        for (m = 0; m < metadataLoadPaths.length; m++)
+        {
+            loadTargets[m] = new LoadTarget(dsp,pTree,new String[]{ metadataLoadPaths[m][0]}, metadataLoadPaths[m][1]);
+            dsp.drain();
+        }
 		// FIRST PRE-LOAD SENSITIVE STUFF
 		for (i = 0; i < modelPreLoadPaths.length; i++)
 		{
@@ -48,7 +56,8 @@ public class Processor
 			loadTargets[i++] = new LoadTarget(dsp,pTree,new String[]{ modelLoadPaths[j][0]}, modelLoadPaths[j][1]);
 		}
 	}
-	private final String modelPreLoadPaths[][];
+    private final String metadataLoadPaths[][];
+    private final String modelPreLoadPaths[][];
 	private final String modelLoadPaths[][];
 	private final LoadTarget loadTargets[];
 	private final ProcessorTree pTree;

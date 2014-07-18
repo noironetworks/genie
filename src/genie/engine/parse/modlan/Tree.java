@@ -20,6 +20,7 @@ public class Tree
         // TODO:
         if (null != root)
         {
+            System.out.println("\n\nPROCESSING DATA: ------------------------------------\n\n");
             root.process(preg.getRoot());
         }
     }

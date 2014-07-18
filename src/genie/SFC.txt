@@ -1,0 +1,92 @@
+
+
+
+
+
+## Definition of a service graph
+## Service graph consists of multiple logical function nodes and connectors.
+## Service graph can have multiple connectors representing consumers and providers
+## (TODO:how do we deal with mutuals?)
+## In most cases service graph is used between a group of provider and consumer groups.
+## Logical functions have behavior that identify behavior on the wire
+svc-graph <name>
+
+    ## provider connector. when a contract references a service graph,
+    ## it references through one of the provider connectors
+    ## TODO: provider connector named default can be created by default?
+    prov-conn <name>
+        next <name> <next-stage-name>/<input-name>
+
+    ## consumer connector
+    ## TODO: need labeling mechanism for selection of the consumer connector by the
+    ## consumer in case multiple such connectors exist.
+    ## TODO: consumer connector named default can be created by default
+    cons-conn <name>
+
+    ## logical service function
+    function <name>
+
+        # identification of the wire
+        behavior l3gateway | l2-transparent | l2-non-transparent | copy
+
+        # definition of the logical function input: will be useful when we get into config of the functions
+        # TODO: in named default is created by default
+        in <name>
+
+        # output from the function; specifies where to go next: next function input or terminal
+        # TODO: next named default is created by default
+        next <name> [func <next-stage-name>/<input-name>]|<cons|prov-conn> <name>]
+
+
+EXAMPLE
+-------
+
+##
+## A SIMPLE CHAIN OF FIREWALL FOLLOWED BY THE LOAD BALANCER AND TWO TERMINALS
+##
+svc-graph simple-slb-and-wf
+
+    consumer-connector cons
+        next function cool-fw/cons-side
+
+    function cool-fw
+        behavior l2-non-transparent
+        in consumer-side
+        in prov-side
+        next cool-slb/cons-side
+        next cons-conn cons
+
+    function cool-slb
+        behavior l3gateway
+        in cons-side
+        in prov-side
+        next prov-conn prov
+        next func cool-fw/prov-side
+
+    provider-connector prov
+        next func cool-slb/prov-side
+
+##
+## SLB WITH DIRECT RETURN, BUT SYMMETRICAL FIREWALL
+##
+svc-graph simple-slb-and-wf
+
+    consumer-connector cons
+        next function cool-fw/cons-side
+
+    function cool-fw
+        behavior l2-non-transparent
+        in consumer-side
+        in prov-side
+        next cool-slb/cons-side
+        next cons-conn cons
+
+    function cool-slb
+        behavior l3gateway
+        in cons-side
+        in prov-side
+        next prov-conn prov
+        next func cool-fw/prov-side
+
+    provider-connector prov
+        next func cool-fw/prov-side

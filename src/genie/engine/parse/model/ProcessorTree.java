@@ -1,5 +1,8 @@
 package genie.engine.parse.model;
 
+import genie.engine.model.Item;
+import genie.engine.model.Pair;
+import genie.engine.parse.modlan.Node;
 import genie.engine.parse.modlan.ParseDirective;
 import genie.engine.parse.modlan.Processor;
 import genie.engine.parse.modlan.ProcessorRegistry;
@@ -12,7 +15,7 @@ public class ProcessorTree
 {
     public ProcessorTree()
     {
-        super("model");
+        super("model", false);
     }
 
     public Processor getRoot()
@@ -20,12 +23,12 @@ public class ProcessorTree
         return this;
     }
 
-    public ParseDirective beginCB(genie.engine.parse.modlan.Node aIn)
+    public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItemOrNull)
     {
-        return ParseDirective.CONTINUE;
+        return null; // RETURN NULL TO ASSUME DEFAULTS
     }
 
-    public void endCB(genie.engine.parse.modlan.Node aIn)
+    public void endCB(Node aInData, Item aInItemOrNull)
     {
 
     }

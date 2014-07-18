@@ -1,0 +1,45 @@
+module<name>
+{
+##    primitive<name,hint>
+##    {
+##        language<C>
+##        {
+##
+##        }
+##
+##        const<name,value>
+##        {
+##            auto-trans: "name"
+##        }
+##
+##        const<name,value>
+##        {
+##            remove
+##        }
+##
+##        validate<name>
+##        {
+##            range<name, min, max>
+##            content<name>:"regex"
+##            size<name,min,max>
+##        }
+##    }
+##
+##    typedef<name,supertype>
+##    {
+##    }
+
+    class<name,abstract|concrete:superclass>
+    {
+        member<name,type:type>
+        {
+        }
+
+        override<name>
+        {
+
+        }
+    }
+
+
+}

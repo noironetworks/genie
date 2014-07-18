@@ -1,11 +1,14 @@
 package genie.engine.parse.modlan;
 
+import genie.engine.model.Item;
+import genie.engine.model.Pair;
+
 /**
  * Created by midvorki on 3/22/14.
  */
 public interface Processor
 {
-    public ParseDirective beginCB(Node aIn);
-    public void endCB(Node aIn);
+    public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItemOrNull);
+    public void endCB(Node aInData, Item aInItemOrNull);
     public Processor getChild(String aInName);
 }

@@ -1,5 +1,7 @@
 package genie.engine.parse.modlan;
 
+import genie.engine.model.Item;
+import genie.engine.model.Pair;
 import modlan.report.Severity;
 import modlan.utils.Strings;
 
@@ -53,7 +55,7 @@ public class Node
             if (hasNamedValues())
             {
                 String lThis = nvps.get(aInName);
-                if (Strings.isEmpty(lThis))
+                if (!Strings.isEmpty(lThis))
                 {
                     lRet = lThis;
                 }
@@ -67,6 +69,11 @@ public class Node
                     "no default provided.");
         }
         return lRet;
+    }
+
+    public Map<String,String> getNvps()
+    {
+        return nvps;
     }
 
     /**
@@ -116,9 +123,19 @@ public class Node
         return comments;
     }
 
+    public String getQual()
+    {
+        return null == qual ? name : qual;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // INTERNAL APIS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private Item getAncestorItem()
+    {
+        return null == parent ? null : parent.item;
+    }
 
     /**
      * INTERNAL: DO NOT CALL EXPLICITLY!
@@ -127,6 +144,7 @@ public class Node
      */
     public final void process(Processor aInParentProcessor)
     {
+        System.out.println(this + ".process(parent-proc=" + aInParentProcessor + ")");
         Processor lProc = null;
         if (null != aInParentProcessor)
         {
@@ -137,6 +155,7 @@ public class Node
             // assume it's root
             // TODO:
         }
+        System.out.println(this + ".process(parent-proc=" + aInParentProcessor + "): my-proc=" + lProc);
 
         if (null == lProc)
         {
@@ -146,12 +165,20 @@ public class Node
                 "processor can't be found",
                 "\"" + name + "\" processor is not registered with parent processor: " + aInParentProcessor
                  );
-
-            lProc = aInParentProcessor;
         }
         else
         {
-            switch (lProc.beginCB(this))
+            Pair<ParseDirective,Item> lRes = lProc.beginCB(this, getAncestorItem());
+
+            this.item = (null == lRes || null == lRes.getSecond()) ?
+                            getAncestorItem() : lRes.getSecond();
+
+            System.out.println(this + ".process(parent-proc=" + aInParentProcessor + "): item=" + this.item);
+
+            //System.out.println(this + ": NEW ITEM: " + item + " WITH PROC: " + lProc + " of class " + lProc.getClass());
+
+            switch ((null == lRes || null == lRes.getFirst()) ?
+                            ParseDirective.CONTINUE : lRes.getFirst())
             {
                 case END_SUBTREE:
                 case END_TREE:
@@ -161,21 +188,28 @@ public class Node
                 case CONTINUE:
                 default:
 
-                    if (null != children)
-                    {
-                        for (java.util.LinkedList<Node> lNodes : children.values())
-                        {
-                            for (Node lNode : lNodes)
-                            {
-                                lNode.process(lProc);
-                            }
-                        }
-                    }
+                    processChildren(lProc);
+
             }
-            lProc.endCB(this);
+            lProc.endCB(this, item);
         }
     }
 
+    private void processChildren(Processor aInProc)
+    {
+        System.out.println(this + ".processChildren(parent-proc=" + aInProc + ")");
+
+        if (null != children)
+        {
+            for (java.util.LinkedList<Node> lNodes : children.values())
+            {
+                for (Node lNode : lNodes)
+                {
+                    lNode.process(aInProc);
+                }
+            }
+        }
+    }
     /**
      * INTERNAL: DO NOT CALL EXPLICITLY!
      * add a child node to this node.
@@ -287,6 +321,10 @@ public class Node
             String lComponent = lComponents[i];
             String lNVPair[] = lComponent.split(":|=");
 
+            for (int j = 0; j < lNVPair.length; j++)
+            {
+                lNVPair[j] = lNVPair[j].trim();
+            }
             switch (lNVPair.length)
             {
                 case 1:
@@ -376,4 +414,5 @@ public class Node
     private java.util.LinkedList<String> comments = null;
     private java.util.TreeMap<String, java.util.LinkedList<Node>> children = null;
     private final Node parent;
+    private Item item = null;
 }

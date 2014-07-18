@@ -14,13 +14,6 @@ public abstract class ProcessorNode
         implements Processor
 {
     /////////////////////////////////////////////
-    // SUBCLASS IMPLEMENTED CALLBACKS
-    /////////////////////////////////////////////
-
-    public abstract ParseDirective beginCB(Node aIn);
-    public abstract void endCB(Node aIn);
-
-    /////////////////////////////////////////////
     // PROCESSING METHODS
     /////////////////////////////////////////////
 
@@ -31,7 +24,42 @@ public abstract class ProcessorNode
 
     public ProcessorNode getChild(String aInName)
     {
-        return null == children ? null : children.get(aInName);
+        ProcessorNode lThis = null;
+
+        if (null == children)
+        {
+            lThis = getRecursion();
+        }
+        else
+        {
+            lThis = children.get(aInName);
+            if (null == lThis)
+            {
+                lThis = getRecursion();
+            }
+        }
+        if (null == lThis)
+        {
+            Severity.INFO.report(this.toString(),"child retrieval", "child \"" + aInName + "\" doesn't exist", "can't find child " + aInName);
+        }
+        return lThis;
+    }
+
+    private ProcessorNode getRecursion()
+    {
+        /**
+        ProcessorNode lThis = null;
+        if (isRecursive)
+        {
+            for (lThis = this;
+                 null != lThis && lThis.isRecursive && !lThis.equals(getName());
+                 lThis = lThis.parent)
+            {
+
+            }
+        }
+         **/
+        return isRecursive ? this : null;
     }
 
     /////////////////////////////////////////////
@@ -60,9 +88,10 @@ public abstract class ProcessorNode
         parent = aInParent;
     }
 
-    protected ProcessorNode(String aInName)
+    protected ProcessorNode(String aInName, boolean aInIsRecursive)
     {
         name = aInName;
+        isRecursive = aInIsRecursive;
     }
 
     public String toString()
@@ -81,6 +110,7 @@ public abstract class ProcessorNode
     }
 
     private String name;
+    private boolean isRecursive;
     private TreeMap<String, ProcessorNode> children = null;
     private ProcessorNode parent = null;
 }

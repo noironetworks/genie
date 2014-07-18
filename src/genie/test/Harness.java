@@ -194,8 +194,9 @@ public class Harness
 
         //String lPrePaths[][] = {{"/Users/midvorki/code/projects/genie/PREMODEL",".mod"}};
         //String lPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".mod"}};
-        String lPrePaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL/SYNTAX",".mod"}};
-        String lPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL/SYNTAX",".mod"}};
+        String lMetaPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".meta"}};
+        String lPrePaths[][] = {}; //{{"/Users/midvorki/code/projects/genie/MODEL/SYNTAX",".mod"}};
+        String lPaths[][] = {}; //{{"/Users/midvorki/code/projects/genie/MODEL/SYNTAX",".mod"}};
 
 //        String lSuffix = ".mod";
 
@@ -203,6 +204,7 @@ public class Harness
 
         new Processor(
             3,
+            lMetaPaths,
             lPrePaths,
             lPaths,
             ParseRegistry.init(),
