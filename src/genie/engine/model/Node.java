@@ -234,6 +234,12 @@ public class Node implements Validatable
         getItem().postLoadCb();
     }
 
+    public void metaModelLoadCompleteCb() { getItem().metaModelLoadCompleteCb(); }
+
+    public void preLoadModelCompleteCb() { getItem().preLoadModelCompleteCb(); }
+
+    public void loadModelCompleteCb() { getItem().loadModelCompleteCb(); }
+
     /**
      * Stringifier
      * @return printable string of this Node identity

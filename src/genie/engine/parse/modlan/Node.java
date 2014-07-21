@@ -39,6 +39,11 @@ public class Node
         return null != nvps && !nvps.isEmpty();
     }
 
+    public boolean checkFlag(String aInName)
+    {
+        return (!Strings.isEmpty(aInName)) &&  hasNamedValues() && nvps.containsKey(aInName);
+    }
+
     /**
      * named value accessor. retrieves named value by name. optionally causes death if value is not found
      * @param aInName name of the value retrieved
@@ -144,7 +149,7 @@ public class Node
      */
     public final void process(Processor aInParentProcessor)
     {
-        System.out.println(this + ".process(parent-proc=" + aInParentProcessor + ")");
+        //System.out.println(this + ".process(parent-proc=" + aInParentProcessor + ")");
         Processor lProc = null;
         if (null != aInParentProcessor)
         {
@@ -155,7 +160,7 @@ public class Node
             // assume it's root
             // TODO:
         }
-        System.out.println(this + ".process(parent-proc=" + aInParentProcessor + "): my-proc=" + lProc);
+        //System.out.println(this + ".process(parent-proc=" + aInParentProcessor + "): my-proc=" + lProc);
 
         if (null == lProc)
         {
@@ -173,7 +178,7 @@ public class Node
             this.item = (null == lRes || null == lRes.getSecond()) ?
                             getAncestorItem() : lRes.getSecond();
 
-            System.out.println(this + ".process(parent-proc=" + aInParentProcessor + "): item=" + this.item);
+            //System.out.println(this + ".process(parent-proc=" + aInParentProcessor + "): item=" + this.item);
 
             //System.out.println(this + ": NEW ITEM: " + item + " WITH PROC: " + lProc + " of class " + lProc.getClass());
 
@@ -197,7 +202,7 @@ public class Node
 
     private void processChildren(Processor aInProc)
     {
-        System.out.println(this + ".processChildren(parent-proc=" + aInProc + ")");
+       // System.out.println(this + ".processChildren(parent-proc=" + aInProc + ")");
 
         if (null != children)
         {
@@ -246,7 +251,7 @@ public class Node
         {
             comments = new java.util.LinkedList<String>();
         }
-        System.out.println(this + ".addComments(" + aIn + ")");
+        //System.out.println(this + ".addComments(" + aIn + ")");
         comments.addAll(aIn);
     }
 
@@ -261,7 +266,7 @@ public class Node
         {
             comments = new java.util.LinkedList<String>();
         }
-        System.out.println(this + ".addComments(" + aIn + ")");
+        //System.out.println(this + ".addComments(" + aIn + ")");
         comments.add(aIn);
     }
 

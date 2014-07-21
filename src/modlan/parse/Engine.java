@@ -36,7 +36,7 @@ public class Engine
             literals.reset();
             stack.push(new StateCtx(state, "doc-root", null));
             stack.peek().setData(invokeBeginCb(stack.peek().getText()));
-            reportInfo("execute", "push: " + stack.peek());
+            //reportInfo("execute", "push: " + stack.peek());
             while (ctx.hasMore())
             {
                 ctx.getNext();
@@ -106,7 +106,7 @@ public class Engine
                     ctx.holdThisForNext();
                     if (null != lNextState)
                     {
-                        System.out.println("fastforwarded to next potential state: " + lNextState);
+                        //System.out.println("fastforwarded to next potential state: " + lNextState);
                         lRet = lNextState.isRecursivelyAttached();
                     }
                 }
@@ -132,14 +132,14 @@ public class Engine
 
     private void endState()
     {
-        reportInfo("endState", "POP: " + stack.peek());
+        //reportInfo("endState", "POP: " + stack.peek());
         stack.peek().setData(invokeEndCb(stack.peek().getText()));
         literals.reset();
         stack.pop();
         if (!stack.empty())
         {
             state = stack.peek().getState();
-            reportInfo("endState", "NEW TOP: " + stack.peek());
+            //reportInfo("endState", "NEW TOP: " + stack.peek());
         }
 
     }
@@ -150,7 +150,7 @@ public class Engine
         lNextState = getNextState(aInThisChar);
         if (null != lNextState && state != lNextState)
         {
-	        reportInfo("checkHandleNextState", (lNextState.isSelfContained() ? "SELF CONTAINED > " : "NON-SELF-CONT > ") + "NEW STATE: '" + lNextState + "' ON CHAR: '" + aInThisChar + "'");
+	        //reportInfo("checkHandleNextState", (lNextState.isSelfContained() ? "SELF CONTAINED > " : "NON-SELF-CONT > ") + "NEW STATE: '" + lNextState + "' ON CHAR: '" + aInThisChar + "'");
             if (lNextState.isSelfContained())
             {
                 if (ctx.hasMore())
@@ -192,13 +192,13 @@ public class Engine
 		            }
 	            }
 
-	            reportInfo("checkHandleNextState", "NEW STATE: " + lNextState + "(" + literals + ")");
+	            //reportInfo("checkHandleNextState", "NEW STATE: " + lNextState + "(" + literals + ")");
 
 
                 state = lNextState;
                 String lThisString = literals.toString();
                 stack.push(new StateCtx(state, lThisString, stack.peek()));
-                reportInfo("checkHandleNextState", "PUSH: " + stack.peek());
+                //reportInfo("checkHandleNextState", "PUSH: " + stack.peek());
                 // INVOKE BEGIN CB AND REMEMBER DATA RETURNED
                 stack.peek().setData(invokeBeginCb(lThisString));
                 literals.reset();
@@ -221,7 +221,7 @@ public class Engine
 
     private Data invokeBeginCb(State aInState, String aInString)
     {
-        reportInfo("invokeBeginCb", "[+++] invoking for " + aInState + " STRING: " + aInString);
+        //reportInfo("invokeBeginCb", "[+++] invoking for " + aInState + " STRING: " + aInString);
         if (null != callTbl[aInState.getIdx()][0])
         {
             try
@@ -244,7 +244,7 @@ public class Engine
 
     private Data invokeEndCb(State aInState, String aInString)
     {
-        reportInfo("invokeEndCb", "[---] invoking for " + aInState + " STRING: " + aInString);
+        //reportInfo("invokeEndCb", "[---] invoking for " + aInState + " STRING: " + aInString);
 
         if (null != callTbl[aInState.getIdx()][1])
         {
@@ -276,7 +276,7 @@ public class Engine
 
     private void handleLiterals(State aInState)
     {
-	    reportInfo("handleLiterals(" + aInState + ")", "begin");
+	    //reportInfo("handleLiterals(" + aInState + ")", "begin");
 
 	    literals.reset();
         char lThisChar = ctx.getThis();
@@ -287,14 +287,14 @@ public class Engine
             if (aInState.isEnd(lThisChar))
             {
 	            // END OF STATE
-	            reportInfo("handleLiterals(" + aInState + ")", "DONE: @end with: " + literals);
+	            //reportInfo("handleLiterals(" + aInState + ")", "DONE: @end with: " + literals);
                 return;
             }
             else if (null != TransitionTable.get(aInState, lThisChar))
             {
 	            // NEXT STATE IS BEGINNING
-	            reportInfo("handleLiterals(" + aInState + ")",
-	                       "DONE: @next state '" + TransitionTable.get(aInState, lThisChar) + "' on '" + lThisChar + "' with: " + literals);
+	            //reportInfo("handleLiterals(" + aInState + ")",
+	            //           "DONE: @next state '" + TransitionTable.get(aInState, lThisChar) + "' on '" + lThisChar + "' with: " + literals);
 	            return;
             }
             else if (Character.isLetter(lThisChar) ||
@@ -381,7 +381,7 @@ public class Engine
             }
             else
             {
-	            reportInfo("handleLiterals(" + aInState + ")", "DONE: OUT OF CHARS: " + literals);
+	            //reportInfo("handleLiterals(" + aInState + ")", "DONE: OUT OF CHARS: " + literals);
 	            return;
             }
         }

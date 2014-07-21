@@ -7,6 +7,7 @@ import genie.engine.model.*;
 import genie.test.TestObj;
 import genie.engine.proc.Processor;
 import genie.test.mtype.TypeTest;
+import modlan.utils.Strings;
 
 import java.util.*;
 
@@ -58,6 +59,8 @@ public class Harness
     public static void main(String [ ] args)
     {
         System.out.println("\n\n\n####################################################################\n\n\n");
+
+
         /**Map<String, String> lMap = new TreeMap<String, String>();
         System.out.println(
                 stringexperiment("*TESTYPE*", "bob; abstract:john/smith", lMap) +
@@ -66,7 +69,9 @@ public class Harness
          //TypeTest.run();
          //relTest();
          //objTest();
+
          fileTest();
+
          //classRelnTest1();
          //relTest();
          //genericsTest(new LinkedList<Module>());

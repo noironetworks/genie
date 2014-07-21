@@ -30,6 +30,11 @@ public class Dsptchr
 		chnl.suspendUntilDrained();
 	}
 
+    public void waitForDrain()
+    {
+        chnl.waitOutSuspense();
+    }
+
 	public void kill()
 	{
 		chnl.markForDeath();

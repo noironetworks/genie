@@ -1,6 +1,6 @@
 module<name>
 {
-##    primitive<name,hint>
+##    primitive<name,hint=string>
 ##    {
 ##        language<C>
 ##        {
@@ -29,10 +29,11 @@ module<name>
 ##    {
 ##    }
 
-    class<name,abstract|concrete:superclass>
+    class<name,concrete:superclass>
     {
-        member<name,type:type>
+        member<name,type:crap/shit>
         {
+
         }
 
         override<name>

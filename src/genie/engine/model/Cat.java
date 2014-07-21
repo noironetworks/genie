@@ -182,6 +182,64 @@ public class Cat extends Ident implements Validatable
         }
     }
 
+    public static void metaModelLoadComplete()
+    {
+        Severity.INFO.report("CAT", "metaModelLoadComplete", "metaModelLoadComplete", "all");
+
+        for (Cat lCat : idToCatTable.values())
+        {
+            lCat.metaModelLoadCompleteCb();
+            Severity.INFO.report(lCat.toString(), "metaModelLoadComplete", "metaModelLoadComplete", "DONE");
+        }
+    }
+
+    public void metaModelLoadCompleteCb()
+    {
+        for (Node lNode : nodes.getList())
+        {
+            lNode.metaModelLoadCompleteCb();
+        }
+    }
+
+    public static void preLoadModelComplete()
+    {
+        Severity.INFO.report("CAT", "preLoadModelComplete", "preLoadModelComplete", "all");
+
+        for (Cat lCat : idToCatTable.values())
+        {
+            lCat.preLoadModelCompleteCb();
+            Severity.INFO.report(lCat.toString(), "preLoadModelComplete", "preLoadModelComplete", "DONE");
+        }
+    }
+
+    public void preLoadModelCompleteCb()
+    {
+        for (Node lNode : nodes.getList())
+        {
+            lNode.preLoadModelCompleteCb();
+        }
+    }
+
+    public static void loadModelComplete()
+    {
+        Severity.INFO.report("CAT", "loadModelComplete", "loadModelComplete", "all");
+
+        for (Cat lCat : idToCatTable.values())
+        {
+            lCat.loadModelCompleteCb();
+            Severity.INFO.report(lCat.toString(), "loadModelComplete", "loadModelComplete", "DONE");
+        }
+    }
+
+    public void loadModelCompleteCb()
+    {
+        for (Node lNode : nodes.getList())
+        {
+            lNode.loadModelCompleteCb();
+        }
+    }
+
+
     public static void postLoad()
     {
         Severity.INFO.report("CAT", "postLoad", "postLoad", "all");
@@ -190,7 +248,7 @@ public class Cat extends Ident implements Validatable
         for (Cat lCat : idToCatTable.values())
         {
             lCat.postLoadCb();
-            Severity.INFO.report("CAT", "postLoad", "postLoad", lCat.toString());
+            Severity.INFO.report(lCat.toString(), "postLoad", "postLoad", "DONE");
         }
     }
 

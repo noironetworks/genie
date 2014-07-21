@@ -13,6 +13,8 @@ import genie.engine.parse.modlan.ProcessorRegistry;
 public class ProcessorTree
         extends ProcessorNode implements ProcessorRegistry
 {
+    public static String DOC_ROOT_NAME = "doc-root";
+
     public ProcessorTree()
     {
         super("model", false);
@@ -21,6 +23,11 @@ public class ProcessorTree
     public Processor getRoot()
     {
         return this;
+    }
+
+    public ParseNode getDocRoot()
+    {
+        return (ParseNode) getChild(DOC_ROOT_NAME);
     }
 
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItemOrNull)

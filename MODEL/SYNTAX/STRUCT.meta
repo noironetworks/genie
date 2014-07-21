@@ -1,32 +1,34 @@
 #
 # use=...       directs to use other node parsing rule
 # parser=...    directs to use specific java class for parsing
+# generic       identifies that this parsing node has no functional behaviors and doesn't result in model items
+#
 metadata
 {
-    node<module>
+    node<module; generic>
     {
-        node<type>
+        node<type; generic>
         {
-            node<const>
-            node<validate>
+            node<const; generic>
+            node<validate; generic>
             {
-                node<range>
-                node<content>
-                node<size>
+                node<range; generic>
+                node<content; generic>
+                node<size; generic>
             }
         }
-        node<class>
+        node<class; generic>
         {
-            node<member>
+            node<member; generic>
             {
-                node<const; explicit=class>
-                node<validate; use=/module/type/validate>
+                node<const; generic>
+                node<validate; use=module/type/validate >
             }
         }
-        node<contained>
-        node<named>
+        node<contained; generic>
+        node<named; generic>
         {
-            node<rule>
+            node<rule; generic>
         }
     }
 }

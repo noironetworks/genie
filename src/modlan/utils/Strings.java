@@ -15,4 +15,34 @@ public class Strings
 
     public static boolean isDefault(String aIn) { return DEFAULT.equalsIgnoreCase(aIn); }
 
+    public static String replaceChar(String aIn, int aInPos, char aInNewChar)
+    {
+        if (null != aIn && aInPos < aIn.length())
+        {
+            char[] lChars = aIn.toCharArray();
+            lChars[aInPos] = aInNewChar;
+            return new String(lChars);
+        }
+        else
+        {
+            return aIn;
+        }
+    }
+
+    public static String upFirstLetter(String aIn)
+    {
+        if (!isEmpty(aIn))
+        {
+            char lChar = aIn.charAt(0);
+            if (Character.isLetter(lChar))
+            {
+                if (Character.isLowerCase(lChar))
+                {
+                    return replaceChar(aIn,0,Character.toUpperCase(lChar));
+                }
+            }
+        }
+        return aIn;
+    }
+
 }

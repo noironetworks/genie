@@ -23,44 +23,45 @@ public class PNode
 
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)
     {
-        System.out.println("\n\n---------------> " + this + ".beginCb(" + aInData + ", " + aInParentItem + "): " + aInData.getNvps());
+        System.out.println("\n\n++++++++++++++========> " + this + ".beginCb(" + aInData + ", " + aInParentItem + "): " + aInData.getNvps());
 
-        System.out.println("---------------> explicit: " + lExplicit + "; use: " + lUse);
+        // CREATE META NODE THAT CORRESPONDS TO THIS NODE PARSING RULE
+        MNode lMNode = new MNode(aInParentItem, aInData.getQual());
 
-        ParseNode lParentParseNode =
-                (null != aInParentItem && aInParentItem instanceof MNode) ?
-                    (ParseNode)((MNode) aInParentItem).getContext() :
-                    null;
-
-        ParseNode lParseNode = new ParseNode(aInData.getQual(),false);
-
-        if (null != lParentParseNode)
-        {
-            lParentParseNode.addChild(lParseNode);
-        }
-
-
-        MNode lMNode = new MNode(aInParentItem, aInData.getQual(), null);
-        String lExplicit = aInData.getNamedValue("explicit", null, false);
+        // CHECK IF WE HAVE TO USE OTHER NODE'S PARSER
         String lUse = aInData.getNamedValue("use", null, false);
-
-        String lParserImplClassName = null;
-        if (!Strings.isEmpty(lExplicit))
+        if (!Strings.isEmpty(lUse))
         {
-            lParserImplClassName = lExplicit;
+            lMNode.addUses(lUse);
         }
         else
         {
-            StringWriter lParserImplClassNameBuff = new StringWriter();
-            lParserImplClassNameBuff.append("");
-            if (!Strings.isEmpty(lUse))
-            {
-                lMNode.addUses(lUse);
-            }
+            // GET THE PARSE NODE'S EXPLICIT PARSING CLASS DIRECTIVE
+            String lExplicit = aInData.getNamedValue("explicit", null, false);
+
+            // CHECK IF DIRECT PARSING CLASS DIRECTIVE IS SET
+            String lParserImplClassName = null;
             if (!Strings.isEmpty(lExplicit))
             {
-
+                lParserImplClassName = lExplicit;
             }
+            else if (aInData.checkFlag("generic"))
+            {
+                lParserImplClassName = "genie.engine.parse.model.ParseNode";
+            }
+            else
+            {
+                // DETERMINE DEFAULT PARSER NAME FOR THIS NODE
+                StringWriter lParserImplClassNameBuff = new StringWriter();
+                lParserImplClassNameBuff.append("genie.content.parse.p");
+                String lQual = aInData.getQual();
+                lParserImplClassNameBuff.append(lQual.toLowerCase());
+                lParserImplClassNameBuff.append(".P");
+                lParserImplClassNameBuff.append(Strings.upFirstLetter(lQual));
+                lParserImplClassNameBuff.append("Node");
+                lParserImplClassName = lParserImplClassNameBuff.toString();
+            }
+            lMNode.addExplicitParserClassName(lParserImplClassName);
         }
         System.out.println("--------------- END::: " + aInData + ": mnode=" + lMNode + " under parent: " + aInParentItem + "\n\n");
 

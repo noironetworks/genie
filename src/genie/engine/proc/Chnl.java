@@ -101,6 +101,29 @@ public class Chnl
 		notifyAll();
 	}
 
+    public synchronized void waitOutSuspense()
+    {
+        if (!isDeath())
+        {
+            while (Status.SUSPEND == status)
+            {
+                Severity.INFO.report("PROC CHNL", "put", "task", "SUSPENDED: BLOCKING!");
+
+                try
+                {
+                    wait();
+                }
+                catch (InterruptedException lE)
+                {
+                }
+            }
+            notifyAll();
+        }
+        else
+        {
+            notifyAll();
+        }
+    }
 	public synchronized void put(Task aInTask)
 	{
 		if (!isDeath())

@@ -163,6 +163,11 @@ public class Item
     {
     }
 
+    public void metaModelLoadCompleteCb() {  }
+
+    public void preLoadModelCompleteCb() {  }
+
+    public void loadModelCompleteCb() {  }
 
     /**
      * Stringifier

@@ -489,6 +489,11 @@ public class Relator extends Item
         }
     }
 
+    public String getItemGName()
+    {
+        return itemGName;
+    }
+
     private final Cat itemCat;
     private final Cat invItemCat;
     private final RelatorCat complCat;

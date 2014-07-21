@@ -13,40 +13,6 @@ public class ParseRegistry
 {
     public static ProcessorTree init()
     {
-        //Package lPkg =
-        /**
-         * model<name>
-         * {
-         *         class<name>:
-         *         {
-         *             abstract
-         *             super<superclass-name>
-         *             interface<interface-name>
-         *             interface<interface-name>
-         *             
-         *             property<prop-name>:
-         *             {
-         *                  type<type-name>
-         *
-         *                  range:
-         *                  {
-         *                      min<100>
-         *                      max<300>
-         *                  }
-         *
-         *                  const<>
-         *             }
-         *
-         *             parent<container>
-         *             parent<container>
-         *             relation<name>:
-         *             {
-         *                 target<class>
-         *                 cardinality<1:1|N:1|1:N|N:N>
-         *             }
-         *         }
-         * }
-         */
         /**
          *
          *     private String text =
@@ -65,7 +31,7 @@ public class ParseRegistry
          */
         ProcessorTree lPTree = new ProcessorTree();
         {
-            ProcessorNode lDocRoot = new ParseNode("doc-root");
+            ProcessorNode lDocRoot = new ParseNode(ProcessorTree.DOC_ROOT_NAME);
             lPTree.addChild(lDocRoot);
             {
                 ProcessorNode metadata = new ParseNode("metadata");
@@ -75,41 +41,6 @@ public class ParseRegistry
                     metadata.addChild(node);
                 }
 
-            }
-            {
-	            {
-                    ParseNode module = new ParseNode("module");
-		            lDocRoot.addChild(module);
-		            {
-                        ParseNode class_ = new ParseNode("class");
-			            module.addChild(class_);
-			            {
-				            ParseNode member = new ParseNode("member");
-				            class_.addChild(member);
-
-                            ParseNode override = new ParseNode("override");
-                            class_.addChild(override);
-			            }
-		            }
-	            }
-	            {
-		            ParseNode lDvorkin = new ParseNode("dvorkin");
-		            lDocRoot.addChild(lDvorkin);
-		            {
-			            ParseNode lHeight = new ParseNode("height");
-			            lDvorkin.addChild(lHeight);
-
-			            ParseNode lGirth = new ParseNode("girth");
-			            lDvorkin.addChild(lGirth);
-
-			            ParseNode lDetails = new ParseNode("details");
-			            lDvorkin.addChild(lDetails);
-			            {
-				            ParseNode lSkill = new ParseNode("skill");
-				            lDetails.addChild(lSkill);
-			            }
-		            }
-	            }
             }
         }
         return lPTree;
