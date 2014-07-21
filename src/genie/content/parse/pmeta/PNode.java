@@ -12,15 +12,30 @@ import java.io.StringWriter;
 
 /**
  * Created by midvorki on 7/16/14.
+ *
+ * This is a parsing node for meta abstraction for representing loadable parsing nodes.
+ * Parsing nodes are registered in corresponding STRUCT.meta file that represents the
+ * meta-structure of the parsed tree.
  */
 public class PNode
         extends ParseNode
 {
+    /**
+     * Constructor
+     */
     public PNode()
     {
         super("node", true);
     }
 
+    /**
+     * Parsing callback to indicate beginning of the node parsing. This callback creates a parsing metadata item that is
+     * later used in forming the parse tree for model loading.
+     *
+     * @param aInData parsed data node
+     * @param aInParentItem parent item that was a result of parsing parent nodes. can be null if no parent.
+     * @return a pair of resulting parse directive and the item that was produced as result of parsing this data node.
+     */
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)
     {
         // CREATE META NODE THAT CORRESPONDS TO THIS NODE PARSING RULE
