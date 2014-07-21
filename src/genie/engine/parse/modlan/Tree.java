@@ -68,7 +68,7 @@ public class Tree
     {
         Node lData = stack.peek();
         lData.setQual(aIn);
-        System.out.println("\n\n--------->  [" + lData + "] QUAL=" + aIn + " IN " + lData + ":: SET QUALIFIERS: " + lData.getNvps() + " QUAL=" + lData.getQual());
+        // System.out.println("\n\n--------->  [" + lData + "] QUAL=" + aIn + " IN " + lData + ":: SET QUALIFIERS: " + lData.getNvps() + " QUAL=" + lData.getQual());
         return lData;
     }
 

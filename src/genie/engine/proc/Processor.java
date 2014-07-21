@@ -3,6 +3,7 @@ package genie.engine.proc;
 import genie.content.parse.modlan.ParseRegistry;
 import genie.engine.model.Cat;
 import genie.engine.parse.model.ProcessorTree;
+import modlan.report.Severity;
 
 /**
  * Created by midvorki on 4/4/14.
@@ -42,7 +43,7 @@ public class Processor
 
 	private void process()
 	{
-        System.out.println("========> " + this + ".process()::begin");
+        Severity.INFO.report(this.toString(), "processing", "model processing", "BEGIN");
         try
         {
             load();
@@ -57,7 +58,10 @@ public class Processor
             lE.printStackTrace();
             System.exit(666);
         }
-        System.out.println("========> " + this + ".process()::end");
+        finally
+        {
+            Severity.INFO.report(this.toString(), "processing", "model processing", "END");
+        }
 	}
 
     private void postProcess()
@@ -67,7 +71,7 @@ public class Processor
     }
 	private void load()
 	{
-        System.out.println("========> " + this + ".load()::begin");
+        Severity.INFO.report(this.toString(), "load", "model loading", "BEGIN");
 
         int i, j, m;
         // FIRST PRE-LOAD SENSITIVE STUFF
@@ -77,7 +81,6 @@ public class Processor
             dsp.drain();
             dsp.waitForDrain();
         }
-        System.out.println("**************> " + this + ".metaModelLoadComplete()");
 
         Cat.metaModelLoadComplete();
 
@@ -90,7 +93,6 @@ public class Processor
 			dsp.drain();
             dsp.waitForDrain();
         }
-        System.out.println("**************> " + this + ".preLoadModelComplete()");
 
         Cat.preLoadModelComplete();
 
@@ -101,9 +103,15 @@ public class Processor
 		}
         dsp.drain();
         dsp.waitForDrain();
-        System.out.println("**************> " + this + ".loadModelComplete()");
         Cat.loadModelComplete();
-	}
+        Severity.INFO.report(this.toString(),"load","model loaded", "END");
+
+    }
+
+    public String toString()
+    {
+        return "genie:processor";
+    }
     private final String metadataLoadPaths[][];
     private final String modelPreLoadPaths[][];
 	private final String modelLoadPaths[][];

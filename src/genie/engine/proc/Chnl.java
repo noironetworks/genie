@@ -15,7 +15,7 @@ public class Chnl
 		if (0 == --procCount &&
 		    Status.SUSPEND == status)
 		{
-			//Severity.INFO.report("PROC CHNL", "doneCb", "", "UNSUSPENDING: ALL TASKS DONE");
+			//Severity.INFO.report("processor:chnl", "doneCb", "", "UNSUSPENDING: ALL TASKS DONE");
 			status = Status.RUNNING;
 			notifyAll();
 		}
@@ -59,12 +59,12 @@ public class Chnl
 		{
 			if (0 < queue.size())
 			{
-				Severity.INFO.report("PROC CHNL", "suspend", "", "SUSPENDING CHNL!!");
+				Severity.INFO.report("processor:chnl", "suspend", "", "SUSPENDING CHNL!!");
 				status = Status.SUSPEND;
 			}
 			else
 			{
-				Severity.INFO.report("PROC CHNL", "suspend", "", "NO TASKS: NO SUSPENSION NECESSARY!!");
+				Severity.INFO.report("processor:chnl", "suspend", "", "NO TASKS: NO SUSPENSION NECESSARY!!");
 			}
 		}
 		else
@@ -80,11 +80,11 @@ public class Chnl
 
 	public synchronized void markForDeath()
 	{
-		Severity.INFO.report("------------- PROC CHNL", "markForDeath", "", "WILL MARK FOR DEATH..............................");
+		Severity.INFO.report("processor:chnl", "markForDeath", "", "WILL MARK FOR DEATH..............................");
 
 		while (!((queue.isEmpty()) && (0 == procCount)))
 		{
-			Severity.INFO.report("------------- PROC CHNL", "markForDeath", "", "WAITING FOR QUEUE TO DRAIN????????????????");
+			Severity.INFO.report("processor:chnl", "markForDeath", "", "WAITING FOR QUEUE TO DRAIN????????????????");
 
 			try
 			{
@@ -96,7 +96,7 @@ public class Chnl
 		}
 		status = Status.DEATH;
 
-		Severity.INFO.report("------------- PROC CHNL", "markForDeath", "", "MARKED FOR DEATH!!!!!!!!!!!!!!!!!!!");
+		Severity.INFO.report("processor:chnl", "markForDeath", "", "MARKED FOR DEATH!!!!!!!!!!!!!!!!!!!");
 
 		notifyAll();
 	}
@@ -107,7 +107,7 @@ public class Chnl
         {
             while (Status.SUSPEND == status)
             {
-                Severity.INFO.report("PROC CHNL", "put", "task", "SUSPENDED: BLOCKING!");
+                Severity.INFO.report("processor:chnl", "put", "task", "SUSPENDED: BLOCKING!");
 
                 try
                 {
@@ -130,7 +130,7 @@ public class Chnl
 		{
 			while (Status.SUSPEND == status && (!(Thread.currentThread() instanceof Doer)))
 			{
-				Severity.INFO.report("PROC CHNL", "put", "task", "SUSPENDED: BLOCKING!");
+				Severity.INFO.report("processor:chnl", "put", "task", "SUSPENDED: BLOCKING!");
 
 				try
 				{

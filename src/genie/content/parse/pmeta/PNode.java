@@ -23,8 +23,6 @@ public class PNode
 
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)
     {
-        System.out.println("\n\n++++++++++++++========> " + this + ".beginCb(" + aInData + ", " + aInParentItem + "): " + aInData.getNvps());
-
         // CREATE META NODE THAT CORRESPONDS TO THIS NODE PARSING RULE
         MNode lMNode = new MNode(aInParentItem, aInData.getQual());
 
@@ -63,8 +61,6 @@ public class PNode
             }
             lMNode.addExplicitParserClassName(lParserImplClassName);
         }
-        System.out.println("--------------- END::: " + aInData + ": mnode=" + lMNode + " under parent: " + aInParentItem + "\n\n");
-
         return new Pair<ParseDirective, Item>(
                 ParseDirective.CONTINUE,
                 lMNode);

@@ -122,12 +122,10 @@ public class MNode extends Item
             ParseNode lParentParseNode = null;
             if (null == lParentItem)
             {
-                System.out.println(":::: NULL PARENT");
                 lParentParseNode = Processor.get().getPTree().getDocRoot();
             }
             else if (lParentItem instanceof MNode)
             {
-                System.out.println(":::: MNode PARENT: " + lParentItem);
                 lParentParseNode = ((MNode) lParentItem).getParseNode();
             }
             else
@@ -141,7 +139,6 @@ public class MNode extends Item
             {
                 ParseNode lParseNode = (ParseNode) lParserClass.getConstructors()[0].newInstance(getLID().getName());
                 lParentParseNode.addChild(lParseNode);
-                System.out.println("**************> " + this + ".getParseNode(): PARSE NODE:" + lParseNode);
                 context = lParseNode;
             }
             catch (Throwable lE)

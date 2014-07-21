@@ -9,7 +9,7 @@ public class Doer extends Thread
 {
 	public Doer(int aInId, Chnl aInChnl)
 	{
-		super("DOER(" + aInId + ")");
+		super("processor:doer(" + aInId + ")");
 		id = aInId;
 		chnl = aInChnl;
 	}
