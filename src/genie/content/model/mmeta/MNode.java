@@ -186,6 +186,7 @@ public class MNode extends Item
             {
                 Severity.DEATH.report(this.toString(),"parsing rule structure formation", "can't invoke constructor for: " + parserClassName, lE);
             }
+            Severity.INFO.report(toString(),"parser load", "rule loaded", "parser node: " + parseNode);
         }
         return parseNode;
     }

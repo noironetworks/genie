@@ -2,9 +2,9 @@ package genie.test.mtype;
 
 import genie.content.model.module.Module;
 import genie.content.model.mtype.Language;
-import genie.content.model.mtype.LanguageBinding;
+import genie.content.model.mtype.MLanguageBinding;
 import genie.content.model.mtype.MType;
-import genie.content.model.mtype.TypeHint;
+import genie.content.model.mtype.MTypeHint;
 import genie.engine.model.Item;
 
 /**
@@ -33,9 +33,9 @@ public class TypeTest
                     {
                         for (Language lLang : Language.values())
                         {
-                            new LanguageBinding(lType, lLang);
+                            new MLanguageBinding(lType, lLang);
                         }
-                        new TypeHint(lType);
+                        new MTypeHint(lType);
                     }
                     else
                     {

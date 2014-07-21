@@ -6,11 +6,12 @@ import modlan.report.Severity;
 /**
  * Created by dvorkinista on 7/7/14.
  */
-public class LanguageBinding extends SubTypeItem
+public class MLanguageBinding
+        extends SubTypeItem
 {
     public static final Cat MY_CAT = Cat.getCreate("type:language-binding");
 
-    public LanguageBinding(
+    public MLanguageBinding(
             MType aInType, Language aInLang)
     {
         super(MY_CAT, aInType, aInLang.getName());

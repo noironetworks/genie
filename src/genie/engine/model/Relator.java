@@ -451,7 +451,8 @@ public class Relator extends Item
         Severity.INFO.report(this.toString(), "validate", "validating", "resolves to: " + lTargetNode);
         if (null == lTargetNode)
         {
-            Severity.DEATH.report(this.toString(), "validate", "unresolvable target", itemGName + " in cat " + itemCat);
+            Severity.DEATH.report(this.toString(), "validate", "unresolvable target", itemGName + " in cat " + itemCat +
+                                 "::: " + itemCat.getNodes().getList());
         }
     }
 

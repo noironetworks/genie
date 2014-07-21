@@ -6,6 +6,7 @@ import genie.content.model.module.SubModuleItem;
 import genie.content.model.mvalidation.MValidator;
 import genie.engine.model.*;
 import modlan.report.Severity;
+import modlan.utils.Strings;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -119,23 +120,20 @@ public class MType extends SubModuleItem
      */
     public void addSupertype(String aInTargetGName)
     {
-        if (isBuiltIn())
+        if (!Strings.isEmpty(aInTargetGName))
         {
-            Severity.DEATH.report(
-                    this.toString(),
-                    "add super-type",
-                    "built-in/base type can't have super-types",
-                    "can't derive from " + aInTargetGName);
+            if (isBuiltIn())
+            {
+                Severity.DEATH.report(this.toString(), "add super-type", "built-in/base type can't have super-types",
+                                      "can't derive from " + aInTargetGName);
+            }
+            else if (getGID().getName().equals(aInTargetGName))
+            {
+                Severity.DEATH
+                        .report(this.toString(), "add super-type", "can't reference self", "can't derive from self");
+            }
+            SUPER_CAT.add(MY_CAT, getGID().getName(), MY_CAT, aInTargetGName);
         }
-        else if (getGID().getName().equals(aInTargetGName))
-        {
-            Severity.DEATH.report(
-                    this.toString(),
-                    "add super-type",
-                    "can't reference self",
-                    "can't derive from self");
-        }
-        SUPER_CAT.add(MY_CAT, getGID().getName(), MY_CAT, aInTargetGName);
     }
 
     /**
@@ -303,10 +301,10 @@ public class MType extends SubModuleItem
      * @param aIn language for which binding is to be retrieved
      * @return language binding for this type given the specified language (aIn)
      */
-    public LanguageBinding getLanguageBinding(Language aIn)
+    public MLanguageBinding getLanguageBinding(Language aIn)
     {
-        LanguageBinding lLb =
-                (LanguageBinding) getBuiltInType().getChildItem(LanguageBinding.MY_CAT,aIn.getName());
+        MLanguageBinding lLb =
+                (MLanguageBinding) getBuiltInType().getChildItem(MLanguageBinding.MY_CAT,aIn.getName());
 
         if (null == lLb)
         {
@@ -325,10 +323,10 @@ public class MType extends SubModuleItem
      * retrieves type hint for this specific type
      * @return type hint for this type
      */
-    public TypeHint getTypeHint()
+    public MTypeHint getTypeHint()
     {
-        TypeHint lTh =
-                (TypeHint) getBuiltInType().getChildItem(TypeHint.MY_CAT,TypeHint.NAME);
+        MTypeHint lTh =
+                (MTypeHint) getBuiltInType().getChildItem(MTypeHint.MY_CAT, MTypeHint.NAME);
 
         if (null == lTh)
         {

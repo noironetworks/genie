@@ -5,13 +5,15 @@ import genie.engine.model.Cat;
 /**
  * Created by dvorkinista on 7/7/14.
  */
-public class TypeHint extends SubTypeItem
+public class MTypeHint
+        extends SubTypeItem
 {
     public static final Cat MY_CAT = Cat.getCreate("type:hint");
     public static final String NAME = "hint";
 
-    public TypeHint(
-            MType aInType)
+    public MTypeHint(
+            MType aInType
+                    )
     {
         super(MY_CAT, aInType, NAME);
     }

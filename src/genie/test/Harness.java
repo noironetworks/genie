@@ -201,7 +201,7 @@ public class Harness
         //String lPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".mod"}};
         String lMetaPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".meta"}};
         String lPrePaths[][] = {}; //{{"/Users/midvorki/code/projects/genie/MODEL/SYNTAX",".mod"}};
-        String lPaths[][] = {}; //{{"/Users/midvorki/code/projects/genie/MODEL/SYNTAX",".mod"}};
+        String lPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".mdl"}};
 
 //        String lSuffix = ".mod";
 

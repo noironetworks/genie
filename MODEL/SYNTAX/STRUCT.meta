@@ -6,9 +6,23 @@
 #
 metadata
 {
-    node<module; generic>
+    node<module>
     {
-        node<type; generic>
+        node<primitive; use=module/type>
+        {
+            node<const; use=module/type/const>
+
+            node<validate; use=module/type/validate>
+            {
+                node<range; use=module/type/validate/range>
+                node<content; use=module/type/validate/content>
+                node<size; use=module/type/validate/size>
+            }
+            node<hint; namespace=type>
+            node<language; namespace=type>
+        }
+
+        node<type>
         {
             node<const; generic>
             node<validate; generic>
@@ -18,6 +32,7 @@ metadata
                 node<size; generic>
             }
         }
+
         node<class; generic>
         {
             node<member; generic>
