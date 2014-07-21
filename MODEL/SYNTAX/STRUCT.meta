@@ -2,6 +2,7 @@
 # use=...       directs to use other node parsing rule
 # parser=...    directs to use specific java class for parsing
 # generic       identifies that this parsing node has no functional behaviors and doesn't result in model items
+# namespace=... optionally specifies in which namespace/package corresponding parsing behavior is if auto non-generic is used
 #
 metadata
 {

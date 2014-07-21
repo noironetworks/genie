@@ -58,22 +58,26 @@ public class PNode
             {
                 lParserImplClassName = lExplicit;
             }
+            // CHECK IF THIS THIS IS A GENERIC/PLACEHOLDER NODE
             else if (aInData.checkFlag("generic"))
             {
                 lParserImplClassName = "genie.engine.parse.model.ParseNode";
             }
+            // THIS IS AN AUTO-PICKED PARSING NODE... LET'S FABRICATE THE NAME
             else
             {
                 // DETERMINE DEFAULT PARSER NAME FOR THIS NODE
+                String lQual = aInData.getQual();
+                String lNs = aInData.getNamedValue("namespace", lQual, false);
                 StringWriter lParserImplClassNameBuff = new StringWriter();
                 lParserImplClassNameBuff.append("genie.content.parse.p");
-                String lQual = aInData.getQual();
-                lParserImplClassNameBuff.append(lQual.toLowerCase());
+                lParserImplClassNameBuff.append(lNs.toLowerCase());
                 lParserImplClassNameBuff.append(".P");
                 lParserImplClassNameBuff.append(Strings.upFirstLetter(lQual));
                 lParserImplClassNameBuff.append("Node");
                 lParserImplClassName = lParserImplClassNameBuff.toString();
             }
+            // Set the parser node class name
             lMNode.addExplicitParserClassName(lParserImplClassName);
         }
         return new Pair<ParseDirective, Item>(
