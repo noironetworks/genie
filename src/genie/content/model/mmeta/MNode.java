@@ -2,9 +2,16 @@ package genie.content.model.mmeta;
 
 import genie.engine.model.*;
 import genie.engine.parse.model.ParseNode;
+import genie.engine.parse.model.ParseNodeProp;
+import genie.engine.parse.model.ParseNodePropType;
 import genie.engine.proc.Processor;
 import modlan.report.Severity;
 import modlan.utils.Strings;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by midvorki on 7/16/14.
@@ -16,7 +23,7 @@ public class MNode extends Item
     /**
      * category of this item
      */
-    public static final Cat MY_CAT = Cat.getCreate("parser:meta");
+    public static final Cat MY_CAT = Cat.getCreate("parser:meta:node");
 
     /**
      * Relationship category for tracking "uses" relationships. "Uses" relationship represents indirection
@@ -180,6 +187,33 @@ public class MNode extends Item
             {
                 ParseNode lParseNode = (ParseNode) lParserClass.getConstructors()[0].newInstance(getLID().getName());
                 lParentParseNode.addChild(lParseNode);
+                TreeMap<String,MNodeProp> lNodeProps = new TreeMap<String,MNodeProp>();
+                getProps(lNodeProps);
+                for (MNodeProp lNodeProp : lNodeProps.values())
+                {
+                    lParseNode.addProp(
+                            new ParseNodeProp(lNodeProp.getLID().getName(),lNodeProp.getType(),false));
+                }
+                // CHECK IF THERE'S QUALIFIER, THERE HAS TO BE NAME
+                {
+                    MNodeProp lQualProp = lNodeProps.get(Strings.QUAL);
+                    if (null != lQualProp &&
+                       !lNodeProps.containsKey(Strings.NAME))
+                    {
+                        lParseNode.addProp(
+                                new ParseNodeProp(Strings.NAME, ParseNodePropType.QUAL,false));
+                    }
+                }
+                // CHECK IF THERE'S NAME, THERE HAS TO BE QUALIFIER
+                {
+                    MNodeProp lNameProp = lNodeProps.get(Strings.NAME);
+                    if (null != lNameProp &&
+                        !lNodeProps.containsKey(Strings.QUAL))
+                    {
+                        lParseNode.addProp(
+                                new ParseNodeProp(Strings.QUAL, ParseNodePropType.QUAL,false));
+                    }
+                }
                 parseNode = lParseNode;
             }
             catch (Throwable lE)
@@ -189,6 +223,25 @@ public class MNode extends Item
             //Severity.INFO.report(toString(),"parser load", "rule loaded", "parser node: " + parseNode);
         }
         return parseNode;
+    }
+
+    public void getProps(Map<String,MNodeProp> aOut)
+    {
+        LinkedList<Item> lNodePropItems = new LinkedList<Item>();
+        getChildItems(MNodeProp.MY_CAT,lNodePropItems);
+
+        for (Item lIt : lNodePropItems)
+        {
+            if (!aOut.containsKey(lIt.getLID().getName()))
+            {
+                aOut.put(lIt.getLID().getName(),(MNodeProp) lIt);
+            }
+        }
+        MNode lUses = getUsesNode();
+        if (null != lUses)
+        {
+            lUses.getProps(aOut);
+        }
     }
 
     private ParseNode parseNode = null;

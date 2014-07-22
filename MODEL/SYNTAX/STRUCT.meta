@@ -8,6 +8,8 @@ metadata
 {
     node<module>
     {
+        qual<name>
+
         node<primitive; use=module/type>
         {
             node<const; use=module/type/const>
@@ -26,12 +28,28 @@ metadata
             }
 
             node<hint; namespace=type>
+            {
+                qual<name>
+            }
+
             node<language; namespace=type>
+            {
+                qual<name>
+            }
         }
 
         node<type>
         {
+            qual<name>
+            prop<super>
+
             node<const>
+            {
+                qual<name>
+                prop<value>
+                prop<target>
+            }
+
             node<map-const; use=module/type/const>
             node<remove-const; use=module/type/const>
             node<revertive-const; use=module/type/const>

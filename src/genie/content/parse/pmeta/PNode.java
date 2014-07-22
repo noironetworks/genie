@@ -4,6 +4,7 @@ import genie.content.model.mmeta.MNode;
 import genie.engine.model.Item;
 import genie.engine.model.Pair;
 import genie.engine.parse.model.ParseNode;
+import genie.engine.parse.model.ParseNodePropType;
 import genie.engine.parse.modlan.Node;
 import genie.engine.parse.modlan.ParseDirective;
 import modlan.utils.Strings;
@@ -26,6 +27,16 @@ public class PNode
     public PNode()
     {
         super("node", true);
+    }
+
+    /**
+     * checks if the property is supported by this node. this overrides behavior to always return true
+     * @param aInName name of the property
+     * @return always returns true
+     */
+    public boolean hasProp(String aInName)
+    {
+        return true;
     }
 
     /**

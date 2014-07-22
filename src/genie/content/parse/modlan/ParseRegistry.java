@@ -1,10 +1,12 @@
 package genie.content.parse.modlan;
 
 import genie.content.parse.pmeta.PNode;
+import genie.content.parse.pmeta.PProp;
 import genie.engine.parse.model.ParseNode;
 import genie.engine.parse.model.ProcessorNode;
 import genie.engine.parse.model.ProcessorTree;
 import genie.engine.parse.modlan.ParseDirective;
+import modlan.utils.Strings;
 
 /**
  * Created by midvorki on 3/22/14.
@@ -13,34 +15,25 @@ public class ParseRegistry
 {
     public static ProcessorTree init()
     {
-        /**
-         *
-         *     private String text =
-         "# who are you crazy man?\n" +
-         "dvorkin<mike>:\n" +
-         "{\n" +
-         "    # dimensions...\n" +
-         "    height:average\n" +
-         "    # Blah Blah\n" +
-         "    girth:\"fat trucker\"\n" +
-         "    details:\n" +
-         "    {\n" +
-         "         skill<programming>:crazymad\n" +
-         "    }\n" +
-         "}\n";
-         */
         ProcessorTree lPTree = new ProcessorTree();
         {
             ProcessorNode lDocRoot = new ParseNode(ProcessorTree.DOC_ROOT_NAME);
             lPTree.addChild(lDocRoot);
             {
-                ProcessorNode metadata = new ParseNode("metadata");
+                ProcessorNode metadata = new ParseNode(Strings.METADATA);
                 lDocRoot.addChild(metadata);
                 {
                     ProcessorNode node = new PNode();
                     metadata.addChild(node);
+                    {
+                        PProp prop = new PProp(Strings.PROP);
+                        node.addChild(prop);
+                    }
+                    {
+                        PProp qual = new PProp(Strings.QUAL);
+                        node.addChild(qual);
+                    }
                 }
-
             }
         }
         return lPTree;

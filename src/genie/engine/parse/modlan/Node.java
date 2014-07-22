@@ -173,6 +173,24 @@ public class Node
         }
         else
         {
+            if (hasNamedValues())
+            {
+                for (String lPropName : nvps.keySet())
+                {
+                    if (!lProc.hasProp(lPropName))
+                    {
+                        Severity.DEATH.report(
+                                this.toString(),
+                                "PARSE",
+                                "unsupported node property/qualifier encountered",
+                                "no property \"" + lPropName + "\" defined: " + lProc +
+                                "; ALL NODEL PROPS: " + nvps +
+                                "; ALOOWED: " + lProc.getPropNames() +
+                                "; THIS JAVACLASS: " + this.getClass() +
+                                "; PROCESSOR JAVA CLASS: " + lProc.getClass());
+                    }
+                }
+            }
             Pair<ParseDirective,Item> lRes = lProc.beginCB(this, getAncestorItem());
 
             this.item = (null == lRes || null == lRes.getSecond()) ?
@@ -287,7 +305,7 @@ public class Node
      */
     public void setValue(String aIn)
     {
-        value = aIn;
+        addNVP(Strings.VALUE, value = aIn);
     }
 
     /**
@@ -339,7 +357,10 @@ public class Node
                         addNVP(aInType, lNVPair[0]); // NO VALUE
                         addNVP("name", lNVPair[0]); // NO VALUE
                     }
-                    addNVP(lNVPair[0], lNVPair[0]); // NO VALUE
+                    else
+                    {
+                        addNVP(lNVPair[0], lNVPair[0]); // NO VALUE
+                    }
                     break;
 
                 case 2:

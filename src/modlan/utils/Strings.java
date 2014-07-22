@@ -8,7 +8,11 @@ public class Strings
     public static final String ANY = "any";
     public static final String DEFAULT = "default";
     public static final String EMPTY = "";
+    public static final String METADATA = "metadata";
+    public static final String META = "meta";
     public static final String NAME = "name";
+    public static final String PROP = "prop";
+    public static final String QUAL = "qual";
     public static final String SUPER = "super";
     public static final String TARGET = "target";
     public static final String VALUE = "value";

@@ -7,6 +7,8 @@ import genie.engine.parse.modlan.ParseDirective;
 import genie.engine.parse.modlan.Processor;
 import genie.engine.parse.modlan.ProcessorRegistry;
 
+import java.util.Collection;
+
 /**
  * Created by midvorki on 3/22/14.
  */
@@ -38,6 +40,16 @@ public class ProcessorTree
     public void endCB(Node aInData, Item aInItemOrNull)
     {
 
+    }
+
+    public boolean hasProp(String aInName)
+    {
+        return false;
+    }
+
+    public Collection<String> getPropNames()
+    {
+        return null;
     }
 
 }
