@@ -426,10 +426,22 @@ public class Relator extends Item
      */
     public void toIdentString(StringBuilder aInSb)
     {
+        if (RelatorCat.Type.TO == getType())
+        {
+            aInSb.append(getFromRelator().getItemGName());
+            aInSb.append("->");
+        }
         aInSb.append(itemGName);
         if (null != getNode())
         {
-            aInSb.append("->");
+            if (RelatorCat.Type.TO == getType())
+            {
+                aInSb.append("::");
+            }
+            else
+            {
+                aInSb.append("->");
+            }
             aInSb.append(getCat().getName());
             aInSb.append('[');
             aInSb.append(getRelatorCat().getCardinality());

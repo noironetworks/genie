@@ -40,12 +40,12 @@ public enum Severity
             if (null != aInT)
             {
                 aInT.printStackTrace();
-                throw new Error(lSb.toString(), aInT);
             }
             else
             {
-                throw new Error(lSb.toString());
+                new Error(lSb.toString()).printStackTrace();
             }
+            System.exit(666);
         }
         else
         {
