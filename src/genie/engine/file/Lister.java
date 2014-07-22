@@ -32,7 +32,7 @@ public class Lister
 		{
 			if (aInFile.isDirectory())
 			{
-				Severity.INFO.report(aInFile.toURI().toString(), "model file search", "", "exploring.");
+				//Severity.INFO.report(aInFile.toURI().toString(), "model file search", "", "exploring.");
 				for (File lThisF : aInFile.listFiles())
 				{
 					explore(lThisF, aInSuffix);
@@ -43,7 +43,7 @@ public class Lister
 				if (null == aInSuffix || 0 == aInSuffix.length() ||
 				    aInFile.getPath().endsWith(aInSuffix))
 				{
-					Severity.INFO.report(aInFile.toURI().toString(), "model file search", "", "incling.");
+					//Severity.INFO.report(aInFile.toURI().toString(), "model file search", "", "incling.");
 
 					files.put(aInFile.toURI(), aInFile);
 				}

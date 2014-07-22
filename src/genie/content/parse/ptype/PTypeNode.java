@@ -26,13 +26,13 @@ public class PTypeNode
      */
     public PTypeNode(String aInName)
     {
-        super(aInName, true);
+        super(aInName);
         isPrimitive = PRIMITIVE.equalsIgnoreCase(aInName);
     }
 
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)
     {
-        System.out.println("\n\n\n ----------->" + this + ".beginCb(" + aInData + ", " + aInParentItem + ") " + " \n\n\n");
+        System.out.println("----------->" + this + ".beginCb(" + aInData + ", " + aInParentItem + ")");
         MType lType = new MType((Module) aInParentItem, aInData.getNamedValue(Strings.NAME,null,true), isPrimitive);
         lType.addSupertype(aInData.getNamedValue(Strings.SUPER, null, !isPrimitive));
         return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE,lType);

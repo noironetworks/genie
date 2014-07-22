@@ -18,12 +18,12 @@ public class PModuleNode
      */
     public PModuleNode(String aInName)
     {
-        super(aInName, true);
+        super(aInName);
     }
 
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)
     {
-        System.out.println("\n\n\n ----------->" + this + ".beginCb(" + aInData + ", " + aInParentItem + ") " + " \n\n\n");
+        System.out.println("----------->" + this + ".beginCb(" + aInData + ", " + aInParentItem + ")");
         return new Pair<ParseDirective, Item>(
                     ParseDirective.CONTINUE,
                     Module.get(aInData.getNamedValue("name",null, true), true));

@@ -76,7 +76,7 @@ public abstract class ProcessorNode
         aInNode.addParent(this);
     }
 
-    private void addParent(ProcessorNode aInParent)
+    protected void addParent(ProcessorNode aInParent)
     {
         if (null != parent)
         {

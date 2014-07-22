@@ -21,7 +21,7 @@ public class PHintNode
      */
     public PHintNode(String aInName)
     {
-        super(aInName, true);
+        super(aInName);
     }
 
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)

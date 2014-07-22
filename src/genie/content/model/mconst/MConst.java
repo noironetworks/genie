@@ -53,12 +53,12 @@ public class MConst extends Item
     }
 
     /**
-     * private generic constructor used by other MConst constructors
+     * INTERNAL generic constructor used by other MConst constructors
      * @param aInParent parent item that is either a type or a property
      * @param aInName name of the constant
      * @param aInAction constant action that indicates this constant's behavior
      */
-    private MConst(
+    public MConst(
             Item aInParent,
             String aInName,
             ConstAction aInAction,
@@ -359,8 +359,6 @@ public class MConst extends Item
         }
         return lConst;
     }
-
-
 
     private final ConstAction action;
     private final ConstScope scope;

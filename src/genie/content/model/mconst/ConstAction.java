@@ -14,40 +14,40 @@ public enum ConstAction
     /**
      * specifies that this is an alias to another constant. think of it as synonymous or an alias.
      */
-    MAPPED("mapped"), // MAPS into another constant for value
+    MAPPED("mapped", "map-const"), // MAPS into another constant for value
 
     /**
      * specifies that this constant defines a value and clobbers any previous definition (if value is specified.)
      */
-    VALUE("value"),   // HAS value
+    VALUE("value", "const"),   // HAS value
 
     /**
      * indicates that the corresponding previously defined constant with the same name is not applicable.
      */
-    REMOVE("remove"), // removes the constant
+    REMOVE("remove", "remove-const"), // removes the constant
 
     /**
      * indicates that the constant has value, but the value of the constant never persists,
      * instead it goes back to the previous value
      */
-    AUTO_REVERTIVE("auto-revertive"), // accepts the value but reverts to some original const
+    AUTO_REVERTIVE("auto-revertive", "revertive-const"), // accepts the value but reverts to some original const
 
     /**
      * indicates that the constant has value, but the value of the constant never persists,
      * instead it goes to the value specified in the indirection rule.
      */
-    AUTO_TRANSITION("auto-transition"), // automatically transition to specified const
+    AUTO_TRANSITION("auto-transition", "transitive-const"), // automatically transition to specified const
 
     /**
      * specifies that the constant has value, and it serves as a default value for the properties for which is
      * constant is in scope.
      */
-    DEFAULT("default"), // acts as default value
+    DEFAULT("default", "default"), // acts as default value
 
     /**
      * indicates that the constant has value, but can't be set administratively
      */
-    UNSETTABLE("unsettable"), // unsettable administratively
+    UNSETTABLE("unsettable", "unsettable-const"), // unsettable administratively
     ;
 
     /**
@@ -95,6 +95,22 @@ public enum ConstAction
         }
     }
 
+    public boolean hasMandatoryValue()
+    {
+        switch (this)
+        {
+            case VALUE:
+            case AUTO_REVERTIVE:
+            case AUTO_TRANSITION:
+
+                return true;
+
+            default:
+
+                return false;
+        }
+    }
+
     public boolean hasDirectOrIndirectValue()
     {
         return this != REMOVE;
@@ -118,10 +134,12 @@ public enum ConstAction
     /**
      * constructor of const action
      * @param aIn name of the constant
+     * @param aInModelName model-level name
      */
-    private ConstAction(String aIn)
+    private ConstAction(String aIn, String aInModelName)
     {
         name = aIn;
+        modelName = aInModelName;
     }
 
     /**
@@ -134,12 +152,21 @@ public enum ConstAction
     }
 
     /**
+     * const action model name accessor
+     * @return model name of the const action
+     */
+    public String getModelName()
+    {
+        return modelName;
+    }
+
+    /**
      * stringifier
      * @return name of the const action
      */
     public String toString()
     {
-        return name;
+        return name + "/" + modelName;
     }
 
     /**
@@ -151,7 +178,8 @@ public enum ConstAction
     {
         for (ConstAction lCA : ConstAction.values())
         {
-            if (aIn.equalsIgnoreCase(lCA.getName()))
+            if (aIn.equalsIgnoreCase(lCA.getName()) ||
+                aIn.equalsIgnoreCase(lCA.getModelName()))
             {
                 return lCA;
             }
@@ -165,4 +193,6 @@ public enum ConstAction
         return null;
     }
     private final String name;
+    private final String modelName;
+
 }

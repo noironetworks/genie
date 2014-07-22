@@ -25,7 +25,7 @@ public enum Severity
 
     public void report(String aInContext, String aInAction, String aInCause, String aInM, Throwable aInT)
     {
-        StringBuffer lSb = new StringBuffer();
+        StringBuilder lSb = new StringBuilder();
         format(
               lSb,
               aInContext,
@@ -39,6 +39,7 @@ public enum Severity
         {
             if (null != aInT)
             {
+                System.out.println(lSb.toString());
                 aInT.printStackTrace();
             }
             else
@@ -70,15 +71,14 @@ public enum Severity
 
     public void stack(String aInContext, String aInAction, String aInCause, String aInM, Throwable aInT)
     {
-        StringBuffer lSb = new StringBuffer();
+        StringBuilder lSb = new StringBuilder();
         format(
-                      lSb,
-                      aInContext,
-                      aInAction,
-                      aInCause,
-                      aInM,
-                      null
-              );
+                lSb,
+                aInContext,
+                aInAction,
+                aInCause,
+                aInM,
+                null);
 
         if (null != aInT)
         {
@@ -97,7 +97,7 @@ public enum Severity
     }
 
     private void format(
-            StringBuffer aOutSb,
+            StringBuilder aOutSb,
             String aInContext,
             String aInAction,
             String aInCause,

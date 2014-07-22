@@ -5,11 +5,13 @@ package modlan.utils;
  */
 public class Strings
 {
-    public static final String DEFAULT = "default";
     public static final String ANY = "any";
+    public static final String DEFAULT = "default";
     public static final String EMPTY = "";
     public static final String NAME = "name";
     public static final String SUPER = "super";
+    public static final String TARGET = "target";
+    public static final String VALUE = "value";
 
     public static boolean isEmpty(String aIn) { return null == aIn || aIn.isEmpty(); }
 
