@@ -18,4 +18,6 @@ public interface Consumer
 
     public Data onContentBegin(String aInName);
     public Data onContentEnd(String aInName);
+
+    public void setEngine(Engine aIn);
 }

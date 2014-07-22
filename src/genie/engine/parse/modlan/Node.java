@@ -432,7 +432,48 @@ public class Node
             lThisNode = lThisNode.parent;
         }
         aInSb.append(']');
+        if (!Strings.isEmpty(fileName))
+        {
+            aInSb.append('(');
+            aInSb.append(fileName);
+            aInSb.append(':');
+            aInSb.append(lineNum);
+            aInSb.append(':');
+            aInSb.append(columnNum);
+            aInSb.append(')');
+        }
     }
+
+    public void setFileName(String aInFileName)
+    {
+        fileName = aInFileName;
+    }
+
+    public String getFileName()
+    {
+        return fileName;
+    }
+
+    public void setLineNum(int aIn)
+    {
+        lineNum = aIn;
+    }
+
+    public int getLineNum()
+    {
+        return lineNum;
+    }
+
+    public void setColumnNum(int aIn)
+    {
+        columnNum = aIn;
+    }
+
+    public int getColumnNum()
+    {
+        return columnNum;
+    }
+
     private final String name;
     private String qual = null;
     private String value = null;
@@ -441,4 +482,7 @@ public class Node
     private java.util.TreeMap<String, java.util.LinkedList<Node>> children = null;
     private final Node parent;
     private Item item = null;
+    private String fileName = null;
+    private int lineNum = 0;
+    private int columnNum = 0;
 }

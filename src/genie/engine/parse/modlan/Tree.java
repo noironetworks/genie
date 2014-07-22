@@ -1,6 +1,8 @@
 package genie.engine.parse.modlan;
 
 import modlan.parse.Consumer;
+import modlan.parse.Ctx;
+import modlan.parse.Engine;
 
 import java.util.LinkedList;
 
@@ -25,6 +27,15 @@ public class Tree
         }
     }
 
+    public Engine getEngine()
+    {
+        return engine;
+    }
+
+    public void setEngine(Engine aIn)
+    {
+        engine = aIn;
+    }
     //////////////////////////////////////////////////////////////
     // MODLAN PARSINNG CALLBACKS /////////////////////////////////
     //////////////////////////////////////////////////////////////
@@ -47,6 +58,9 @@ public class Tree
     {
 
         Node lData = new Node(stack.peek(), aInName);
+
+        markContext(lData);
+
         stack.push(lData);
         lData.addComments(commentBuffer);
         commentBuffer.clear();
@@ -111,6 +125,20 @@ public class Tree
         return stack.peek();
     }
 
+    private void markContext(Node aIn)
+    {
+        if (null != engine)
+        {
+            Ctx lCtx = engine.getCtx();
+            if (null != lCtx)
+            {
+                aIn.setLineNum(lCtx.getCurrLineNum());
+                aIn.setColumnNum(lCtx.getCurrColumnNum());
+                aIn.setFileName(lCtx.getFileName());
+            }
+        }
+    }
+
     //////////////////////////////////////////////////////////////
     // PRIVATE DATA //////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
@@ -120,4 +148,5 @@ public class Tree
     private final Node root = new Node(null, "doc-root");
     private final LinkedList<String> commentBuffer = new LinkedList<String>();
     private final ProcessorRegistry preg;
+    private Engine engine = null;
 }

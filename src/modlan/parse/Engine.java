@@ -14,10 +14,11 @@ public class Engine
     {
         ctx = aInCtx;
         consumer = aInConsumer;
+        consumer.setEngine(this);
         initCallTbl();
     }
 
-    protected Ctx getCtx()
+    public Ctx getCtx()
     {
         return ctx;
     }
