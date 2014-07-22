@@ -53,6 +53,8 @@ public class Item
     {
         node = aInNode;
         node.register(this);
+
+        //System.out.println("ITEM::CONSTRUCTED(" + this + ")");
     }
 
     /**

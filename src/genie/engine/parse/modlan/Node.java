@@ -319,7 +319,7 @@ public class Node
         String lRet = null;
         String[] lComponents = aIn.split(";");
 
-        lRet = lComponents[0];
+        lRet = lComponents[0].trim();
 
         for (int i = 0; i < lComponents.length; i++)
         {

@@ -77,7 +77,8 @@ public class Processor
         // FIRST PRE-LOAD SENSITIVE STUFF
         for (m = 0; m < metadataLoadPaths.length; m++)
         {
-            loadTargets[m] = new LoadTarget(dsp,pTree,new String[]{ metadataLoadPaths[m][0]}, metadataLoadPaths[m][1]);
+            loadTargets[m] = new LoadTarget(
+                    dsp,pTree,new String[]{ metadataLoadPaths[m][0]}, metadataLoadPaths[m][1], false);
             dsp.drain();
             dsp.waitForDrain();
         }
@@ -89,7 +90,8 @@ public class Processor
         // FIRST PRE-LOAD SENSITIVE STUFF
 		for (i = 0; i < modelPreLoadPaths.length; i++)
 		{
-			loadTargets[i] = new LoadTarget(dsp,pTree,new String[]{ modelPreLoadPaths[i][0]}, modelPreLoadPaths[i][1]);
+			loadTargets[i] = new LoadTarget(
+                    dsp,pTree,new String[]{ modelPreLoadPaths[i][0]}, modelPreLoadPaths[i][1], false);
 			dsp.drain();
             dsp.waitForDrain();
         }
@@ -99,7 +101,8 @@ public class Processor
         // NOW LOAD GENERAL MODELS
 		for (j = 0; j < modelLoadPaths.length; j++)
 		{
-			loadTargets[i++] = new LoadTarget(dsp,pTree,new String[]{ modelLoadPaths[j][0]}, modelLoadPaths[j][1]);
+			loadTargets[i++] = new LoadTarget(
+                    dsp,pTree,new String[]{ modelLoadPaths[j][0]}, modelLoadPaths[j][1], true);
 		}
         dsp.drain();
         dsp.waitForDrain();

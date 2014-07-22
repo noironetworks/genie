@@ -23,9 +23,9 @@ public class Doer extends Thread
 			{
 				try
 				{
-					Severity.INFO.report(toString(), "run", "task", "BEGIN: " + lTask);
+					//Severity.INFO.report(toString(), "run", "task", "BEGIN: " + lTask);
 					lTask.run();
-					Severity.INFO.report(toString(), "run", "task", "END:" + lTask);
+					//Severity.INFO.report(toString(), "run", "task", "END:" + lTask);
 				}
 				finally
 				{

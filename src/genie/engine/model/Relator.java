@@ -460,7 +460,7 @@ public class Relator extends Item
     {
         super.validateCb();
         Node lTargetNode = getTargetNode();
-        Severity.INFO.report(this.toString(), "validate", "validating", "resolves to: " + lTargetNode);
+        //Severity.INFO.report(this.toString(), "validate", "validating", "resolves to: " + lTargetNode);
         if (null == lTargetNode)
         {
             Severity.DEATH.report(this.toString(), "validate", "unresolvable target", itemGName + " in cat " + itemCat +

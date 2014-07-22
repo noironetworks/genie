@@ -14,7 +14,7 @@ import java.io.File;
 public class LoadTarget
 {
 
-	public LoadTarget(Dsptchr aInDisp, ProcessorTree aInPTree, String aInPaths[], String aInSuffix)
+	public LoadTarget(Dsptchr aInDisp, ProcessorTree aInPTree, String aInPaths[], String aInSuffix, boolean aInIsParallel)
 	{
 		disp = aInDisp;
 		pTree = aInPTree;
@@ -24,7 +24,7 @@ public class LoadTarget
 		{
 			listers = new Lister[]{};
 		}
-		else
+		else if (aInIsParallel)
 		{
 			listers = new Lister[paths.length];
 			for (int i = 0; i < paths.length; i++)
@@ -58,6 +58,25 @@ public class LoadTarget
 						});
 			}
 		}
+        else
+        {
+            listers = new Lister[paths.length];
+            for (int i = 0; i < paths.length; i++)
+            {
+                final int lThisI = i;
+
+                listers[lThisI] = new Lister(paths[lThisI],suffix);
+                for (final File lFile : listers[lThisI].getFiles())
+                {
+
+                    genie.engine.file.Reader lReader =
+                            new genie.engine.file.Reader(lFile);
+                    modlan.parse.Engine lE =
+                            new modlan.parse.Engine(lReader, new Tree(pTree));
+                    lE.execute();
+                }
+            }
+        }
 	}
 
 	public String getSuffix()

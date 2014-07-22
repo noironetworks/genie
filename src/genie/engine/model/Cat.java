@@ -184,7 +184,7 @@ public class Cat extends Ident implements Validatable
 
     public static void metaModelLoadComplete()
     {
-        Severity.INFO.report("CAT", "metaModelLoadComplete", "metaModelLoadComplete", "all");
+        //Severity.INFO.report("CAT", "metaModelLoadComplete", "metaModelLoadComplete", "all");
 
         for (Cat lCat : idToCatTable.values())
         {
@@ -203,12 +203,12 @@ public class Cat extends Ident implements Validatable
 
     public static void preLoadModelComplete()
     {
-        Severity.INFO.report("CAT", "preLoadModelComplete", "preLoadModelComplete", "all");
+        //Severity.INFO.report("CAT", "preLoadModelComplete", "preLoadModelComplete", "all");
 
         for (Cat lCat : idToCatTable.values())
         {
             lCat.preLoadModelCompleteCb();
-            Severity.INFO.report(lCat.toString(), "preLoadModelComplete", "preLoadModelComplete", "DONE");
+            //Severity.INFO.report(lCat.toString(), "preLoadModelComplete", "preLoadModelComplete", "DONE");
         }
     }
 
@@ -222,12 +222,12 @@ public class Cat extends Ident implements Validatable
 
     public static void loadModelComplete()
     {
-        Severity.INFO.report("CAT", "loadModelComplete", "loadModelComplete", "all");
+        //Severity.INFO.report("CAT", "loadModelComplete", "loadModelComplete", "all");
 
         for (Cat lCat : idToCatTable.values())
         {
             lCat.loadModelCompleteCb();
-            Severity.INFO.report(lCat.toString(), "loadModelComplete", "loadModelComplete", "DONE");
+            //Severity.INFO.report(lCat.toString(), "loadModelComplete", "loadModelComplete", "DONE");
         }
     }
 
@@ -242,13 +242,13 @@ public class Cat extends Ident implements Validatable
 
     public static void postLoad()
     {
-        Severity.INFO.report("CAT", "postLoad", "postLoad", "all");
+        //Severity.INFO.report("CAT", "postLoad", "postLoad", "all");
         validated = true;
 
         for (Cat lCat : idToCatTable.values())
         {
             lCat.postLoadCb();
-            Severity.INFO.report(lCat.toString(), "postLoad", "postLoad", "DONE");
+            //Severity.INFO.report(lCat.toString(), "postLoad", "postLoad", "DONE");
         }
     }
 
@@ -262,36 +262,36 @@ public class Cat extends Ident implements Validatable
 
     private static void preValidate()
     {
-        Severity.INFO.report("CAT", "preValidate", "pre-validatin", "all");
+        //Severity.INFO.report("CAT", "preValidate", "pre-validatin", "all");
 
         for (Cat lCat : idToCatTable.values())
         {
             lCat.preValidateCb();
-            Severity.INFO.report("CAT", "preValidate", "pre-validatin", lCat.toString());
+            //Severity.INFO.report("CAT", "preValidate", "pre-validatin", lCat.toString());
 
         }
     }
 
     private static void validate()
     {
-        Severity.INFO.report("CAT", "validate", "validatin", "all");
+        //Severity.INFO.report("CAT", "validate", "validatin", "all");
         validated = true;
 
         for (Cat lCat : idToCatTable.values())
         {
             lCat.validateCb();
-            Severity.INFO.report("CAT", "validate", "validatin", lCat.toString());
+            //Severity.INFO.report("CAT", "validate", "validatin", lCat.toString());
         }
     }
 
     private static void postValidate()
     {
-        Severity.INFO.report("CAT", "postValidate", "post-validatin", "all");
+        //Severity.INFO.report("CAT", "postValidate", "post-validatin", "all");
 
         for (Cat lCat : idToCatTable.values())
         {
             lCat.postValidateCb();
-            Severity.INFO.report("CAT", "postValidate", "post-validatin", lCat.toString());
+            //Severity.INFO.report("CAT", "postValidate", "post-validatin", lCat.toString());
         }
     }
 

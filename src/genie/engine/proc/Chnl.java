@@ -107,7 +107,7 @@ public class Chnl
         {
             while (Status.SUSPEND == status)
             {
-                Severity.INFO.report("processor:chnl", "put", "task", "SUSPENDED: BLOCKING!");
+                Severity.INFO.report("processor:chnl", "put", "task", "SUSPENDED: WAITING OUT THE SUSPENSE!");
 
                 try
                 {
