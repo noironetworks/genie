@@ -57,7 +57,7 @@ public class Chnl
 	{
 		if (!isDeath())
 		{
-			if (0 < queue.size())
+			if (hasOutstandingTasks())
 			{
 				Severity.INFO.report("processor:chnl", "suspend", "", "SUSPENDING CHNL!!");
 				status = Status.SUSPEND;
@@ -78,11 +78,15 @@ public class Chnl
 		return Status.DEATH == status;
 	}
 
+    private boolean hasOutstandingTasks()
+    {
+        return !((queue.isEmpty()) && (0 == procCount));
+    }
 	public synchronized void markForDeath()
 	{
 		Severity.INFO.report("processor:chnl", "markForDeath", "", "WILL MARK FOR DEATH..............................");
 
-		while (!((queue.isEmpty()) && (0 == procCount)))
+		while (hasOutstandingTasks())
 		{
 			Severity.INFO.report("processor:chnl", "markForDeath", "", "WAITING FOR QUEUE TO DRAIN????????????????");
 
@@ -103,27 +107,21 @@ public class Chnl
 
     public synchronized void waitOutSuspense()
     {
-        if (!isDeath())
+        while (Status.SUSPEND == status && hasOutstandingTasks()) //&& 0 < queue.size())
         {
-            while (Status.SUSPEND == status)
-            {
-                Severity.INFO.report("processor:chnl", "put", "task", "SUSPENDED: WAITING OUT THE SUSPENSE!");
+            Severity.INFO.report("processor:chnl", "put", "task", "SUSPENDED: WAITING OUT THE SUSPENSE!");
 
-                try
-                {
-                    wait();
-                }
-                catch (InterruptedException lE)
-                {
-                }
+            try
+            {
+                wait();
             }
-            notifyAll();
+            catch (InterruptedException lE)
+            {
+            }
         }
-        else
-        {
-            notifyAll();
-        }
+        notifyAll();
     }
+
 	public synchronized void put(Task aInTask)
 	{
 		if (!isDeath())

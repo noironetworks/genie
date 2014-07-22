@@ -183,29 +183,9 @@ public class Harness
     }
     public static void fileTest()
     {
-
-        /**
-         *
-        System.out.println("Hey!");
-        modlan.parse.Engine lE = new modlan.parse.Engine(
-                    new genie.test.Ctx(),
-                    new Tree(lPTree) // TODO: ADD PROCESSOR REGISTRY
-                    );
-        lE.execute();
-         **/
-
-//        Dsptchr lDisp = new Dsptchr(2);
-//        final ProcessorTree lPTree = ParseRegistry.init();
-
-        //String lPrePaths[][] = {{"/Users/midvorki/code/projects/genie/PREMODEL",".mod"}};
-        //String lPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".mod"}};
         String lMetaPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".meta"}};
         String lPrePaths[][] = {}; //{{"/Users/midvorki/code/projects/genie/MODEL/SYNTAX",".mod"}};
         String lPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".mdl"}};
-
-//        String lSuffix = ".mod";
-
-//        LoadTarget lT = new LoadTarget(lDisp, lPTree, lPaths, lSuffix);
 
         new Processor(
             3,
@@ -215,29 +195,5 @@ public class Harness
             ParseRegistry.init(),
             "WHATEVER-DEST-PATH"
             );
-
-        //java.io.File lFile = new java.io.File(lPath);
-        /**
-        for (final File lFile : (new Lister(lPath, lSuffix)).getFiles())
-        {
-            lDisp.trigger(
-                    new Task()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            genie.engine.file.Reader lReader = new genie.engine.file.Reader(lFile);
-                            modlan.parse.Engine lE = new modlan.parse.Engine(lReader, new Tree(lPTree) // TODO: ADD PROCESSOR REGISTRY
-                            );
-                            lE.execute();
-                        }
-
-                        public String toString()
-                        {
-                            return "LOADER[" + lFile.toURI().toString() + "]";
-                        }
-                    });
-        }
-         **/
     }
 }
