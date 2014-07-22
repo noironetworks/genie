@@ -34,7 +34,7 @@ public class PConstNode
 
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)
     {
-        System.out.println(" ----------->" + this + ".beginCb(" + aInData + ", " + aInParentItem + ")");
+//        System.out.println(" ----------->" + this + ".beginCb(" + aInData + ", " + aInParentItem + ")");
         MConst lConst = new MConst(aInParentItem,aInData.getNamedValue(Strings.NAME,null,true),action,scope);
         String lIndirectionTarget = aInData.getNamedValue(Strings.TARGET,null,action.hasExplicitIndirection());
         if (!Strings.isEmpty(lIndirectionTarget))
