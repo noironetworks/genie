@@ -21,38 +21,44 @@ public class Chnl
 		}
 	}
 
-	public synchronized Task poll()
+	public Task poll()
 	{
-		Task lTask = null;
+        Task lTask = null;
 
-		try
-		{
-			while (null == (lTask = queue.poll()))
-			{
-				if (isDeath())
-				{
-					return null;
-				}
-				try
-				{
-					wait();
-				}
-				catch (InterruptedException lE)
-				{
-				}
-			}
-		}
-		finally
-		{
-			notifyAll();
-		}
-		if (null != lTask)
-		{
-			procCount++;
-		}
+        synchronized (this)
+        {
+            try
+            {
+                while (null == (lTask = queue.poll()))
+                {
+                    if (isDeath())
+                    {
+                        return null;
+                    }
+                    try
+                    {
+                        wait();
+                    }
+                    catch (InterruptedException lE)
+                    {
+                    }
+                }
+            }
+            finally
+            {
+                notifyAll();
+            }
+            /**
+            if (null != lTask)
+            {
+                procCount++;
+            }
+             **/
+        }
 		return lTask;
 	}
 
+    /*
 	public synchronized void suspendUntilDrained()
 	{
 		if (!isDeath())
@@ -72,79 +78,111 @@ public class Chnl
 			notifyAll();
 		}
 	}
+    */
+    public void suspendUntilDrained()
+    {
+        synchronized (this)
+        {
+            if (!isDeath())
+            {
+                while (true)
+                {
+                    if (hasOutstandingTasks())
+                    {
+                        Severity.INFO.report("processor:chnl", "suspend", "", "SUSPENDING CHNL!!");
+                        status = Status.SUSPEND;
+                        try
+                        {
+                            wait();
+                        }
+                        catch (InterruptedException lE)
+                        {
+                        }
+                        Severity.INFO.report("processor:chnl", "suspend", "", "WAKE UP!!");
+                    }
+                    else
+                    {
+                        Severity.INFO.report("processor:chnl", "suspend", "", "NO TASKS: NO SUSPENSION NECESSARY!!");
+                        notifyAll();
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                notifyAll();
+            }
+        }
+    }
 
-	public synchronized boolean isDeath()
+    public boolean isDeath()
 	{
-		return Status.DEATH == status;
+        synchronized (this)
+        {
+            return Status.DEATH == status;
+        }
 	}
 
     private boolean hasOutstandingTasks()
     {
-        return !((queue.isEmpty()) && (0 == procCount));
+        return (!queue.isEmpty()) || (0 < procCount);
     }
-	public synchronized void markForDeath()
+
+	public void markForDeath()
 	{
-		Severity.INFO.report("processor:chnl", "markForDeath", "", "WILL MARK FOR DEATH..............................");
+        synchronized (this)
+        {
+            Severity.INFO.report(
+                            "processor:chnl", "markForDeath", "", "WILL MARK FOR DEATH.................");
 
-		while (hasOutstandingTasks())
-		{
-			Severity.INFO.report("processor:chnl", "markForDeath", "", "WAITING FOR QUEUE TO DRAIN????????????????");
+            while (hasOutstandingTasks())
+            {
+                Severity.INFO.report("processor:chnl", "markForDeath", "", "WAITING FOR QUEUE TO DRAIN???????????");
 
-			try
-			{
-				wait();
-			}
-			catch (InterruptedException lE)
-			{
-			}
-		}
-		status = Status.DEATH;
+                try
+                {
+                    wait();
+                }
+                catch (InterruptedException lE)
+                {
+                }
+            }
+            status = Status.DEATH;
 
-		Severity.INFO.report("processor:chnl", "markForDeath", "", "MARKED FOR DEATH!!!!!!!!!!!!!!!!!!!");
+            Severity.INFO.report("processor:chnl", "markForDeath", "", "MARKED FOR DEATH!!!!!!!!!!!!!!!!!!!");
 
-		notifyAll();
+            notifyAll();
+        }
 	}
 
-    public synchronized void waitOutSuspense()
-    {
-        while (Status.SUSPEND == status && hasOutstandingTasks()) //&& 0 < queue.size())
+	public void put(Task aInTask)
+	{
+        synchronized (this)
         {
-            Severity.INFO.report("processor:chnl", "put", "task", "SUSPENDED: WAITING OUT THE SUSPENSE!");
+            if (!isDeath())
+            {
+                procCount++;
 
-            try
-            {
-                wait();
+                while (Status.SUSPEND == status && (!(Thread.currentThread() instanceof Doer)))
+                {
+                    Severity.INFO.report("processor:chnl", "put", "task", "SUSPENDED: BLOCKING!");
+
+                    try
+                    {
+                        wait();
+                    }
+                    catch (InterruptedException lE)
+                    {
+                    }
+                }
+                queue.add(aInTask);
+                notifyAll();
             }
-            catch (InterruptedException lE)
+            else
             {
+                notifyAll();
             }
         }
-        notifyAll();
-    }
-
-	public synchronized void put(Task aInTask)
-	{
-		if (!isDeath())
-		{
-			while (Status.SUSPEND == status && (!(Thread.currentThread() instanceof Doer)))
-			{
-				Severity.INFO.report("processor:chnl", "put", "task", "SUSPENDED: BLOCKING!");
-
-				try
-				{
-					wait();
-				}
-				catch (InterruptedException lE)
-				{
-				}
-			}
-			queue.add(aInTask);
-			notifyAll();
-		}
-		else
-		{
-			notifyAll();
-		}
 	}
 
 	private int procCount = 0;

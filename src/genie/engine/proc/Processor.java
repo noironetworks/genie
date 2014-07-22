@@ -46,15 +46,16 @@ public class Processor
         Severity.INFO.report(this.toString(), "processing", "model processing", "BEGIN");
         try
         {
+            preloadClasses();
             load();
             dsp.drain();
-            dsp.waitForDrain();
             postProcess();
             dsp.drain();
             dsp.kill();
         }
         catch (Throwable lE)
         {
+            Severity.ERROR.report(this.toString(), "processing", "model processing", "EXCEPTION ENCOUNTERED: " + lE);
             lE.printStackTrace();
             System.exit(666);
         }
@@ -63,6 +64,19 @@ public class Processor
             Severity.INFO.report(this.toString(), "processing", "model processing", "END");
         }
 	}
+
+    private void preloadClasses()
+    {
+        try
+        {
+            //Class lClass = ClassLoader.getSystemClassLoader().loadClass("genie.engine.model.Item");
+        }
+        catch (Throwable lE)
+        {
+            Severity.DEATH.report(toString(),"class pre loader", "", lE);
+        }
+
+    }
 
     private void postProcess()
     {
@@ -80,7 +94,6 @@ public class Processor
             loadTargets[m] = new LoadTarget(
                     dsp,pTree,new String[]{ metadataLoadPaths[m][0]}, metadataLoadPaths[m][1], false);
             dsp.drain();
-            dsp.waitForDrain();
         }
 
         Cat.metaModelLoadComplete();
@@ -93,7 +106,6 @@ public class Processor
 			loadTargets[i] = new LoadTarget(
                     dsp,pTree,new String[]{ modelPreLoadPaths[i][0]}, modelPreLoadPaths[i][1], false);
 			dsp.drain();
-            dsp.waitForDrain();
         }
 
         Cat.preLoadModelComplete();
@@ -105,10 +117,8 @@ public class Processor
                     dsp,pTree,new String[]{ modelLoadPaths[j][0]}, modelLoadPaths[j][1], true);
 		}
         dsp.drain();
-        dsp.waitForDrain();
         Cat.loadModelComplete();
         Severity.INFO.report(this.toString(),"load","model loaded", "END");
-
     }
 
     public String toString()

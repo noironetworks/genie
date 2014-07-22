@@ -2,6 +2,7 @@ package genie.engine.model;
 
 import modlan.report.Severity;
 
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -172,6 +173,10 @@ public class Cat extends Ident implements Validatable
      */
     private static synchronized void register(Cat aIn)
     {
+        if (isValidated())
+        {
+            Severity.WARN.report(aIn.toString(),"register","","register after validation");
+        }
         if (null != nameToCatTable.put(aIn.getName(), aIn))
         {
             Severity.DEATH.report(aIn.toString(), "register", "duplicate", "name already defined; must be unique");
@@ -186,7 +191,7 @@ public class Cat extends Ident implements Validatable
     {
         //Severity.INFO.report("CAT", "metaModelLoadComplete", "metaModelLoadComplete", "all");
 
-        for (Cat lCat : idToCatTable.values())
+        for (Cat lCat : new LinkedList<Cat>(idToCatTable.values()))
         {
             lCat.metaModelLoadCompleteCb();
             Severity.INFO.report(lCat.toString(), "metaModelLoadComplete", "metaModelLoadComplete", "DONE");
@@ -205,7 +210,7 @@ public class Cat extends Ident implements Validatable
     {
         //Severity.INFO.report("CAT", "preLoadModelComplete", "preLoadModelComplete", "all");
 
-        for (Cat lCat : idToCatTable.values())
+        for (Cat lCat : new LinkedList<Cat>(idToCatTable.values()))
         {
             lCat.preLoadModelCompleteCb();
             //Severity.INFO.report(lCat.toString(), "preLoadModelComplete", "preLoadModelComplete", "DONE");
@@ -224,7 +229,7 @@ public class Cat extends Ident implements Validatable
     {
         //Severity.INFO.report("CAT", "loadModelComplete", "loadModelComplete", "all");
 
-        for (Cat lCat : idToCatTable.values())
+        for (Cat lCat : new LinkedList<Cat>(idToCatTable.values()))
         {
             lCat.loadModelCompleteCb();
             //Severity.INFO.report(lCat.toString(), "loadModelComplete", "loadModelComplete", "DONE");
@@ -245,7 +250,7 @@ public class Cat extends Ident implements Validatable
         //Severity.INFO.report("CAT", "postLoad", "postLoad", "all");
         validated = true;
 
-        for (Cat lCat : idToCatTable.values())
+        for (Cat lCat : new LinkedList<Cat>(idToCatTable.values()))
         {
             lCat.postLoadCb();
             //Severity.INFO.report(lCat.toString(), "postLoad", "postLoad", "DONE");
@@ -264,7 +269,7 @@ public class Cat extends Ident implements Validatable
     {
         //Severity.INFO.report("CAT", "preValidate", "pre-validatin", "all");
 
-        for (Cat lCat : idToCatTable.values())
+        for (Cat lCat : new LinkedList<Cat>(idToCatTable.values()))
         {
             lCat.preValidateCb();
             //Severity.INFO.report("CAT", "preValidate", "pre-validatin", lCat.toString());
@@ -277,8 +282,9 @@ public class Cat extends Ident implements Validatable
         //Severity.INFO.report("CAT", "validate", "validatin", "all");
         validated = true;
 
-        for (Cat lCat : idToCatTable.values())
+        for (Cat lCat : new LinkedList<Cat>(idToCatTable.values()))
         {
+            Severity.INFO.report("CAT", "validate", "validating", lCat.toString());
             lCat.validateCb();
             //Severity.INFO.report("CAT", "validate", "validatin", lCat.toString());
         }
@@ -288,7 +294,7 @@ public class Cat extends Ident implements Validatable
     {
         //Severity.INFO.report("CAT", "postValidate", "post-validatin", "all");
 
-        for (Cat lCat : idToCatTable.values())
+        for (Cat lCat : new LinkedList<Cat>(idToCatTable.values()))
         {
             lCat.postValidateCb();
             //Severity.INFO.report("CAT", "postValidate", "post-validatin", lCat.toString());

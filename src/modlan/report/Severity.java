@@ -109,7 +109,9 @@ public enum Severity
         synchronized (this) { lThisCnt = count++; };
 
         aOutSb.append(lThisCnt);
+        aOutSb.append(":" + Thread.currentThread().getName());
         aOutSb.append('>');
+
         aOutSb.append(name);
         if (null != aInContext && 0 < aInContext.length())
         {

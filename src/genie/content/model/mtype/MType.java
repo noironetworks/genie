@@ -8,9 +8,7 @@ import genie.engine.model.*;
 import modlan.report.Severity;
 import modlan.utils.Strings;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by dvorkinista on 7/7/14.
@@ -468,5 +466,17 @@ public class MType extends SubModuleItem
         }
     }
 
+    public void validateCb()
+    {
+        super.validateCb();
+        getBase();
+        findConst(new TreeMap<String, MConst>(), true);
+        findValidator(new TreeMap<String, MValidator>(), true);
+        getTypeHint();
+        for (Language lLang : Language.values())
+        {
+            getLanguageBinding(lLang);
+        }
+    }
     private final boolean isBuiltIn;
 }
