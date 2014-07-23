@@ -1,9 +1,6 @@
 package genie.content.parse.pvalidation;
 
-import genie.content.model.mvalidation.MContentValidator;
-import genie.content.model.mvalidation.MRange;
-import genie.content.model.mvalidation.MValidator;
-import genie.content.model.mvalidation.ValidatorAction;
+import genie.content.model.mvalidation.*;
 import genie.engine.model.Item;
 import genie.engine.model.Pair;
 import genie.engine.parse.model.ParseNode;
@@ -35,7 +32,23 @@ public class PContentNode
                 (MValidator)aInParentItem,
                 aInData.getNamedValue(Strings.NAME,Strings.DEFAULT,true), action);
 
+        addConstraint(aInData, lVal);
+
         return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE,lVal);
+    }
+
+
+    private void addConstraint(Node aInData, MContentValidator aInVal)
+    {
+        String lConstr = aInData.getNamedValue(Strings.REGEX,null, true);
+        if (!Strings.isEmpty(lConstr))
+        {
+            new MContentValidatorParam(
+                    aInVal,
+                    aInData.getNamedValue(Strings.NAME,null,true),
+                    lConstr,
+                    aInData.getNamedValue(Strings.TYPE,null,false));
+        }
     }
 
     private final ValidatorAction action;

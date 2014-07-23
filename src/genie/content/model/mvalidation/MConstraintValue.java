@@ -13,7 +13,7 @@ public class MConstraintValue
     public static final Cat MY_CAT = Cat.getCreate("mconst:value");
     public static final String NAME = "value";
 
-    public MConstraintValue(MValidator aInVal, String aInValue, ConstraintValueType aInConstraintValueType)
+    public MConstraintValue(MRange aInVal, String aInValue, ConstraintValueType aInConstraintValueType)
     {
         super(MY_CAT,aInVal,aInConstraintValueType.getName());
         value = aInValue;

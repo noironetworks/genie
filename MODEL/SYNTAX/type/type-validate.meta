@@ -35,7 +35,8 @@ metadata
                      namespace=validation>
                 {
                     qual<name>
-                    qual<regex>
+                    prop<regex>
+                    prop<type>
                 }
 
                 #content constraint removal specification

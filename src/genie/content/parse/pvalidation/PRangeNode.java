@@ -1,9 +1,6 @@
 package genie.content.parse.pvalidation;
 
-import genie.content.model.mvalidation.MRange;
-import genie.content.model.mvalidation.MValidator;
-import genie.content.model.mvalidation.ValidatorAction;
-import genie.content.model.mvalidation.ValidatorScope;
+import genie.content.model.mvalidation.*;
 import genie.engine.model.Item;
 import genie.engine.model.Pair;
 import genie.engine.parse.model.ParseNode;
@@ -31,12 +28,29 @@ public class PRangeNode
 
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)
     {
-        MRange lVal = new MRange(
+        MRange lRange = new MRange(
                 (MValidator)aInParentItem,
                 aInData.getNamedValue(Strings.NAME,Strings.DEFAULT,true), action);
 
-        return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE,lVal);
+        addConstraints(aInData,lRange);
+        return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE,lRange);
     }
 
+    private void addConstraints(Node aInData, MRange aInRange)
+    {
+        for (ConstraintValueType lConstrType : ConstraintValueType.values())
+        {
+            addConstraint(aInData,aInRange,lConstrType);
+        }
+    }
+
+    private void addConstraint(Node aInData, MRange aInRange, ConstraintValueType aInType)
+    {
+        String lConstr = aInData.getNamedValue(aInType.getName(),null, false);
+        if (!Strings.isEmpty(lConstr))
+        {
+            new MConstraintValue(aInRange, lConstr, aInType);
+        }
+    }
     private final ValidatorAction action;
 }
