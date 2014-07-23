@@ -7,13 +7,13 @@ import modlan.report.Severity;
  */
 public enum PropAction
 {
-    DEFINE("define"),
-    OVERRIDE("override"),
-    HIDE("hide"),
+    DEFINE(new String[] {"define", "member"}),
+    OVERRIDE(new String[] {"override", "clobber", "override-member", "clobber-member"}),
+    HIDE(new String[] {"hide", "remove", "remove-member", "hide-member"}),
     ;
-    private PropAction(String aIn)
+    private PropAction(String[] aIn)
     {
-        name = aIn;
+        names = aIn;
     }
 
     public boolean isOverride()
@@ -33,30 +33,33 @@ public enum PropAction
 
     public String getName()
     {
-        return name;
+        return names[0];
     }
 
     public String toString()
     {
-        return name;
+        return getName();
     }
 
     public static PropAction get(String aIn)
     {
         for (PropAction lPA : PropAction.values())
         {
-            if (aIn.equalsIgnoreCase(lPA.getName()))
+            for (String lThis : lPA.names)
             {
-                return lPA;
+                if (aIn.equalsIgnoreCase(lThis))
+                {
+                    return lPA;
+                }
             }
         }
         Severity.DEATH.report(
                 "PropertyAction",
                 "get property action for name",
                 "no such property action",
-                "no support for " + aIn + "; actions supported: " + PropAction.values());
+                "no support for " + aIn);
 
         return null;
     }
-    private final String name;
+    private final String[] names;
 }

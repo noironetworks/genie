@@ -37,6 +37,7 @@ public class MClass
     {
         super(MY_CAT, aInModule, aInLName);
         isConcrete = aInIsConcrete;
+        System.out.println("NEW " + (isConcrete() ? "CONCRETE" : "ABSTRACT") + " MClass CONSTRUCTED: " + this);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // CLASS RETRIEVAL APIs

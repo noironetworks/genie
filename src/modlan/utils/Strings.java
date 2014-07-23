@@ -5,7 +5,9 @@ package modlan.utils;
  */
 public class Strings
 {
+    public static final String ABSTRACT = "abstract";
     public static final String ANY = "any";
+    public static final String CONCRETE = "concrete";
     public static final String DEFAULT = "default";
     public static final String EMPTY = "";
     public static final String MAX = "max";

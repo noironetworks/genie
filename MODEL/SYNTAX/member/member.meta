@@ -1,0 +1,32 @@
+metadata
+{
+    ref<module>
+    {
+        ref<class>
+        {
+            node<member;
+                namespace=prop;
+                >
+            {
+                qual<name>
+                qual<type>
+            }
+
+            node<remove-member;
+                 use=module/class/member;
+                 inherit-props=no
+                 >
+            {
+                qual<name>
+            }
+
+            node<override-member;
+                 use=module/class/member;
+                 inherit-props=no
+                 >
+            {
+                qual<name>
+            }
+        }
+    }
+}

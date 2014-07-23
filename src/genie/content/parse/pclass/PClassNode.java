@@ -1,5 +1,6 @@
 package genie.content.parse.pclass;
 
+import genie.content.model.mclass.MClass;
 import genie.content.model.module.Module;
 import genie.engine.model.Item;
 import genie.engine.model.Pair;
@@ -24,7 +25,28 @@ public class PClassNode
 
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)
     {
-        return null;
+        // GET NAME
+        String lName = aInData.getNamedValue(Strings.NAME,null,true);
+
+        // DETERMINE IF THIS CLASS IS CONCRETE
+        boolean lIsConcrete = aInData.getNamedOption(
+                                   Strings.CONCRETE,
+                                   !aInData.getNamedOption(
+                                           Strings.ABSTRACT,
+                                           false));
+        // CREATE A CLASS
+        MClass lClass = new MClass(
+                (Module) aInParentItem,
+                lName,
+                lIsConcrete);
+
+        // ADD SUPERCLASS IF ONE IS DECLARED
+        String lSuper = aInData.getNamedValue(Strings.SUPER,null,false);
+        if (!Strings.isEmpty(lSuper))
+        {
+            lClass.addSuperclass(lSuper);
+        }
+        return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE,lClass);
     }
 
 }

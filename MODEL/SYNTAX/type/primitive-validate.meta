@@ -5,10 +5,8 @@ metadata
         ref<primitive>
         {
             node<validate;
-                 namespace=validation>
+                 use=module/type/validate>
             {
-                qual<name>
-
                 node<range;
                      use=module/type/validate/range>
 

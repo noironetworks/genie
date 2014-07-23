@@ -46,7 +46,12 @@ public class Node
 
     public boolean getNamedOption(String aInName, boolean aInPositiveDefault)
     {
-        return Strings.YES.equalsIgnoreCase(getNamedValue(aInName,aInPositiveDefault ? Strings.YES : Strings.NO, true));
+        return hasNamedValues() ?
+                (Strings.YES.equalsIgnoreCase(
+                        getNamedValue(
+                            aInName,aInPositiveDefault ? Strings.YES : Strings.NO, true)) ||
+                 nvps.containsKey(aInName)) :
+                aInPositiveDefault;
     }
 
     /**
