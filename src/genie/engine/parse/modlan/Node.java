@@ -44,6 +44,11 @@ public class Node
         return (!Strings.isEmpty(aInName)) &&  hasNamedValues() && nvps.containsKey(aInName);
     }
 
+    public boolean getNamedOption(String aInName, boolean aInPositiveDefault)
+    {
+        return Strings.YES.equalsIgnoreCase(getNamedValue(aInName,aInPositiveDefault ? Strings.YES : Strings.NO, true));
+    }
+
     /**
      * named value accessor. retrieves named value by name. optionally causes death if value is not found
      * @param aInName name of the value retrieved
@@ -335,7 +340,7 @@ public class Node
     private String processComplex(String aInType,String aIn)
     {
         String lRet = null;
-        String[] lComponents = aIn.split(";");
+        String[] lComponents = aIn.split(";|\n|\r");
 
         lRet = lComponents[0].trim();
 

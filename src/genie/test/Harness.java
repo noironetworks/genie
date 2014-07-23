@@ -183,6 +183,7 @@ public class Harness
     }
     public static void fileTest()
     {
+
         String lMetaPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".meta"}};
         String lPrePaths[][] = {}; //{{"/Users/midvorki/code/projects/genie/MODEL/SYNTAX",".mod"}};
         String lPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".mdl"}};

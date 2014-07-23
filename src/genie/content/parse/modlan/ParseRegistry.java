@@ -1,5 +1,6 @@
 package genie.content.parse.modlan;
 
+import genie.content.model.mmeta.NodeType;
 import genie.content.parse.pmeta.PNode;
 import genie.content.parse.pmeta.PProp;
 import genie.engine.parse.model.ParseNode;
@@ -22,16 +23,33 @@ public class ParseRegistry
             {
                 ProcessorNode metadata = new ParseNode(Strings.METADATA);
                 lDocRoot.addChild(metadata);
+
+                for (NodeType lNt : NodeType.values())
                 {
-                    ProcessorNode node = new PNode();
-                    metadata.addChild(node);
                     {
-                        PProp prop = new PProp(Strings.PROP);
-                        node.addChild(prop);
-                    }
-                    {
-                        PProp qual = new PProp(Strings.QUAL);
-                        node.addChild(qual);
+                        ProcessorNode node = new PNode(lNt);
+                        metadata.addChild(node);
+                        {
+                            PProp prop = new PProp(Strings.PROP);
+                            node.addChild(prop);
+                        }
+                        {
+                            PProp qual = new PProp(Strings.QUAL);
+                            node.addChild(qual);
+                        }
+                        if (NodeType.REFERENCE == lNt)
+                        {
+                            ProcessorNode subNode = new PNode(NodeType.NODE);
+                            node.addChild(subNode);
+                            {
+                                PProp prop = new PProp(Strings.PROP);
+                                subNode.addChild(prop);
+                            }
+                            {
+                                PProp qual = new PProp(Strings.QUAL);
+                                subNode.addChild(qual);
+                            }
+                        }
                     }
                 }
             }

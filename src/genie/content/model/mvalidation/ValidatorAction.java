@@ -7,33 +7,36 @@ import modlan.report.Severity;
  */
 public enum ValidatorAction
 {
-    ADD("add"),
-    CLOBBER("clobber"),
-    REMOVE("remove"),
+    ADD(new String[]{"add", "validate", "range", "content"}),
+    CLOBBER(new String[]{"clobber", "clobber-validate", "clobber-range", "clobber-content"}),
+    REMOVE(new String[]{"remove", "remove-validate", "remove-range", "remove-content"}),
     ;
 
-    private ValidatorAction(String aIn)
+    private ValidatorAction(String[] aIn)
     {
-        name = aIn;
+        names = aIn;
     }
 
     public String getName()
     {
-        return name;
+        return names[0];
     }
 
     public String toString()
     {
-        return name;
+        return getName();
     }
 
     public static ValidatorAction get(String aIn)
     {
         for (ValidatorAction lVA : ValidatorAction.values())
         {
-            if (aIn.equalsIgnoreCase(lVA.getName()))
+            for (String lS : lVA.names)
             {
-                return lVA;
+                if (lS.equalsIgnoreCase(aIn))
+                {
+                    return lVA;
+                }
             }
         }
         Severity.DEATH.report(
@@ -46,5 +49,5 @@ public enum ValidatorAction
     }
 
 //    public MConstraintValue
-    private final String name;
+    private final String[] names;
 }

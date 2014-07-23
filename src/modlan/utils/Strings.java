@@ -11,11 +11,13 @@ public class Strings
     public static final String METADATA = "metadata";
     public static final String META = "meta";
     public static final String NAME = "name";
+    public static final String NO = "no";
     public static final String PROP = "prop";
     public static final String QUAL = "qual";
     public static final String SUPER = "super";
     public static final String TARGET = "target";
     public static final String VALUE = "value";
+    public static final String YES = "yes";
 
     public static boolean isEmpty(String aIn) { return null == aIn || aIn.isEmpty(); }
 

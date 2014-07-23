@@ -1,0 +1,62 @@
+metadata
+{
+    ref<module>
+    {
+        ref<type>
+        {
+            node<validate;
+                 namespace=validation>
+            {
+                qual<name>
+
+                node<range;
+                     namespace=validation>
+                {
+                    qual<name>
+                    prop<min>
+                    prop<max>
+                    prop<size>
+                }
+
+                node<remove-range;
+                     use=module/type/validate/range;
+                     inherit-props=no
+                     >
+                {
+                    qual<name>
+                }
+
+                node<content;
+                     namespace=validation>
+                {
+                    qual<name>
+                    qual<regex>
+                }
+
+                node<remove-content;
+                     use=module/type/validate/content;
+                     inherit-props=no
+                     >
+                {
+                    qual<name>
+                }
+            }
+
+            node<clobber-validate;
+                 use=module/type/validate
+                 >
+            {
+                node<range;
+                     namespace=validation;
+                     use=module/type/validate/range>
+                node<content;
+                     namespace=validation;
+                     use=module/type/validate/content>
+            }
+
+            node<remove-validate;
+                 use=module/type/validate
+                 >
+        }
+    }
+}

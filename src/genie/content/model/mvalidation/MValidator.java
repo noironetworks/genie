@@ -38,7 +38,7 @@ public class MValidator extends Item
         this((Item)aInParent, aInName, ValidatorScope.TYPE, aInAction);
     }
 
-    private MValidator(Item aInParent, String aInName, ValidatorScope aInScope, ValidatorAction aInAction)
+    public MValidator(Item aInParent, String aInName, ValidatorScope aInScope, ValidatorAction aInAction)
     {
         super(MY_CAT, aInParent, aInName);
         scope = aInScope;

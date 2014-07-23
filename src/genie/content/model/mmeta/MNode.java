@@ -150,6 +150,11 @@ public class MNode extends Item
         parserClassName = aIn;
     }
 
+    public boolean hasExplicitParseClassName()
+    {
+        return !Strings.isEmpty(parserClassName);
+    }
+
     /**
      * INTERNAL CALLBACK: used to initialize and register parsing nodes.
      */
@@ -237,14 +242,23 @@ public class MNode extends Item
                 aOut.put(lIt.getLID().getName(),(MNodeProp) lIt);
             }
         }
-        MNode lUses = getUsesNode();
-        if (null != lUses)
+        if (inheritProps)
         {
-            lUses.getProps(aOut);
+            MNode lUses = getUsesNode();
+            if (null != lUses)
+            {
+                lUses.getProps(aOut);
+            }
         }
+    }
+
+    public void setInheritProps(boolean aIn)
+    {
+        inheritProps = aIn;
     }
 
     private ParseNode parseNode = null;
     private String parserClassName = null;
     private Class<?> parserClass = null;
+    private boolean inheritProps = true;
 }

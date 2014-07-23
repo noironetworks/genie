@@ -1,0 +1,22 @@
+metadata
+{
+    ref<module>
+    {
+        node<primitive;
+             use=module/type>
+        {
+            qual<name>
+
+            node<hint; namespace=type>
+            {
+                qual<name>
+            }
+
+            node<language;
+                 namespace=type>
+            {
+                qual<name>
+            }
+        }
+    }
+}

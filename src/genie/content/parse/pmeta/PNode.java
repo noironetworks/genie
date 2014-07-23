@@ -1,6 +1,7 @@
 package genie.content.parse.pmeta;
 
 import genie.content.model.mmeta.MNode;
+import genie.content.model.mmeta.NodeType;
 import genie.engine.model.Item;
 import genie.engine.model.Pair;
 import genie.engine.parse.model.ParseNode;
@@ -24,9 +25,10 @@ public class PNode
     /**
      * Constructor
      */
-    public PNode()
+    public PNode(NodeType aInType)
     {
-        super("node", true);
+        super(aInType.getName(), true);
+        type = aInType;
     }
 
     /**
@@ -49,50 +51,74 @@ public class PNode
      */
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)
     {
-        // CREATE META NODE THAT CORRESPONDS TO THIS NODE PARSING RULE
-        MNode lMNode = new MNode(aInParentItem, aInData.getQual());
+        // TRY TO FIND EXISTING META NODE
+        MNode lMNode = (MNode) (null != aInParentItem ?
+                                    aInParentItem.getChildItem(MNode.MY_CAT, aInData.getQual()) :
+                                    MNode.MY_CAT.getItem(aInData.getQual()));
 
-        // CHECK IF WE HAVE TO USE OTHER NODE'S PARSER
-        String lUse = aInData.getNamedValue("use", null, false);
-        if (!Strings.isEmpty(lUse))
+
+        // CHECK IF FOUND
+        if (null == lMNode)
         {
-            lMNode.addUses(lUse);
+            // NOT FOUND: CREATE META NODE THAT CORRESPONDS TO THIS NODE PARSING RULE
+            lMNode = new MNode(aInParentItem, aInData.getQual());
         }
-        else
-        {
-            // GET THE PARSE NODE'S EXPLICIT PARSING CLASS DIRECTIVE
-            String lExplicit = aInData.getNamedValue("explicit", null, false);
 
-            // CHECK IF DIRECT PARSING CLASS DIRECTIVE IS SET
-            String lParserImplClassName = null;
-            if (!Strings.isEmpty(lExplicit))
+        if (NodeType.NODE == type)
+        {
+            // CHECK IF IT HAS INDIRECTION ALREADY SPECIFIED
+            if (!lMNode.usesOtherNode())
             {
-                lParserImplClassName = lExplicit;
+                // CHECK IF WE HAVE TO USE OTHER NODE'S PARSER
+                String lUse = aInData.getNamedValue("use", null, false);
+                if (!Strings.isEmpty(lUse))
+                {
+                    lMNode.addUses(lUse);
+                }
             }
-            // CHECK IF THIS THIS IS A GENERIC/PLACEHOLDER NODE
-            else if (aInData.checkFlag("generic"))
+
+            // CHECK IF NEITHER INDIRECTION OR EXPLICIT CLASS ARE SPECIFIED
+            if (!(lMNode.usesOtherNode() || lMNode.hasExplicitParseClassName()))
             {
-                lParserImplClassName = "genie.engine.parse.model.ParseNode";
+                // NEITHER INDIRECTION OR EXPLICIT CLASS ARE SPECIFIED
+
+                // GET THE PARSE NODE'S EXPLICIT PARSING CLASS DIRECTIVE
+                String lExplicit = aInData.getNamedValue("explicit", null, false);
+
+                // CHECK IF DIRECT PARSING CLASS DIRECTIVE IS SET
+                String lParserImplClassName = null;
+                if (!Strings.isEmpty(lExplicit))
+                {
+                    lParserImplClassName = lExplicit;
+                }
+                // CHECK IF THIS THIS IS A GENERIC/PLACEHOLDER NODE
+                else if (aInData.checkFlag("generic"))
+                {
+                    lParserImplClassName = "genie.engine.parse.model.ParseNode";
+                }
+                // THIS IS AN AUTO-PICKED PARSING NODE... LET'S FABRICATE THE NAME
+                else
+                {
+                    // DETERMINE DEFAULT PARSER NAME FOR THIS NODE
+                    String lQual = aInData.getQual();
+                    String lNs = aInData.getNamedValue("namespace", lQual, false);
+                    StringWriter lParserImplClassNameBuff = new StringWriter();
+                    lParserImplClassNameBuff.append("genie.content.parse.p");
+                    lParserImplClassNameBuff.append(lNs.toLowerCase());
+                    lParserImplClassNameBuff.append(".P");
+                    lParserImplClassNameBuff.append(Strings.upFirstLetter(lQual));
+                    lParserImplClassNameBuff.append("Node");
+                    lParserImplClassName = lParserImplClassNameBuff.toString();
+                }
+                // Set the parser node class name
+                lMNode.addExplicitParserClassName(lParserImplClassName);
             }
-            // THIS IS AN AUTO-PICKED PARSING NODE... LET'S FABRICATE THE NAME
-            else
-            {
-                // DETERMINE DEFAULT PARSER NAME FOR THIS NODE
-                String lQual = aInData.getQual();
-                String lNs = aInData.getNamedValue("namespace", lQual, false);
-                StringWriter lParserImplClassNameBuff = new StringWriter();
-                lParserImplClassNameBuff.append("genie.content.parse.p");
-                lParserImplClassNameBuff.append(lNs.toLowerCase());
-                lParserImplClassNameBuff.append(".P");
-                lParserImplClassNameBuff.append(Strings.upFirstLetter(lQual));
-                lParserImplClassNameBuff.append("Node");
-                lParserImplClassName = lParserImplClassNameBuff.toString();
-            }
-            // Set the parser node class name
-            lMNode.addExplicitParserClassName(lParserImplClassName);
+            lMNode.setInheritProps(aInData.getNamedOption("inherit-props",true));
         }
         return new Pair<ParseDirective, Item>(
                 ParseDirective.CONTINUE,
                 lMNode);
     }
+
+    private final NodeType type;
 }
