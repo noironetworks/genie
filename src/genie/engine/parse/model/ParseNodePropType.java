@@ -9,6 +9,7 @@ public enum ParseNodePropType
 {
     PROP("prop"),
     QUAL("qual"),
+    OPTION("option"),
     ;
 
     private ParseNodePropType(String aInName)

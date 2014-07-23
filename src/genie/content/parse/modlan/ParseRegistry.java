@@ -37,6 +37,10 @@ public class ParseRegistry
                             PProp qual = new PProp(Strings.QUAL);
                             node.addChild(qual);
                         }
+                        {
+                            PProp option = new PProp(Strings.OPTION);
+                            node.addChild(option);
+                        }
                         if (NodeType.REFERENCE == lNt)
                         {
                             ProcessorNode subNode = new PNode(NodeType.NODE);
@@ -48,6 +52,10 @@ public class ParseRegistry
                             {
                                 PProp qual = new PProp(Strings.QUAL);
                                 subNode.addChild(qual);
+                            }
+                            {
+                                PProp option = new PProp(Strings.OPTION);
+                                subNode.addChild(option);
                             }
                         }
                     }

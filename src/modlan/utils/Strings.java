@@ -14,6 +14,7 @@ public class Strings
     public static final String MIN = "min";
     public static final String NAME = "name";
     public static final String NO = "no";
+    public static final String OPTION = "option";
     public static final String PROP = "prop";
     public static final String QUAL = "qual";
     public static final String REGEX = "regex";
