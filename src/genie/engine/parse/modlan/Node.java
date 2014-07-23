@@ -347,44 +347,44 @@ public class Node
         for (int i = 0; i < lComponents.length; i++)
         {
             String lComponent = lComponents[i];
-            String lNVPair[] = lComponent.split(":|=");
-
-            for (int j = 0; j < lNVPair.length; j++)
+            if (!Strings.isEmpty(lComponent))
             {
-                lNVPair[j] = lNVPair[j].trim();
-            }
-            switch (lNVPair.length)
-            {
-                case 1:
+                String lNVPair[] = lComponent.split(":|=");
 
-                    if (0 == i)
-                    {
-                        addNVP(aInType, lNVPair[0]); // NO VALUE
-                        addNVP("name", lNVPair[0]); // NO VALUE
-                    }
-                    else
-                    {
-                        addNVP(lNVPair[0], lNVPair[0]); // NO VALUE
-                    }
-                    break;
+                for (int j = 0; j < lNVPair.length; j++)
+                {
+                    lNVPair[j] = lNVPair[j].trim();
+                }
+                switch (lNVPair.length)
+                {
+                    case 1:
 
-                case 2:
+                        if (0 == i)
+                        {
+                            addNVP(aInType, lNVPair[0]); // NO VALUE
+                            addNVP("name", lNVPair[0]); // NO VALUE
+                        }
+                        else
+                        {
+                            addNVP(lNVPair[0], lNVPair[0]); // NO VALUE
+                        }
+                        break;
 
-                    if (0 == i)
-                    {
-                        addNVP(aInType, lNVPair[0]); // NO VALUE
-                    }
-                    addNVP(lNVPair[0], lNVPair[1]);
-                    break;
+                    case 2:
 
-                default:
+                        if (0 == i)
+                        {
+                            addNVP(aInType, lNVPair[0]); // NO VALUE
+                        }
+                        addNVP(lNVPair[0], lNVPair[1]);
+                        break;
 
-                    Severity.DEATH.report(
-                            this.toString(),
-                            "processing of complex value",
-                            "bad " + aInType + "format",
-                            "name value pair can only have one value" + aIn);
+                    default:
 
+                        Severity.DEATH.report(this.toString(), "processing of complex value",
+                                              "bad " + aInType + "format", "name value pair can only have one value" + aIn);
+
+                }
             }
         }
         return lRet;

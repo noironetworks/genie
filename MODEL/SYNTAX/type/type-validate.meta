@@ -4,11 +4,14 @@ metadata
     {
         ref<type>
         {
+            # validation node
             node<validate;
                  namespace=validation>
             {
+                # qualifier identifying name
                 qual<name>
 
+                # range specification
                 node<range;
                      namespace=validation>
                 {
@@ -18,6 +21,7 @@ metadata
                     prop<size>
                 }
 
+                # range removal specification
                 node<remove-range;
                      use=module/type/validate/range;
                      inherit-props=no
@@ -26,6 +30,7 @@ metadata
                     qual<name>
                 }
 
+                # content constraint specification
                 node<content;
                      namespace=validation>
                 {
@@ -33,6 +38,7 @@ metadata
                     qual<regex>
                 }
 
+                #content constraint removal specification
                 node<remove-content;
                      use=module/type/validate/content;
                      inherit-props=no
@@ -42,6 +48,7 @@ metadata
                 }
             }
 
+            # validation clobbering
             node<clobber-validate;
                  use=module/type/validate
                  >
@@ -54,6 +61,7 @@ metadata
                      use=module/type/validate/content>
             }
 
+            # validation removal
             node<remove-validate;
                  use=module/type/validate
                  >
