@@ -82,7 +82,7 @@ public class Writer extends java.io.Writer
                 // not writing, chunk must be the same as one to write.
                 if (oldBuffers == null)
                 {
-                    oldBuffers = new ArrayList();
+                    oldBuffers = new ArrayList<char[]>();
                 }
                 oldBuffers.add(buffer);
                 buffer = null;
@@ -141,18 +141,14 @@ public class Writer extends java.io.Writer
         writer = new FileWriter(file);
         if (oldBuffers != null)
         {
-            Iterator i = oldBuffers.iterator();
-            while (i.hasNext())
+            for (char[] buffer : oldBuffers)
             {
-                char[] buffer = (char[]) i.next();
                 writer.write(buffer, 0, buffer.length);
             }
             oldBuffers = null;
         }
     }
 
-
-    private static final Object monitor = new Object();
     /**
      * The file which is being processed.
      */
@@ -168,7 +164,7 @@ public class Writer extends java.io.Writer
     /**
      * The list of previously read buffers that were encountered.
      */
-    private ArrayList oldBuffers;
+    private ArrayList<char[]> oldBuffers;
 
     private final WriteStats stats;
 }
