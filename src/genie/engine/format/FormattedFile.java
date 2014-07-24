@@ -14,19 +14,20 @@ import java.io.PrintWriter;
 public class FormattedFile
 {
     public FormattedFile(
+            FormatterCtx aInFormatterCtx,
             FileNameRule aInFileNameRule,
-            String aInRootPath,
             String aInFileName,
             boolean aInOverrideExisting,
             WriteStats aInStats)
     {
+        formatterCtx = aInFormatterCtx;
         fileNameRule = aInFileNameRule;
-        rootPath = aInRootPath;
         fileName = aInFileName;
         overrideExisting = aInOverrideExisting;
         stats = aInStats;
         init();
     }
+
     public FormattedFile(
             String aInRootPath,
             String aInRelativePath,
@@ -39,8 +40,8 @@ public class FormattedFile
             WriteStats aInStats)
     {
         this(
+          new FormatterCtx(aInRootPath),
           new FileNameRule(aInRelativePath,aInModulePath,aInFilePrefix,aInFileSuffix,aInFileExtension),
-          aInRootPath,
           aInFileName,
           aInOverrideExisting,
           aInStats);
@@ -171,6 +172,16 @@ public class FormattedFile
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // DATA ACCESSORS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public FormatterCtx getCtx()
+    {
+        return formatterCtx;
+    }
+
+    public FileNameRule getFileNameRule()
+    {
+        return fileNameRule;
+    }
+
     public String getFullPath()
     {
         return fullPath;
@@ -188,7 +199,7 @@ public class FormattedFile
 
     public String getRootPath()
     {
-        return rootPath;
+        return formatterCtx.getRootPath();
     }
 
     public String getRelativePath()
@@ -226,16 +237,21 @@ public class FormattedFile
         return overrideExisting;
     }
 
+    public WriteStats getStats()
+    {
+        return stats;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // INITIALIZATION
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void initFullPath()
     {
         StringBuilder lSb = new StringBuilder();
-        if (!Strings.isEmpty(rootPath))
+        if (!Strings.isEmpty(formatterCtx.getRootPath()))
         {
-            lSb.append(rootPath);
-            if (!rootPath.endsWith("/"))
+            lSb.append(formatterCtx.getRootPath());
+            if (!formatterCtx.getRootPath().endsWith("/"))
             {
                 lSb.append('/');
             }
@@ -371,8 +387,8 @@ public class FormattedFile
     private String fullPath = null;
     private String fullFileName = null;
 
+    private final FormatterCtx formatterCtx;
     private final FileNameRule fileNameRule;
-    private final String rootPath;
     private final String fileName;
     private final boolean overrideExisting;
     private File dir = null;

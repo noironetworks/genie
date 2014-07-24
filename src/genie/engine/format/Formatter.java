@@ -5,7 +5,7 @@ import modlan.utils.Strings;
 /**
  * Created by midvorki on 7/23/14.
  */
-public abstract class Formatter
+public class Formatter
 {
     public Formatter(
             FormattedFile aInFormattedFile,
@@ -372,18 +372,6 @@ public abstract class Formatter
     {
         indent(aInIndentDepth);
         formattedFile.println(format, args);
-    }
-
-    /**
-     * CODE GENERATION HANDLE.
-     */
-    public abstract void generate();
-
-    public void execute()
-    {
-        generate();
-        flush();
-        close();
     }
 
     public FormattedFile getFormattedFile() { return formattedFile; }
