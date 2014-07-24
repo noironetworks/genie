@@ -8,8 +8,11 @@ import modlan.utils.Strings;
 public abstract class Formatter
 {
     public Formatter(
-            FormattedFile aInFormattedFile, Indenter aInIndenter, BlockFormatDirective aInHeaderFormatDirective, BlockFormatDirective aInCommentFormatDirective, String[] aInDescription
-                    )
+            FormattedFile aInFormattedFile,
+            Indenter aInIndenter,
+            BlockFormatDirective aInHeaderFormatDirective,
+            BlockFormatDirective aInCommentFormatDirective,
+            String[] aInDescription)
     {
         formattedFile = aInFormattedFile;
         indenter = aInIndenter;
@@ -382,6 +385,11 @@ public abstract class Formatter
         flush();
         close();
     }
+
+    public FormattedFile getFormattedFile() { return formattedFile; }
+    public Indenter getIndenter() { return indenter; }
+    public BlockFormatDirective getHeaderFormatDirective() { return headerFormatDirective; }
+    public BlockFormatDirective getCommentFormatDirective() { return commentFormatDirective; }
 
     private final FormattedFile formattedFile;
     private final Indenter indenter;
