@@ -14,8 +14,23 @@ import java.io.PrintWriter;
 public class FormattedFile
 {
     public FormattedFile(
+            FileNameRule aInFileNameRule,
+            String aInRootPath,
+            String aInFileName,
+            boolean aInOverrideExisting,
+            WriteStats aInStats)
+    {
+        fileNameRule = aInFileNameRule;
+        rootPath = aInRootPath;
+        fileName = aInFileName;
+        overrideExisting = aInOverrideExisting;
+        stats = aInStats;
+        init();
+    }
+    public FormattedFile(
             String aInRootPath,
             String aInRelativePath,
+            String aInModulePath,
             String aInFilePrefix,
             String aInFileName,
             String aInFileSuffix,
@@ -23,15 +38,12 @@ public class FormattedFile
             boolean aInOverrideExisting,
             WriteStats aInStats)
     {
-        rootPath = aInRootPath;
-        relativePath = aInRelativePath;
-        filePrefix = aInFilePrefix;
-        fileName = aInFileName;
-        fileSuffix = aInFileSuffix;
-        fileExtension = aInFileExtension;
-        overrideExisting = aInOverrideExisting;
-        stats = aInStats;
-        init();
+        this(
+          new FileNameRule(aInRelativePath,aInModulePath,aInFilePrefix,aInFileSuffix,aInFileExtension),
+          aInRootPath,
+          aInFileName,
+          aInOverrideExisting,
+          aInStats);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,12 +193,17 @@ public class FormattedFile
 
     public String getRelativePath()
     {
-        return relativePath;
+        return fileNameRule.getRelativePath();
+    }
+
+    public String getModulePath()
+    {
+        return fileNameRule.getModulePath();
     }
 
     public String getFilePrefix()
     {
-        return fileSuffix;
+        return fileNameRule.getFilePrefix();
     }
 
     public String getFileName()
@@ -196,12 +213,12 @@ public class FormattedFile
 
     public String getFileSuffix()
     {
-        return fileSuffix;
+        return fileNameRule.getFileSuffix();
     }
 
     public String getFileExtension()
     {
-        return fileExtension;
+        return fileNameRule.getFileExtension();
     }
 
     public boolean isOverrideExisting()
@@ -223,10 +240,18 @@ public class FormattedFile
                 lSb.append('/');
             }
         }
-        if (!Strings.isEmpty(relativePath))
+        if (!Strings.isEmpty(getRelativePath()))
         {
-            lSb.append(relativePath);
-            if (!relativePath.endsWith("/"))
+            lSb.append(getRelativePath());
+            if (!getRelativePath().endsWith("/"))
+            {
+                lSb.append('/');
+            }
+        }
+        if (!Strings.isEmpty(getModulePath()))
+        {
+            lSb.append(getModulePath());
+            if (!getModulePath().endsWith("/"))
             {
                 lSb.append('/');
             }
@@ -235,23 +260,26 @@ public class FormattedFile
 
         StringBuilder lFnSb = new StringBuilder();
 
-        if (!Strings.isEmpty(filePrefix))
+        if (!Strings.isEmpty(getFilePrefix()))
         {
-            lFnSb.append(filePrefix);
+            lFnSb.append(getFilePrefix());
 
         }
         if (!Strings.isEmpty(fileName))
         {
             lFnSb.append(fileName);
         }
-        if (!Strings.isEmpty(fileSuffix))
+        if (!Strings.isEmpty(getFileSuffix()))
         {
-            lFnSb.append(fileSuffix);
+            lFnSb.append(getFileSuffix());
         }
-        if (!Strings.isEmpty(fileExtension))
+        if (!Strings.isEmpty(getFileExtension()))
         {
-            lFnSb.append('.');
-            lFnSb.append(fileExtension);
+            if (!getFileExtension().startsWith("."))
+            {
+                lSb.append('.');
+            }
+            lFnSb.append(getFileExtension());
         }
         lSb.append(lFnSb);
         fullPath = lSb.toString();
@@ -343,12 +371,9 @@ public class FormattedFile
     private String fullPath = null;
     private String fullFileName = null;
 
+    private final FileNameRule fileNameRule;
     private final String rootPath;
-    private final String relativePath;
     private final String fileName;
-    private final String filePrefix;
-    private final String fileSuffix;
-    private final String fileExtension;
     private final boolean overrideExisting;
     private File dir = null;
     private File file = null;
