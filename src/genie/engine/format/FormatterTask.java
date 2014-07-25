@@ -26,11 +26,26 @@ public abstract class FormatterTask implements Task
         return name;
     }
 
+
+    /**
+     * module path formatter. formats module path (package, namespace, ..._.
+     * this methid is overridable by subclasses for customization
+     * @return formatted module path
+     */
+    protected String formatModulePath()
+    {
+        return null;
+    }
+
     /**
      * description formatter
      * @return description
      */
-    abstract protected String[] formatDescription();
+    protected String[] formatDescription()
+    {
+        return null;
+    }
+
     /**
      * CODE GENERATION HANDLE.
      */
@@ -50,7 +65,7 @@ public abstract class FormatterTask implements Task
           aInFormatter.getCommentFormatDirective(),
           aInFormatter.getFormattedFile().getFileName(),
           !aInFormatter.getFormattedFile().isOverrideExisting(),
-          aInFormatter.getFormattedFile().getStats()
+          aInFormatter.getFormattedFile().getCtx().getStats()
           );
         file = aInFormatter.getFormattedFile();
         out = aInFormatter;
@@ -87,9 +102,13 @@ public abstract class FormatterTask implements Task
 
     public final void run()
     {
+        System.out.println(name + "::::::::::::::::::::: run()");
         init();
+        System.out.println(name + "------------------------ initialized()");
         generate();
+        System.out.println(name + "------------------------ generated()");
         finish();
+        System.out.println(name + "------------------------ finished()");
     }
 
     protected void init()
@@ -98,10 +117,9 @@ public abstract class FormatterTask implements Task
         {
             file = new FormattedFile(
                     formatterCtx,
-                    fileNameRule,
+                    fileNameRule.makeSpecific(formatModulePath()),
                     formatFileName(),
-                    !isUserFile,
-                    stats);
+                    !isUserFile);
         }
         if (null == out)
         {

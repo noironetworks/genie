@@ -1,5 +1,11 @@
 package genie.engine.format;
 
+import genie.engine.file.WriteStats;
+import genie.engine.proc.Processor;
+import modlan.report.Severity;
+
+import java.lang.reflect.Constructor;
+
 /**
  * Created by midvorki on 7/24/14.
  */
@@ -39,9 +45,51 @@ public class FormatterTaskMeta
         switch (type)
         {
             case GENERIC:
+            default: // TODO: REMOVE
+                try
+                {
+                    Constructor<FormatterTask> lConstr =
+                            taskClass.getConstructor(
+                                    FormatterCtx.class,
+                                    FileNameRule.class,
+                                    Indenter.class,
+                                    BlockFormatDirective.class,
+                                    BlockFormatDirective.class,
+                                    String.class,
+                                    boolean.class,
+                                    WriteStats.class);
+                    if (null != lConstr)
+                    {
+                        FormatterTask lTask = lConstr.newInstance(
+                                aInCtx,
+                                fileNameRule,
+                                file.getIndenter(),
+                                file.getHeaderFormatDirective(),
+                                file.getCommentFormatDirective(),
+                                name,
+                                false, // isUser, TODO: FIX
+                                aInCtx.getStats()
+                                );
+
+                        Processor.get().getDsp().trigger(lTask);
+                    }
+                    else
+                    {
+                        Severity.DEATH.report(
+                                toString(),
+                                "process",
+                                "failed to constract",
+                                "constructor not found for class:" + taskClass);
+                    }
+                }
+                catch (Throwable lE)
+                {
+                    Severity.DEATH.report(toString(),"process","failed to constract", lE);
+                }
 
                 break;
 
+            /**
             case CATEGORY:
 
                 break;
@@ -53,6 +101,7 @@ public class FormatterTaskMeta
             default:
 
                 // DO NOTHING. NOT POSSIBLE
+             **/
         }
     }
 

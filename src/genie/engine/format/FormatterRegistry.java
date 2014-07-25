@@ -36,6 +36,8 @@ public class FormatterRegistry
             }
         }
     }
+
+    private FormatterRegistry() {}
     public String toString()
     {
         return "formatter:registry";

@@ -3,6 +3,8 @@ package genie.test;
 import genie.content.model.mclass.MClass;
 import genie.content.model.module.Module;
 import genie.content.parse.modlan.ParseRegistry;
+import genie.engine.format.FormatterCtx;
+import genie.engine.format.FormatterRegistry;
 import genie.engine.model.*;
 import genie.test.TestObj;
 import genie.engine.proc.Processor;
@@ -204,5 +206,6 @@ public class Harness
             ParseRegistry.init(),
             "WHATEVER-DEST-PATH"
             );
+
     }
 }

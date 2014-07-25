@@ -1,6 +1,8 @@
 package genie.engine.proc;
 
 import genie.content.parse.modlan.ParseRegistry;
+import genie.engine.format.FormatterCtx;
+import genie.engine.format.FormatterRegistry;
 import genie.engine.model.Cat;
 import genie.engine.parse.model.ProcessorTree;
 import modlan.report.Severity;
@@ -36,6 +38,11 @@ public class Processor
         return INSTANCE;
     }
 
+    public Dsptchr getDsp()
+    {
+        return dsp;
+    }
+
     public ProcessorTree getPTree()
     {
         return pTree;
@@ -50,6 +57,9 @@ public class Processor
             load();
             dsp.drain();
             postProcess();
+            dsp.drain();
+            // TODO: NO HARDCODING!
+            FormatterRegistry.get().process(new FormatterCtx("midvorki/code/projects/genie/TEST/OUT"));
             dsp.drain();
             dsp.kill();
         }

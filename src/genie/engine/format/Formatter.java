@@ -31,7 +31,7 @@ public class Formatter
             String[] aInDescription,
             boolean aInDoNotOverwriteExisting)
     {
-        String[] lStr = new String[6 + aInDescription.length];
+        String[] lStr = new String[6 + (null != aInDescription ? aInDescription.length : 0)];
         int i = 0;
         lStr[i++] = "SOME COPYRIGHT"; // TODO: insieme.ngen.NGen.getCopyrightMessage(),
         lStr[i++] = " ";
@@ -41,9 +41,12 @@ public class Formatter
                   " file genie code generation framework free of license." +
                   (aInDoNotOverwriteExisting ? "with manual implementation detail." : "");
         lStr[i++] = " ";
-        for (String lThatLine : aInDescription)
+        if (null != aInDescription)
         {
-            lStr[i++] = lThatLine;
+            for (String lThatLine : aInDescription)
+            {
+                lStr[i++] = lThatLine;
+            }
         }
         return lStr;
     }

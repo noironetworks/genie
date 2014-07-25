@@ -1,5 +1,7 @@
 package genie.engine.format;
 
+import modlan.utils.Strings;
+
 /**
  * Created by midvorki on 7/24/14.
  *
@@ -38,15 +40,22 @@ public class FileNameRule
     {
         return filePrefix;
     }
-
     public final String getFileSuffix()
     {
         return fileSuffix;
     }
-
     public final String getFileExtension()
     {
         return fileExtension;
+    }
+    public final boolean isTemplate() { return Strings.isEmpty(modulePath); }
+
+    public FileNameRule makeSpecific(String aInModulePath)
+    {
+        return isTemplate() && !(Strings.isEmpty(aInModulePath)) ?
+                    new FileNameRule(
+                            relativePath, aInModulePath, filePrefix, fileSuffix,fileExtension) :
+                    this;
     }
 
     private final String relativePath;

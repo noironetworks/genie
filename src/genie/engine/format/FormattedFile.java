@@ -17,14 +17,12 @@ public class FormattedFile
             FormatterCtx aInFormatterCtx,
             FileNameRule aInFileNameRule,
             String aInFileName,
-            boolean aInOverrideExisting,
-            WriteStats aInStats)
+            boolean aInOverrideExisting)
     {
         formatterCtx = aInFormatterCtx;
         fileNameRule = aInFileNameRule;
         fileName = aInFileName;
         overrideExisting = aInOverrideExisting;
-        stats = aInStats;
         init();
     }
 
@@ -36,15 +34,13 @@ public class FormattedFile
             String aInFileName,
             String aInFileSuffix,
             String aInFileExtension,
-            boolean aInOverrideExisting,
-            WriteStats aInStats)
+            boolean aInOverrideExisting)
     {
         this(
           new FormatterCtx(aInRootPath),
           new FileNameRule(aInRelativePath,aInModulePath,aInFilePrefix,aInFileSuffix,aInFileExtension),
           aInFileName,
-          aInOverrideExisting,
-          aInStats);
+          aInOverrideExisting);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -237,11 +233,6 @@ public class FormattedFile
         return overrideExisting;
     }
 
-    public WriteStats getStats()
-    {
-        return stats;
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // INITIALIZATION
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -300,6 +291,11 @@ public class FormattedFile
         lSb.append(lFnSb);
         fullPath = lSb.toString();
         fullFileName = lFnSb.toString();
+        System.out.println(this.toString() +
+                           ".initFullPath(): \nfileName: " + fileName +
+                           "\ndirPath: " + dirPath +
+                           "\nfullPath: " + fullPath +
+                           "\nfullFileName: " + fullFileName);
     }
 
     public File getDir()
@@ -318,6 +314,7 @@ public class FormattedFile
         initDir();
         initFile();
         initWriter();
+        System.out.println("=================== " + this + ".init(): initialized");
     }
 
     private synchronized void initDir()
@@ -330,8 +327,11 @@ public class FormattedFile
         {
             Severity.DEATH.report(toString(),"initialize directory","","", lE);
         }
+        System.out.println("=================== " + this + ".initDir():" + dir);
         for  (int i = 0; i < 10 && !dir.exists(); i++)
         {
+            System.out.println("=================== " + this + ".initDir(): making: " + dir);
+
             if (!dir.mkdirs())
             {
                 try
@@ -353,7 +353,7 @@ public class FormattedFile
 
     private synchronized void initFile()
     {
-        File file = new File(fullPath); //new File(dir, aInFileName);
+        file = new File(fullPath); //new File(dir, aInFileName);
         if ((!overrideExisting) && file.exists())
         {
             file = new File(fullPath + ".new");// new File(dir, aInFileName + ".new");
@@ -365,7 +365,7 @@ public class FormattedFile
         try
         {
             String lFileName = file.toString();
-            writer = new PrintWriter(new Writer(file, stats));
+            writer = new PrintWriter(new Writer(file, formatterCtx.getStats()));
             //return new PrintWriter(
             //    new BufferedWriter(
             //        new Writer(file),
@@ -394,5 +394,4 @@ public class FormattedFile
     private File dir = null;
     private File file = null;
     private PrintWriter writer = null;
-    private final WriteStats stats;
 }
