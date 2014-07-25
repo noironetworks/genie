@@ -59,6 +59,7 @@ public class MFormatterDomain
                                 lTask.getFileSuffix(),
                                 lTask.getFileType().getFileExt()),
                         lTask.getFormatterClass());
+                lFeatureMeta.addTask(lTaskMeta);
             }
         }
     }
