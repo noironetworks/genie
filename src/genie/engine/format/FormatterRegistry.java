@@ -9,6 +9,11 @@ import java.util.TreeMap;
  */
 public class FormatterRegistry
 {
+    public static FormatterRegistry get()
+    {
+        return inst;
+    }
+
     public void addDomain(FormatterDomainMeta aIn)
     {
         if (!domains.containsKey(aIn.getName()))
@@ -36,4 +41,5 @@ public class FormatterRegistry
         return "formatter:registry";
     }
     private TreeMap<String,FormatterDomainMeta> domains = new TreeMap<String,FormatterDomainMeta>();
+    private static final FormatterRegistry inst = new FormatterRegistry();
 }

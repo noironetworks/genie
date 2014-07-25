@@ -17,6 +17,7 @@ metadata
             {
                 qual[name]
                 prop[target]
+                prop[category]
                 prop[relative-path]
                 prop[file-type]
                 prop[file-prefix]

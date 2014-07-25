@@ -7,9 +7,9 @@ import java.util.TreeMap;
 /**
  * Created by midvorki on 7/24/14.
  */
-public class FormatterDomainMeta
+public class FormatterFeatureMeta
 {
-    public FormatterDomainMeta(String aInName)
+    public FormatterFeatureMeta(String aInName)
     {
         name = aInName;
     }
@@ -31,7 +31,7 @@ public class FormatterDomainMeta
 
     public void process(FormatterCtx aInCtx)
     {
-        for (FormatterFeatureMeta lTask : tasks.values())
+        for (FormatterTaskMeta lTask : tasks.values())
         {
             if (lTask.isEnabled())
             {
@@ -40,7 +40,7 @@ public class FormatterDomainMeta
         }
     }
 
-    public void addFeature(FormatterFeatureMeta aIn)
+    public void addTask(FormatterTaskMeta aIn)
     {
         if (!tasks.containsKey(aIn.getName()))
         {
@@ -54,10 +54,10 @@ public class FormatterDomainMeta
 
     public String toString()
     {
-        return "formatter:domain(" + name + ')';
+        return "formatter:feature(" + name + ')';
     }
 
     private final String name;
     private boolean isEnabled = true;
-    private TreeMap<String,FormatterFeatureMeta> tasks = new TreeMap<String,FormatterFeatureMeta>();
+    private TreeMap<String,FormatterTaskMeta> tasks = new TreeMap<String,FormatterTaskMeta>();
 }
