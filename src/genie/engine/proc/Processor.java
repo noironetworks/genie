@@ -18,7 +18,7 @@ public class Processor
 			String aInModelPreLoadPathsInOrder[][],
 			String aInModelLoadPathsInOrder[][],
 			ProcessorTree aInPTree,
-	        String aInDestPath
+	        FormatterCtx[] aInFormatterCtxs
 	        )
 	{
         INSTANCE = this;
@@ -30,6 +30,7 @@ public class Processor
 
 		loadTargets = new LoadTarget[metadataLoadPaths.length + modelPreLoadPaths.length + modelLoadPaths.length];
 
+        formatterCtxs = aInFormatterCtxs;
 		process();
 	}
 
@@ -59,7 +60,10 @@ public class Processor
             postProcess();
             dsp.drain();
             // TODO: NO HARDCODING!
-            FormatterRegistry.get().process(new FormatterCtx("midvorki/code/projects/genie/TEST/OUT"));
+            for (FormatterCtx lCtx : formatterCtxs)
+            {
+                FormatterRegistry.get().process(lCtx);
+            }
             dsp.drain();
             dsp.kill();
         }
@@ -140,6 +144,7 @@ public class Processor
 	private final String modelLoadPaths[][];
 	private final LoadTarget loadTargets[];
 	private final ProcessorTree pTree;
+    private final FormatterCtx[] formatterCtxs;
 	private final Dsptchr dsp;
     private static Processor INSTANCE = null;
 }

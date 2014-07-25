@@ -1,10 +1,15 @@
 package genie.engine.format;
 
 import genie.engine.file.WriteStats;
+import genie.engine.model.Cat;
+import genie.engine.model.Item;
+import genie.engine.model.Node;
 import genie.engine.proc.Processor;
 import modlan.report.Severity;
 
 import java.lang.reflect.Constructor;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Created by midvorki on 7/24/14.
@@ -16,13 +21,67 @@ public class FormatterTaskMeta
             FormatterTaskType aInType,
             FileTypeMeta aInFile,
             FileNameRule aInFileNameRule,
-            Class aInTaskClass)
+            Class aInTaskClass,
+            Cat aInCatOrNull)
     {
         name = aInName;
         type = aInType;
         file = aInFile;
-        taskClass = aInTaskClass;
         fileNameRule = aInFileNameRule;
+        taskClass = aInTaskClass;
+        catOrNull = aInCatOrNull;
+        try
+        {
+            switch (aInType)
+            {
+                case ITEM:
+                {
+                    taskConstr = taskClass.getConstructor(
+                            FormatterCtx.class,
+                            FileNameRule.class,
+                            Indenter.class,
+                            BlockFormatDirective.class,
+                            BlockFormatDirective.class,
+                            String.class,
+                            boolean.class,
+                            WriteStats.class,
+                            Cat.class,
+                            Item.class);
+                    break;
+                }
+                case CATEGORY:
+                {
+                    taskConstr = taskClass.getConstructor(
+                                        FormatterCtx.class,
+                                        FileNameRule.class,
+                                        Indenter.class,
+                                        BlockFormatDirective.class,
+                                        BlockFormatDirective.class,
+                                        String.class,
+                                        boolean.class,
+                                        WriteStats.class,
+                                        Cat.class);
+                    break;
+                }
+                case GENERIC:
+                default:
+                {
+                    taskConstr = taskClass.getConstructor(
+                                        FormatterCtx.class,
+                                        FileNameRule.class,
+                                        Indenter.class,
+                                        BlockFormatDirective.class,
+                                        BlockFormatDirective.class,
+                                        String.class, boolean.class,
+                                        WriteStats.class);
+                    break;
+                }
+            }
+        }
+        catch (Throwable lE)
+        {
+            Severity.DEATH.report(toString(),"process","failed to constract", lE);
+        }
     }
 
     public String getName() { return name; }
@@ -41,26 +100,15 @@ public class FormatterTaskMeta
 
     public void process(FormatterCtx aInCtx)
     {
-        // TODO:IMPLEMENT ME
-        switch (type)
+        try
         {
-            case GENERIC:
-            default: // TODO: REMOVE
-                try
+            switch (type)
+            {
+                case ITEM:
                 {
-                    Constructor<FormatterTask> lConstr =
-                            taskClass.getConstructor(
-                                    FormatterCtx.class,
-                                    FileNameRule.class,
-                                    Indenter.class,
-                                    BlockFormatDirective.class,
-                                    BlockFormatDirective.class,
-                                    String.class,
-                                    boolean.class,
-                                    WriteStats.class);
-                    if (null != lConstr)
+                    for (Item lItem : catOrNull.getNodes().getItemsList())
                     {
-                        FormatterTask lTask = lConstr.newInstance(
+                        FormatterTask lTask = taskConstr.newInstance(
                                 aInCtx,
                                 fileNameRule,
                                 file.getIndenter(),
@@ -68,40 +116,55 @@ public class FormatterTaskMeta
                                 file.getCommentFormatDirective(),
                                 name,
                                 false, // isUser, TODO: FIX
-                                aInCtx.getStats()
-                                );
-
+                                aInCtx.getStats(),
+                                catOrNull,
+                                lItem);
                         Processor.get().getDsp().trigger(lTask);
+
                     }
-                    else
-                    {
-                        Severity.DEATH.report(
-                                toString(),
-                                "process",
-                                "failed to constract",
-                                "constructor not found for class:" + taskClass);
-                    }
+                    break;
                 }
-                catch (Throwable lE)
+
+                case CATEGORY:
                 {
-                    Severity.DEATH.report(toString(),"process","failed to constract", lE);
+                    FormatterTask lTask = taskConstr.newInstance(
+                            aInCtx,
+                            fileNameRule,
+                            file.getIndenter(),
+                            file.getHeaderFormatDirective(),
+                            file.getCommentFormatDirective(),
+                            name,
+                            false, // isUser, TODO: FIX
+                            aInCtx.getStats(),
+                            catOrNull
+                            );
+
+                    Processor.get().getDsp().trigger(lTask);
+
+                    break;
                 }
+                case GENERIC:
+                default:
+                {
+                    FormatterTask lTask = taskConstr.newInstance(
+                                aInCtx,
+                                fileNameRule,
+                                file.getIndenter(),
+                                file.getHeaderFormatDirective(),
+                                file.getCommentFormatDirective(),
+                                name,
+                                false, // isUser, TODO: FIX
+                                aInCtx.getStats());
 
-                break;
+                    Processor.get().getDsp().trigger(lTask);
 
-            /**
-            case CATEGORY:
-
-                break;
-
-            case ITEM:
-
-                break;
-
-            default:
-
-                // DO NOTHING. NOT POSSIBLE
-             **/
+                    break;
+                }
+            }
+        }
+        catch (Throwable lE)
+        {
+            Severity.DEATH.report(toString(), "process", "failed to constract", lE);
         }
     }
 
@@ -114,6 +177,8 @@ public class FormatterTaskMeta
     private final FormatterTaskType type;
     private final FileTypeMeta file;
     private final FileNameRule fileNameRule;
+    private final Cat catOrNull;
     private final Class taskClass;
+    Constructor<FormatterTask> taskConstr;
     private boolean isEnabled = true;
 }

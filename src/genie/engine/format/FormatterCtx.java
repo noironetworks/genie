@@ -7,8 +7,9 @@ import genie.engine.file.WriteStats;
  */
 public class FormatterCtx
 {
-    public FormatterCtx(String aInDestDir)
+    public FormatterCtx(String aInDomain, String aInDestDir)
     {
+        domain = aInDomain;
         rootPath = aInDestDir;
     }
 
@@ -16,6 +17,7 @@ public class FormatterCtx
     {
         return rootPath;
     }
+    public String getDomain() { return domain; }
 
     public WriteStats getStats() { return stats; }
 
@@ -24,6 +26,7 @@ public class FormatterCtx
         return "formatter-ctx(" + getRootPath() + ')';
     }
 
+    private final String domain;
     private final String rootPath;
-    private final WriteStats stats = new WriteStats();
+    private static final WriteStats stats = new WriteStats();
 }

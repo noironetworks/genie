@@ -198,13 +198,18 @@ public class Harness
 
         String lPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".mdl"}};
 
+        FormatterCtx formatterCtx[] =
+                {
+                        new FormatterCtx("dvorkin", "midvorki/code/projects/genie/TEST/OUT1"),
+                };
+
         new Processor(
             3,
             lMetaPaths,
             lPrePaths,
             lPaths,
             ParseRegistry.init(),
-            "WHATEVER-DEST-PATH"
+            formatterCtx
             );
 
     }

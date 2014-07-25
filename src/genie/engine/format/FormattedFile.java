@@ -27,7 +27,7 @@ public class FormattedFile
     }
 
     public FormattedFile(
-            String aInRootPath,
+            FormatterCtx aInCtx,
             String aInRelativePath,
             String aInModulePath,
             String aInFilePrefix,
@@ -37,7 +37,7 @@ public class FormattedFile
             boolean aInOverrideExisting)
     {
         this(
-          new FormatterCtx(aInRootPath),
+          aInCtx,
           new FileNameRule(aInRelativePath,aInModulePath,aInFilePrefix,aInFileSuffix,aInFileExtension),
           aInFileName,
           aInOverrideExisting);
@@ -291,11 +291,6 @@ public class FormattedFile
         lSb.append(lFnSb);
         fullPath = lSb.toString();
         fullFileName = lFnSb.toString();
-        System.out.println(this.toString() +
-                           ".initFullPath(): \nfileName: " + fileName +
-                           "\ndirPath: " + dirPath +
-                           "\nfullPath: " + fullPath +
-                           "\nfullFileName: " + fullFileName);
     }
 
     public File getDir()
@@ -314,7 +309,6 @@ public class FormattedFile
         initDir();
         initFile();
         initWriter();
-        System.out.println("=================== " + this + ".init(): initialized");
     }
 
     private synchronized void initDir()
@@ -327,11 +321,8 @@ public class FormattedFile
         {
             Severity.DEATH.report(toString(),"initialize directory","","", lE);
         }
-        System.out.println("=================== " + this + ".initDir():" + dir);
         for  (int i = 0; i < 10 && !dir.exists(); i++)
         {
-            System.out.println("=================== " + this + ".initDir(): making: " + dir);
-
             if (!dir.mkdirs())
             {
                 try

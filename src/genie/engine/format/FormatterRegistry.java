@@ -1,6 +1,7 @@
 package genie.engine.format;
 
 import modlan.report.Severity;
+import modlan.utils.Strings;
 
 import java.util.TreeMap;
 
@@ -28,11 +29,27 @@ public class FormatterRegistry
 
     public void process(FormatterCtx aInCtx)
     {
-        for (FormatterDomainMeta lDom : domains.values())
+        if (Strings.isWildCard(aInCtx.getDomain()))
         {
-            if (lDom.isEnabled())
+            for (FormatterDomainMeta lDom : domains.values())
+            {
+                if (lDom.isEnabled())
+                {
+                    lDom.process(aInCtx);
+                }
+            }
+        }
+        else
+        {
+            FormatterDomainMeta lDom = domains.get(aInCtx.getDomain());
+            if (null != lDom)
             {
                 lDom.process(aInCtx);
+            }
+            else
+            {
+                Severity.DEATH.report(
+                        toString(),"","", "domain not fund: " + aInCtx.getDomain() + "; domains: " + domains.keySet());
             }
         }
     }

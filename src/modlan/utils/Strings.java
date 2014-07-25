@@ -7,7 +7,8 @@ public class Strings
 {
     public static final String ABSTRACT = "abstract";
     public static final String ANY = "any";
-    public static final String CATEGORY = "category";
+    public static final String ASTERISK = "*";
+    public static final String CATEGORY = " category";
     public static final String CONCRETE = "concrete";
     public static final String DEFAULT = "default";
     public static final String EMPTY = "";
@@ -22,10 +23,12 @@ public class Strings
     public static final String QUAL = "qual";
     public static final String REGEX = "regex";
     public static final String SUPER = "super";
+    public static final String STAR = ASTERISK;
     public static final String TARGET = "target";
     public static final String TYPE = "type";
     public static final String TYPEDEF = "typedef";
     public static final String VALUE = "value";
+    public static final String WILDCARD = ASTERISK;
     public static final String YES = "yes";
 
     public static boolean isEmpty(String aIn) { return null == aIn || aIn.isEmpty(); }
@@ -33,6 +36,8 @@ public class Strings
     public static boolean isAny(String aIn) { return isEmpty(aIn) || ANY.equalsIgnoreCase(aIn); }
 
     public static boolean isDefault(String aIn) { return DEFAULT.equalsIgnoreCase(aIn); }
+
+    public static boolean isWildCard(String aIn) { return isEmpty(aIn) || WILDCARD.equals(aIn); }
 
     public static String replaceChar(String aIn, int aInPos, char aInNewChar)
     {

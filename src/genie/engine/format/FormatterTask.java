@@ -102,13 +102,9 @@ public abstract class FormatterTask implements Task
 
     public final void run()
     {
-        System.out.println(name + "::::::::::::::::::::: run()");
         init();
-        System.out.println(name + "------------------------ initialized()");
         generate();
-        System.out.println(name + "------------------------ generated()");
         finish();
-        System.out.println(name + "------------------------ finished()");
     }
 
     protected void init()
