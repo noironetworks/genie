@@ -1,11 +1,11 @@
 metadata
 {
-    ref<module>
+    ref[module]
     {
-        node<type>
+        node[type]
         {
-            qual<name>
-            prop<super>
+            qual[name]
+            prop[super]
         }
     }
 }

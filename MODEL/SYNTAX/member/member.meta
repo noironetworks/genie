@@ -1,31 +1,31 @@
 metadata
 {
-    ref<module>
+    ref[module]
     {
-        ref<class>
+        ref[class]
         {
-            node<member;
+            node[member;
                 namespace=prop;
-                >
+                ]
             {
-                qual<name>
-                qual<type>
+                qual[name]
+                qual[type]
             }
 
-            node<remove-member;
+            node[remove-member;
                  use=module/class/member;
                  inherit-props=no
-                 >
+                 ]
             {
-                qual<name>
+                qual[name]
             }
 
-            node<override-member;
+            node[override-member;
                  use=module/class/member;
                  inherit-props=no
-                 >
+                 ]
             {
-                qual<name>
+                qual[name]
             }
         }
     }

@@ -16,14 +16,14 @@ public enum Transition
     //     {
     //         # COMMENT
     //         node
-    //         node<qual>:value
+    //         node[qual]:value
     //     }
     // }
     //////////////////////////////////////////////////////////////////////////////////////////
 
     DOC_TO_COMMENT(State.DOC, State.COMMENT, Attach.FOLLOWING, new char[]{'#'}),
     DOC_TO_NODE(State.DOC, State.NODE, Attach.CONTAINING, new char[]{'*'}),
-    NODE_TO_QUAL(State.NODE, State.QUAL, Attach.CONTAINING, new char[]{'<'}),
+    NODE_TO_QUAL(State.NODE, State.QUAL, Attach.CONTAINING, new char[]{'['}),
     NODE_TO_VALUE(State.NODE, State.VALUE, Attach.CONTAINING, new char[]{':'}),
 //    QUAL_TO_VALUE(Status.QUAL, Status.VALUE, Attach.CONTAINING, new char[]{':'}),
     VALUE_TO_CONTENT(State.VALUE, State.CONTENT, Attach.PRECEDING, new char[]{'{'}),

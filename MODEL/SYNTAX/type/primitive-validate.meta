@@ -1,17 +1,17 @@
 metadata
 {
-    ref<module>
+    ref[module]
     {
-        ref<primitive>
+        ref[primitive]
         {
-            node<validate;
-                 use=module/type/validate>
+            node[validate;
+                 use=module/type/validate]
             {
-                node<range;
-                     use=module/type/validate/range>
+                node[range;
+                     use=module/type/validate/range]
 
-                node<content;
-                     use=module/type/validate/content>
+                node[content;
+                     use=module/type/validate/content]
             }
         }
     }

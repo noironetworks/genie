@@ -354,7 +354,7 @@ public class Node
             String lComponent = lComponents[i];
             if (!Strings.isEmpty(lComponent))
             {
-                String lNVPair[] = lComponent.split(":|=");
+                String lNVPair[] = lComponent.split("=");
 
                 for (int j = 0; j < lNVPair.length; j++)
                 {
@@ -364,7 +364,11 @@ public class Node
                 {
                     case 1:
 
-                        if (0 == i)
+                        if (Strings.isEmpty(lNVPair[0]))
+                        {
+                            // SKIP
+                        }
+                        else if (0 == i)
                         {
                             addNVP(aInType, lNVPair[0]); // NO VALUE
                             addNVP("name", lNVPair[0]); // NO VALUE
@@ -377,17 +381,20 @@ public class Node
 
                     case 2:
 
-                        if (0 == i)
+                        if (!Strings.isEmpty(lNVPair[0]))
                         {
-                            addNVP(aInType, lNVPair[0]); // NO VALUE
+                            if (0 == i)
+                            {
+                                addNVP(aInType, lNVPair[0]); // NO VALUE
+                            }
+                            addNVP(lNVPair[0], lNVPair[1]);
                         }
-                        addNVP(lNVPair[0], lNVPair[1]);
                         break;
 
                     default:
 
                         Severity.DEATH.report(this.toString(), "processing of complex value",
-                                              "bad " + aInType + "format", "name value pair can only have one value" + aIn);
+                                              "bad " + aInType + "format", "name value pair can only have one value: " + aIn);
 
                 }
             }

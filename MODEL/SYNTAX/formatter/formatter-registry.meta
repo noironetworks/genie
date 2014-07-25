@@ -1,0 +1,28 @@
+metadata
+{
+    node[domain;
+         namespace=formatter]
+    {
+        qual[name;
+             namespace=formatter]
+
+        node[feature;
+             namespace=formatter]
+        {
+            qual[name]
+
+            node[task;
+                 namespace=formatter
+                 ]
+            {
+                qual[name]
+                prop[target]
+                prop[relative-path]
+                prop[file-type]
+                prop[file-prefix]
+                prop[file-suffix]
+                prop[formatter]
+            }
+        }
+    }
+}

@@ -1,13 +1,13 @@
 metadata
 {
-    ref<module>
+    ref[module]
     {
-        node<class>
+        node[class]
         {
-            qual<name>
-            prop<super>
-            option<abstract>
-            option<concrete>
+            qual[name]
+            prop[super]
+            option[abstract]
+            option[concrete]
         }
     }
 }

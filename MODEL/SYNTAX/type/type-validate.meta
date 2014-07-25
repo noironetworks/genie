@@ -1,71 +1,71 @@
 metadata
 {
-    ref<module>
+    ref[module]
     {
-        ref<type>
+        ref[type]
         {
             # validation node
-            node<validate;
-                 namespace=validation>
+            node[validate;
+                 namespace=validation]
             {
                 # qualifier identifying name
-                qual<name>
+                qual[name]
 
                 # range specification
-                node<range;
-                     namespace=validation>
+                node[range;
+                     namespace=validation]
                 {
-                    qual<name>
-                    prop<min>
-                    prop<max>
-                    prop<size>
+                    qual[name]
+                    prop[min]
+                    prop[max]
+                    prop[size]
                 }
 
                 # range removal specification
-                node<remove-range;
+                node[remove-range;
                      use=module/type/validate/range;
                      inherit-props=no
-                     >
+                     ]
                 {
-                    qual<name>
+                    qual[name]
                 }
 
                 # content constraint specification
-                node<content;
-                     namespace=validation>
+                node[content;
+                     namespace=validation]
                 {
-                    qual<name>
-                    prop<regex>
-                    prop<type>
+                    qual[name]
+                    prop[regex]
+                    prop[type]
                 }
 
                 #content constraint removal specification
-                node<remove-content;
+                node[remove-content;
                      use=module/type/validate/content;
                      inherit-props=no
-                     >
+                     ]
                 {
-                    qual<name>
+                    qual[name]
                 }
             }
 
             # validation clobbering
-            node<clobber-validate;
+            node[clobber-validate;
                  use=module/type/validate
-                 >
+                 ]
             {
-                node<range;
+                node[range;
                      namespace=validation;
-                     use=module/type/validate/range>
-                node<content;
+                     use=module/type/validate/range]
+                node[content;
                      namespace=validation;
-                     use=module/type/validate/content>
+                     use=module/type/validate/content]
             }
 
             # validation removal
-            node<remove-validate;
+            node[remove-validate;
                  use=module/type/validate
-                 >
+                 ]
         }
     }
 }

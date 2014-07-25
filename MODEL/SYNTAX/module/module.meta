@@ -1,8 +1,8 @@
 metadata
 {
-    node<module>
+    node[module]
     {
-        qual<name>
+        qual[name]
     }
 }
 

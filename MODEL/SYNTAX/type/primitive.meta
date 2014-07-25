@@ -1,21 +1,21 @@
 metadata
 {
-    ref<module>
+    ref[module]
     {
-        node<primitive;
-             use=module/type>
+        node[primitive;
+             use=module/type]
         {
-            qual<name>
+            qual[name]
 
-            node<hint; namespace=type>
+            node[hint; namespace=type]
             {
-                qual<name>
+                qual[name]
             }
 
-            node<language;
-                 namespace=type>
+            node[language;
+                 namespace=type]
             {
-                qual<name>
+                qual[name]
             }
         }
     }

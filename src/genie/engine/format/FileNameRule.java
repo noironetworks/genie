@@ -13,8 +13,11 @@ public class FileNameRule
      * <*projectpath*>/ralativepath/modulepath/[fileprefix][*FILENAME*][filesuffix][.filextension]
      */
     public FileNameRule(
-            final String aInRelativePath, final String aInModulePath, final String aInFilePrefix, final String aInFileSuffix, final String aInFileExtension
-                       )
+            final String aInRelativePath,
+            final String aInModulePath,
+            final String aInFilePrefix,
+            final String aInFileSuffix,
+            final String aInFileExtension)
     {
         relativePath = aInRelativePath;
         modulePath = aInModulePath;
