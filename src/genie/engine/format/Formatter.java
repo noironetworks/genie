@@ -33,7 +33,7 @@ public class Formatter
     {
         String[] lStr = new String[6 + (null != aInDescription ? aInDescription.length : 0)];
         int i = 0;
-        lStr[i++] = "SOME COPYRIGHT"; // TODO: insieme.ngen.NGen.getCopyrightMessage(),
+        lStr[i++] = "SOME COPYRIGHT"; // TODO: need to get copyright message,
         lStr[i++] = " ";
         lStr[i++] = formattedFile.getFullFileName();
         lStr[i++] = " ";

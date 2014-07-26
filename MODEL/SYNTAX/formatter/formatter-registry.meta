@@ -23,6 +23,7 @@ metadata
                 prop[file-prefix]
                 prop[file-suffix]
                 prop[formatter]
+                option[user]
             }
         }
     }

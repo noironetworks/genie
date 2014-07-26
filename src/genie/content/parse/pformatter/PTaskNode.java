@@ -35,6 +35,7 @@ public class PTaskNode extends ParseNode
         lTask.setFilePrefix(aInData.getNamedValue("file-prefix", null, false));
         lTask.setFileSuffix(aInData.getNamedValue("file-suffix", null, false));
         lTask.setFormatterClass(aInData.getNamedValue("formatter", null, true));
+        lTask.setIsUser(aInData.checkFlag("user"));
         return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE,lTask);
     }
 }

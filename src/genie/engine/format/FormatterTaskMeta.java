@@ -22,7 +22,8 @@ public class FormatterTaskMeta
             FileTypeMeta aInFile,
             FileNameRule aInFileNameRule,
             Class aInTaskClass,
-            Cat aInCatOrNull)
+            Cat aInCatOrNull,
+            boolean aInIsUser)
     {
         name = aInName;
         type = aInType;
@@ -82,6 +83,7 @@ public class FormatterTaskMeta
         {
             Severity.DEATH.report(toString(),"process","failed to constract", lE);
         }
+        isUser = aInIsUser;
     }
 
     public String getName() { return name; }
@@ -115,7 +117,7 @@ public class FormatterTaskMeta
                                 file.getHeaderFormatDirective(),
                                 file.getCommentFormatDirective(),
                                 name,
-                                false, // isUser, TODO: FIX
+                                isUser,
                                 aInCtx.getStats(),
                                 catOrNull,
                                 lItem);
@@ -134,7 +136,7 @@ public class FormatterTaskMeta
                             file.getHeaderFormatDirective(),
                             file.getCommentFormatDirective(),
                             name,
-                            false, // isUser, TODO: FIX
+                            isUser,
                             aInCtx.getStats(),
                             catOrNull
                             );
@@ -153,7 +155,7 @@ public class FormatterTaskMeta
                                 file.getHeaderFormatDirective(),
                                 file.getCommentFormatDirective(),
                                 name,
-                                false, // isUser, TODO: FIX
+                                isUser,
                                 aInCtx.getStats());
 
                     Processor.get().getDsp().trigger(lTask);
@@ -180,5 +182,6 @@ public class FormatterTaskMeta
     private final Cat catOrNull;
     private final Class taskClass;
     Constructor<FormatterTask> taskConstr;
+    private final boolean isUser;
     private boolean isEnabled = true;
 }

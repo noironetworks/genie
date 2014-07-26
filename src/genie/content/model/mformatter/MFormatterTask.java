@@ -87,6 +87,9 @@ public class MFormatterTask
         }
     }
 
+    public boolean isUser() { return isUser; }
+    public void setIsUser(boolean aIn) { isUser = aIn; }
+
     private FormatterTaskType target = null;
     private Cat targetCatOrNull = null;
     private String relativePath = null;
@@ -94,4 +97,5 @@ public class MFormatterTask
     private String filePrefix = null;
     private String fileSuffix = null;
     private Class formatterClass = null;
+    private boolean isUser = false;
 }
