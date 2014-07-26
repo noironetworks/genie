@@ -157,11 +157,13 @@ public class FormattedFile
     public void flush()
     {
         writer.flush();
+        //System.out.println(this + ".flush()");
     }
 
     public void close()
     {
         writer.close();
+        //System.out.println(this + ".close()");
     }
 
 
@@ -291,6 +293,7 @@ public class FormattedFile
         lSb.append(lFnSb);
         fullPath = lSb.toString();
         fullFileName = lFnSb.toString();
+        //System.out.println("|||||||||||||||" + this + "--> " + fullPath);
     }
 
     public File getDir()

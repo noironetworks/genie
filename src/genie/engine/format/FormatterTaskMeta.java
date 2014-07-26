@@ -3,14 +3,9 @@ package genie.engine.format;
 import genie.engine.file.WriteStats;
 import genie.engine.model.Cat;
 import genie.engine.model.Item;
-import genie.engine.model.Node;
 import genie.engine.proc.Processor;
 import modlan.report.Severity;
-
 import java.lang.reflect.Constructor;
-import java.util.Collection;
-import java.util.LinkedList;
-
 /**
  * Created by midvorki on 7/24/14.
  */
@@ -21,7 +16,7 @@ public class FormatterTaskMeta
             FormatterTaskType aInType,
             FileTypeMeta aInFile,
             FileNameRule aInFileNameRule,
-            Class aInTaskClass,
+            Class<FormatterTask> aInTaskClass,
             Cat aInCatOrNull,
             boolean aInIsUser)
     {
@@ -102,6 +97,7 @@ public class FormatterTaskMeta
 
     public void process(FormatterCtx aInCtx)
     {
+        //System.out.println(this + ".process()");
         try
         {
             switch (type)
@@ -180,7 +176,7 @@ public class FormatterTaskMeta
     private final FileTypeMeta file;
     private final FileNameRule fileNameRule;
     private final Cat catOrNull;
-    private final Class taskClass;
+    private final Class<FormatterTask> taskClass;
     Constructor<FormatterTask> taskConstr;
     private final boolean isUser;
     private boolean isEnabled = true;

@@ -1,7 +1,7 @@
 package genie.content.model.mformatter;
 
 import genie.engine.format.FileTypeMeta;
-import genie.engine.format.FormatterRegistry;
+import genie.engine.format.FormatterTask;
 import genie.engine.format.FormatterTaskType;
 import genie.engine.model.Cat;
 import genie.engine.model.Item;
@@ -74,12 +74,12 @@ public class MFormatterTask
     public String getFileSuffix() { return fileSuffix; }
     public void setFileSuffix(String aIn) { fileSuffix = aIn; }
 
-    public Class getFormatterClass() { return formatterClass; }
+    public Class<FormatterTask> getFormatterClass() { return formatterClass; }
     public void setFormatterClass(String aIn)
     {
         try
         {
-            formatterClass = ClassLoader.getSystemClassLoader().loadClass(aIn);
+            formatterClass = (Class<FormatterTask>) ClassLoader.getSystemClassLoader().loadClass(aIn);
         }
         catch (Throwable lE)
         {
@@ -96,6 +96,6 @@ public class MFormatterTask
     private FileTypeMeta fileType = null;
     private String filePrefix = null;
     private String fileSuffix = null;
-    private Class formatterClass = null;
+    private Class<FormatterTask> formatterClass = null;
     private boolean isUser = false;
 }

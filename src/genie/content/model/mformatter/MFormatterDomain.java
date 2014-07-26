@@ -3,7 +3,6 @@ package genie.content.model.mformatter;
 import genie.engine.format.*;
 import genie.engine.model.Cat;
 import genie.engine.model.Item;
-
 import java.util.Collection;
 import java.util.LinkedList;
 

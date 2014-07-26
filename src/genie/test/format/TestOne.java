@@ -29,6 +29,7 @@ public class TestOne extends GenericFormatterTask
 
     public void generate()
     {
+        System.out.println(this + ".generate()");
         out.println("Hi, I really really like you");
     }
 }
