@@ -36,7 +36,7 @@ public class Harness
         String lPrePaths[][] =
                 {
                         {"/Users/midvorki/code/projects/genie/MODEL/LOADER",".cfg"},
-                        {"/Users/midvorki/code/projects/genie/MODEL/FORMATTER",".cfg"},
+//                        {"/Users/midvorki/code/projects/genie/MODEL/FORMATTER",".cfg"},
                 };
 
 //        String lPaths[][] = {{"/Users/midvorki/code/projects/genie/MODEL",".mdl"}};

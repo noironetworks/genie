@@ -12,13 +12,13 @@ public enum FileTypeMeta
              new Indenter(10, 4, true),
              new BlockFormatDirective(
                     "/**",
-                    "*",
+                    "* ",
                     null,
                     "*/",
                     1),
              new BlockFormatDirective(
                      "/*",
-                     "*",
+                     "* ",
                      null,
                      "*/",
                      1)
@@ -28,7 +28,7 @@ public enum FileTypeMeta
              new Indenter(10, 4, true),
              new BlockFormatDirective(
                      "/**",
-                     "*",
+                     "* ",
                      null,
                      "*/",
                      1),
@@ -42,16 +42,16 @@ public enum FileTypeMeta
               ".meta",
               new Indenter(10, 4, true),
               new BlockFormatDirective(
-                      "#",
-                      "#",
+                      "# ",
+                      "# ",
                       null,
-                      "#",
+                      "# ",
                       0),
               new BlockFormatDirective(
-                      "#",
-                      "#",
+                      "# ",
+                      "# ",
                       null,
-                      "#",
+                      "# ",
                       0)),
     ;
     private FileTypeMeta(String aInName,

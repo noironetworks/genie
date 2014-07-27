@@ -1,6 +1,7 @@
 package genie.engine.model;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Model item associated with corresponding model graph node
@@ -134,7 +135,7 @@ public class Item
 
     public Node getChildNode(Cat aInCat, String aInName)
     {
-        return getNode().getChildNode(aInCat,aInName);
+        return getNode().getChildNode(aInCat, aInName);
     }
 
     /**
@@ -197,7 +198,84 @@ public class Item
     }
 
     /**
+     * registers parsing data nodes that resulted in genesis and formation of this item
+     * @param aIn parsing data node
+     */
+    public synchronized void addParsingDataNode(genie.engine.parse.modlan.Node aIn)
+    {
+        if (null == parsingDataNodes)
+        {
+            parsingDataNodes = new LinkedList<genie.engine.parse.modlan.Node>();
+        }
+        parsingDataNodes.add(aIn);
+    }
+
+    /**
+     * checks if this item has parsing data nodes associated with it
+     * @return true if this item has parsing data nodes
+     */
+    public boolean hasParsingDataNodes()
+    {
+        return null != parsingDataNodes && !parsingDataNodes.isEmpty();
+    }
+
+    /**
+     * returns parsing data nodes associated with this item
+     * @return parsing data nodes or null, if none are available
+     */
+    public LinkedList<genie.engine.parse.modlan.Node> getParsingDataNodes()
+    {
+        return parsingDataNodes;
+    }
+
+    /**
+     * adds a list of comments to this item
+     * @param aIn comments added
+     */
+    public void addComments(String[] aIn)
+    {
+        if (null == comments)
+        {
+            comments = new LinkedList<String>();
+        }
+        for (String lThis : aIn)
+        {
+            comments.add(lThis);
+        }
+    }
+
+    /**
+     * retrieves all comments associated with this item
+     * @param aOut comments retrieved.
+     */
+    public void getComments(Collection<String> aOut)
+    {
+        if (hasParsingDataNodes())
+        {
+            for (genie.engine.parse.modlan.Node lNode : parsingDataNodes)
+            {
+                if (lNode.hasComments())
+                {
+                    aOut.addAll(lNode.getComments());
+                }
+            }
+        }
+        if (null != comments && !comments.isEmpty())
+        {
+            aOut.addAll(comments);
+        }
+    }
+
+
+    /**
      * Corresponding model graph node.
      */
     protected final Node node;
+
+    /**
+     * parsing data nodes that resulted in genesis and formation of this item
+     */
+    private LinkedList<genie.engine.parse.modlan.Node> parsingDataNodes = null;
+
+    private LinkedList<String> comments = null;
 }

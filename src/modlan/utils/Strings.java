@@ -69,4 +69,21 @@ public class Strings
         return aIn;
     }
 
+    public static String trimFirstN(String aIn, int aInN)
+    {
+        String lRet = aIn;
+        if (aInN < aIn.length())
+        {
+            int i;
+            for (i = 0; i < aInN && (' ' == aIn.charAt(i)); i++)
+            {
+
+            }
+            if (0 < i)
+            {
+                lRet = aIn.substring(i);
+            }
+        }
+        return lRet;
+    }
 }

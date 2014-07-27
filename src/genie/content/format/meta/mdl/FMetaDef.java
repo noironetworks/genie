@@ -49,8 +49,14 @@ public class FMetaDef
     {
         if (aInNode.getParent() == aInParent)
         {
+            TreeMap<String, MNodeProp> lNodeProps = new TreeMap<String, MNodeProp>();
+            aInNode.getProps(lNodeProps);
+            LinkedList<String> lComms = new LinkedList<String>();
+            aInNode.getComments(lComms);
+            getPropComments(lNodeProps.values(), lComms);
+            genComments(aInIndent, aInNode, lComms);
             out.println(aInIndent, aInNode.getLID().getName());
-            genProps(aInIndent, aInNode);
+            genNodeProps(aInIndent, lNodeProps.values());
 
             LinkedList<Item> lChildNodes = new LinkedList<Item>();
             aInNode.getChildItems(MNode.MY_CAT, lChildNodes);
@@ -63,17 +69,7 @@ public class FMetaDef
             }
         }
     }
-    private void genProps(int aInIndent, MNode aInNode)
-    {
-        TreeMap<String, MNodeProp> lNodeProps = new TreeMap<String, MNodeProp>();
-        aInNode.getProps(lNodeProps);
-        if (!lNodeProps.isEmpty())
-        {
-            out.println(aInIndent, '[');
-            genNodeProps(aInIndent, lNodeProps.values());
-            out.println(aInIndent, ']');
-        }
-    }
+
     private void genNodeProps(int aInIndent, Collection<MNodeProp> aInNodeProps)
     {
         for (Item lItem : aInNodeProps)
@@ -98,4 +94,20 @@ public class FMetaDef
                 break;
         }
     }
+
+    public static String[] DUMMY = new String[0];
+    private void genComments(int aInIndent, MNode aInNode, Collection<String> aInComments)
+    {
+        out.printIncodeComment(aInIndent,aInComments.toArray(DUMMY));
+    }
+
+    public void getPropComments(Collection<MNodeProp> aInNodeProps, Collection<String> aOutComments)
+    {
+        for (MNodeProp lThis : aInNodeProps)
+        {
+            aOutComments.add(lThis.getLID().getName() + ": ");
+            lThis.getComments(aOutComments);
+        }
+    }
+
 }

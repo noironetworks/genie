@@ -211,6 +211,13 @@ public class Node
             this.item = (null == lRes || null == lRes.getSecond()) ?
                             getAncestorItem() : lRes.getSecond();
 
+            if (null != this.item)
+            {
+                if (hasComments())
+                {
+                    this.item.addParsingDataNode(this);
+                }
+            }
             //System.out.println(this + ".process(parent-proc=" + aInParentProcessor + "): item=" + this.item);
 
             //System.out.println(this + ": NEW ITEM: " + item + " WITH PROC: " + lProc + " of class " + lProc.getClass());
@@ -285,7 +292,10 @@ public class Node
             comments = new java.util.LinkedList<String>();
         }
         //System.out.println(this + ".addComments(" + aIn + ")");
-        comments.addAll(aIn);
+        for (String lThis : aIn)
+        {
+            comments.add(Strings.trimFirstN(lThis, 1));
+        }
     }
 
     /**
