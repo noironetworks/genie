@@ -36,6 +36,7 @@ public class LoaderIncludeMeta
         return Strings.isEmpty(name) ? dir : name;
     }
 
+    public String toString() { return "loader:include(" + name + ')'; }
     private final String name;
     private final String dir;
     private final String ext;

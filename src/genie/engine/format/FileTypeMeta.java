@@ -37,8 +37,22 @@ public enum FileTypeMeta
                      "*",
                      null,
                      "*/",
-                     1)
-    ),
+                     1)),
+    MDL_META("meta",
+              ".meta",
+              new Indenter(10, 4, true),
+              new BlockFormatDirective(
+                      "#",
+                      "#",
+                      null,
+                      "#",
+                      0),
+              new BlockFormatDirective(
+                      "#",
+                      "#",
+                      null,
+                      "#",
+                      0)),
     ;
     private FileTypeMeta(String aInName,
                          String ainFileExt,

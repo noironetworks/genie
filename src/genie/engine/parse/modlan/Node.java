@@ -80,7 +80,7 @@ public class Node
         {
             Severity.DEATH.report(
                     this.toString(),
-                    "node named value retrieval", "value not found", "value by name " + aInName + "not found;" +
+                    "node named value retrieval", "value not found", "value by name \'" + aInName + "\' not found;" +
                     "no default provided.");
         }
         return lRet;
