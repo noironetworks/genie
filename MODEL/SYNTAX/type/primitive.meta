@@ -3,7 +3,9 @@ metadata
     ref[module]
     {
         node[primitive;
-             use=module/type]
+             use=module/type;
+             inherit-props=no;
+             ]
         {
             qual[name]
 

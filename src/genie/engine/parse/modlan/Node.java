@@ -49,8 +49,8 @@ public class Node
         return hasNamedValues() ?
                 (Strings.YES.equalsIgnoreCase(
                         getNamedValue(
-                            aInName,aInPositiveDefault ? Strings.YES : Strings.NO, true)) ||
-                 nvps.containsKey(aInName)) :
+                            aInName,aInPositiveDefault ? Strings.YES : Strings.NO, true)) /**||
+                        nvps.containsKey(aInName)**/) :
                 aInPositiveDefault;
     }
 

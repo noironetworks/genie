@@ -7,6 +7,7 @@ public enum Severity
 {
     TODO("TODO:", false),
     INFO("INFO:", false),
+    TRACE("INFO", false),
     WARN("WARN:", false),
     ERROR("ERR:", false),
     DEATH("DEATH:", true)
@@ -105,6 +106,11 @@ public enum Severity
             Throwable aInT
             )
     {
+        if (null == aInT && TRACE == this)
+        {
+            aInT = new Throwable();
+        }
+
         int lThisCnt;
         synchronized (this) { lThisCnt = count++; };
 
@@ -150,6 +156,12 @@ public enum Severity
                 aOutSb.append(aInT.getMessage());
             }
             aOutSb.append(']');
+            //aOutSb.append()
+            StackTraceElement[] lTrace = aInT.getStackTrace();
+            for (StackTraceElement lElem : lTrace)
+            {
+                aOutSb.append("\n    " + lElem.toString());
+            }
         }
     }
 
