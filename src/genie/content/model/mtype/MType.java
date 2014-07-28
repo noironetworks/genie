@@ -16,7 +16,7 @@ import java.util.*;
 public class MType extends SubModuleItem
 {
     public static final Cat MY_CAT = Cat.getCreate("mtype");
-    public static final RelatorCat SUPER_CAT = RelatorCat.getCreate("supertype", Cardinality.SINGLE);
+    public static final RelatorCat SUPER_CAT = RelatorCat.getCreate("type:super", Cardinality.SINGLE);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // CONSTRUCTION
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

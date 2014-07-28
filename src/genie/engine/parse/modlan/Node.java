@@ -398,10 +398,12 @@ public class Node
 
                         if (!Strings.isEmpty(lNVPair[0]))
                         {
+                            /**
                             if (0 == i)
                             {
                                 addNVP(aInType, lNVPair[0]); // NO VALUE
                             }
+                             **/
                             addNVP(lNVPair[0], lNVPair[1]);
                         }
                         break;

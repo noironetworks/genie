@@ -8,7 +8,6 @@ import genie.engine.format.FormatterRegistry;
 import genie.engine.model.*;
 import genie.test.TestObj;
 import genie.engine.proc.Processor;
-import genie.test.mtype.TypeTest;
 import modlan.utils.Strings;
 
 import java.util.*;

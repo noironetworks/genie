@@ -56,7 +56,13 @@ public class FMetaDef
             getPropComments(lNodeProps.values(), lComms);
             genComments(aInIndent, aInNode, lComms);
             out.println(aInIndent, aInNode.getLID().getName());
-            genNodeProps(aInIndent, lNodeProps.values());
+
+            if (!lNodeProps.isEmpty())
+            {
+                out.println(aInIndent, '[');
+                genNodeProps(aInIndent, lNodeProps.values());
+                out.println(aInIndent, ']');
+            }
 
             LinkedList<Item> lChildNodes = new LinkedList<Item>();
             aInNode.getChildItems(MNode.MY_CAT, lChildNodes);
@@ -105,7 +111,7 @@ public class FMetaDef
     {
         for (MNodeProp lThis : aInNodeProps)
         {
-            aOutComments.add(lThis.getLID().getName() + ": ");
+            aOutComments.add("- " + lThis.getLID().getName() + ": ");
             lThis.getComments(aOutComments);
         }
     }
