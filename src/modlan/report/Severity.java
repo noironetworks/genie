@@ -59,7 +59,7 @@ public enum Severity
             case ERROR:
             case DEATH:
 
-                System.out.println(aInText);
+                stream.report(aInText);
                 origErr.println(aInText);
                 if (null != aInT)
                 {
@@ -70,7 +70,7 @@ public enum Severity
 
             default:
 
-                System.out.println(aInText);
+                stream.report(aInText);
                 if (null != aInT)
                 {
                     aInT.printStackTrace();
@@ -129,9 +129,9 @@ public enum Severity
         {
             aInT = new Throwable();
         }
+        int lThisCnt = stream.getLinecnt();
 
-        int lThisCnt;
-        synchronized (this) { lThisCnt = count++; };
+///        synchronized (this) { lThisCnt = count++; };
 
         aOutSb.append(lThisCnt);
         aOutSb.append(":" + Thread.currentThread().getName());
@@ -186,9 +186,9 @@ public enum Severity
 
     public static final void init(String aInReportRoot)
     {
-        System.out.println("========================================");
-        System.out.println("==  STARTING THE CODE WRITING ROBOT   ==");
-        System.out.println("========================================");
+        System.out.println("====================================================");
+        System.out.println("==     STARTING GENNIE, THE CODE WRITING ROBOT    ==");
+        System.out.println("====================================================");
 
         try
         {
@@ -204,8 +204,8 @@ public enum Severity
             }
             lLogFile.createNewFile();
 
-            stream = new PrintStream(lLogFile);
-            System.out.println("CREATING LOG: " + lLogFile.getAbsolutePath() );
+            stream = new Reporter(lLogFile);
+            System.out.println("LOG FILE: " + lLogFile.getAbsolutePath() );
             origOut = System.out;
             System.setOut(stream);
             origErr = System.err;
@@ -220,9 +220,9 @@ public enum Severity
 
     public static final void end(boolean aInNormal)
     {
-        origOut.println("========================================");
-        origOut.println("== ROBOT FINISHED WRITNG CODE FOR YOU ==");
-        origOut.println("========================================");
+        origOut.println("====================================================");
+        origOut.println("== GENNIE THE ROBOT FINISHED WRITING CODE FOR YOU ==");
+        origOut.println("====================================================");
         if (null != stream)
         {
             stream.flush();
@@ -246,7 +246,7 @@ public enum Severity
 
     private static PrintStream origOut = null;
     private static PrintStream origErr = null;
-    private static PrintStream stream = null;
+    private static Reporter stream = null;
     private String name;
     private boolean abort;
     private static int count = 0;

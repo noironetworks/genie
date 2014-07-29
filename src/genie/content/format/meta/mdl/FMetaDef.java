@@ -32,8 +32,7 @@ public class FMetaDef
 
     public void generate()
     {
-        System.out.println("--------->" + this + ".generate()");
-        out.println("Hi, I really really like you");
+        out.println();
         genNodelist(0, null, MNode.MY_CAT.getNodes().getItemsList());
     }
 
@@ -111,7 +110,7 @@ public class FMetaDef
     {
         for (MNodeProp lThis : aInNodeProps)
         {
-            aOutComments.add("- " + lThis.getLID().getName() + ": ");
+            aOutComments.add("- [" + lThis.getType() + "] " + lThis.getLID().getName() + ": ");
             lThis.getComments(aOutComments);
         }
     }

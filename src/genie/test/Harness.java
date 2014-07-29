@@ -28,6 +28,8 @@ public class Harness
     {
         Severity.init("/Users/midvorki/code/projects/genie");
 
+//        Severity.WARN.report("","","","BLAH BLAH");
+//        System.out.println("WHAT?");
         String lMetaPaths[][] =
                 {
                         {"/Users/midvorki/code/projects/genie/MODEL/SYNTAX",".meta"},
