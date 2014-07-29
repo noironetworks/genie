@@ -1,5 +1,9 @@
 package modlan.report;
 
+import java.io.File;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+
 /**
  * Created by midvorki on 3/15/14.
  */
@@ -36,29 +40,44 @@ public enum Severity
               null
               );
 
+        doPrint(lSb.toString(),
+                    null != aInT || (!abort) ?
+                            aInT :
+                            new Error(lSb.toString()));
+
         if (abort)
         {
-            if (null != aInT)
-            {
-                System.out.println(lSb.toString());
-                aInT.printStackTrace();
-            }
-            else
-            {
-                new Error(lSb.toString()).printStackTrace();
-            }
-            System.exit(666);
-        }
-        else
-        {
-            if (null != aInT)
-            {
-                aInT.printStackTrace();
-            }
-            System.out.println(lSb.toString());
+            end(false);
         }
     }
 
+    private void doPrint(String aInText, Throwable aInT)
+    {
+        switch (this)
+        {
+            case WARN:
+            case ERROR:
+            case DEATH:
+
+                System.out.println(aInText);
+                origErr.println(aInText);
+                if (null != aInT)
+                {
+                    aInT.printStackTrace();
+                    aInT.printStackTrace(origErr);
+                }
+                break;
+
+            default:
+
+                System.out.println(aInText);
+                if (null != aInT)
+                {
+                    aInT.printStackTrace();
+                }
+                break;
+        }
+    }
     public void report(String aInContext, String aInAction, String aInCause, Throwable aInT)
     {
         report(aInContext, aInAction, aInCause, null, aInT);
@@ -165,6 +184,56 @@ public enum Severity
         }
     }
 
+    public static final void init(String aInReportRoot)
+    {
+        System.out.println("========================================");
+        System.out.println("==  STARTING THE CODE WRITING ROBOT   ==");
+        System.out.println("========================================");
+
+        try
+        {
+            File lDir = new File(aInReportRoot + "/genlog");
+            if (!lDir.exists())
+            {
+                lDir.mkdirs();
+            }
+            File lLogFile = new File(aInReportRoot + "/genlog/GENLOG.txt");
+            if (lLogFile.exists())
+            {
+                lLogFile.delete();
+            }
+            lLogFile.createNewFile();
+
+            stream = new PrintStream(lLogFile);
+            System.out.println("CREATING LOG: " + lLogFile.getAbsolutePath() );
+            origOut = System.out;
+            System.setOut(stream);
+            origErr = System.err;
+            System.setErr(stream);
+        }
+        catch (Throwable lT)
+        {
+            DEATH.report("log-initialization", "", "can't init stream", lT);
+        }
+
+    }
+
+    public static final void end(boolean aInNormal)
+    {
+        origOut.println("========================================");
+        origOut.println("== ROBOT FINISHED WRITNG CODE FOR YOU ==");
+        origOut.println("========================================");
+        if (null != stream)
+        {
+            stream.flush();
+            stream.close();
+        }
+        if (!aInNormal)
+        {
+            System.exit(666);
+        }
+    }
+
     public String getName()
     {
         return name;
@@ -175,6 +244,9 @@ public enum Severity
         return abort;
     }
 
+    private static PrintStream origOut = null;
+    private static PrintStream origErr = null;
+    private static PrintStream stream = null;
     private String name;
     private boolean abort;
     private static int count = 0;

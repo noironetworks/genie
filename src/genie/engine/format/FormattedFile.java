@@ -6,6 +6,7 @@ import modlan.report.Severity;
 import modlan.utils.Strings;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 
 /**
@@ -233,6 +234,11 @@ public class FormattedFile
     public boolean isOverrideExisting()
     {
         return overrideExisting;
+    }
+
+    public PrintWriter getWriter()
+    {
+        return writer;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

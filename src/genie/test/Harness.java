@@ -8,6 +8,7 @@ import genie.engine.format.FormatterRegistry;
 import genie.engine.model.*;
 import genie.test.TestObj;
 import genie.engine.proc.Processor;
+import modlan.report.Severity;
 import modlan.utils.Strings;
 
 import java.util.*;
@@ -20,12 +21,12 @@ public class Harness
 
     public static void main(String [ ] args)
     {
-        System.out.println("\n\n\n####################################################################\n\n\n");
          fileTest();
     }
 
     public static void fileTest()
     {
+        Severity.init("/Users/midvorki/code/projects/genie");
 
         String lMetaPaths[][] =
                 {
@@ -53,5 +54,6 @@ public class Harness
             formatterCtx
             );
 
+        Severity.end(true);
     }
 }
