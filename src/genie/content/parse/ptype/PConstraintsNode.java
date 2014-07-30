@@ -34,7 +34,7 @@ public class PConstraintsNode
                                    aInData.getNamedValue("min", null, false),
                                    aInData.getNamedValue("max", null, false),
                                    aInData.getNamedValue("default", null, false),
-                                   Integer.parseInt(aInData.getNamedValue("default", "-1", false)),
+                                   Integer.parseInt(aInData.getNamedValue("size", "-1", false)),
                                    aInData.getNamedValue("regex", null, false)));
     }
 

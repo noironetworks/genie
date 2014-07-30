@@ -12,7 +12,7 @@ public enum DefinedIn
     HEX,
     OCT,
     BIN,
-    CHAR,
+    ASCII,
     STRING,
     SPECIAL,
     UNKNOWN
