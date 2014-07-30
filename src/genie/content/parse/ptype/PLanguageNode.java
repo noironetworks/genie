@@ -30,11 +30,12 @@ public class PLanguageNode
         MLanguageBinding lLang = new MLanguageBinding(
                 (MType)aInParentItem,
                 Language.get(aInData.getNamedValue(Strings.NAME, null, true)),
-                aInData.getNamedValue("syntax", null, true),
+                aInData.getNamedValue("syntax", null, false),
                 aInData.getNamedValue("object-syntax", null, false),
                 PassBy.get(aInData.getNamedValue("pass-by", null, false)),
                 aInData.checkFlag("pass-const"),
-                aInData.getNamedValue("include", null, false));
+                aInData.getNamedValue("include", null, false),
+                aInData.getNamedValue("like", null, false));
 
         return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE, lLang);
     }

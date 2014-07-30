@@ -12,8 +12,8 @@ import modlan.utils.Strings;
 public class MConstraints
         extends SubTypeItem
 {
-    public static final Cat MY_CAT = Cat.getCreate("type:language:constraints");
-    public static final RelatorCat USE = RelatorCat.getCreate("type:constraints:use", Cardinality.SINGLE);
+    public static final Cat MY_CAT = Cat.getCreate("primitive:language:constraints");
+    public static final RelatorCat USE = RelatorCat.getCreate("primitive:language:constraints:use", Cardinality.SINGLE);
 
     public static final String NAME = "constraints";
 
@@ -49,50 +49,119 @@ public class MConstraints
         }
     }
 
+    public MLanguageBinding getLanguageBinding()
+    {
+        return (MLanguageBinding) getParent();
+    }
+
+    public MConstraints getLike()
+    {
+        MConstraints lThis = null;
+        for (MLanguageBinding lLB = getLanguageBinding().getLike(); null != lLB && null == lThis; lLB = lLB.getLike())
+        {
+            lThis = (MConstraints) lLB.getChildItem(MConstraints.MY_CAT,MConstraints.NAME);
+        }
+        return lThis;
+    }
+
     /**
      * @return retrieves absolute min value for this type
      */
-    public String getMin() { return min; }
+    public String getMin()
+    {
+        if (Strings.isEmpty(min))
+        {
+            MConstraints lThat = getLike();
+            if (null != lThat)
+            {
+                min = lThat.getMin();
+            }
+        }
+        return min;
+    }
 
     /**
      * @return whether or not this binding has absolute min value
      */
-    public boolean hasMin() { return !Strings.isEmpty(min); }
+    public boolean hasMin() { return !Strings.isEmpty(getMin()); }
     
     /**
      * @return absolute max value for this type
      */
-    public String getMax() { return max; }
-
+    public String getMax()
+    {
+        if (Strings.isEmpty(max))
+        {
+            MConstraints lThat = getLike();
+            if (null != lThat)
+            {
+                max = lThat.getMax();
+            }
+        }
+        return max;
+    }
     /**
      * @return whether or not this binding has absolute max value
      */
-    public boolean hasMax() { return !Strings.isEmpty(max); }
+    public boolean hasMax() { return !Strings.isEmpty(getMax()); }
 
     /**
      * @return absolute default value for this type
      */
-    public String getDefault() { return dflt; }
+    public String getDefault()
+    {
+        if (Strings.isEmpty(dflt))
+        {
+            MConstraints lThat = getLike();
+            if (null != lThat)
+            {
+                dflt = lThat.getDefault();
+            }
+        }
+        return dflt;
+    }
 
     /**
      * @return whether or not this binding has absolute default value
      */
-    public boolean hasDefault() { return !Strings.isEmpty(dflt); }
+    public boolean hasDefault() { return !Strings.isEmpty(getDefault()); }
 
     /**
      * @return specified size constraint for this datatype
      */
-    public int getSize() { return size; }
+    public int getSize()
+    {
+        if (-1 == (size))
+        {
+            MConstraints lThat = getLike();
+            if (null != lThat)
+            {
+                size = lThat.getSize();
+            }
+        }
+        return size;
+    }
 
     /**
      * @return default regex statement if any
      */
-    public String getRegex() { return regex; }
+    public String getRegex()
+    {
+        if (Strings.isEmpty(regex))
+        {
+            MConstraints lThat = getLike();
+            if (null != lThat)
+            {
+                regex = lThat.getRegex();
+            }
+        }
+        return regex;
+    }
 
     /**
      * @return whether or not this binding has default regex statement
      */
-    public boolean hasRegex() { return !Strings.isEmpty(regex); }
+    public boolean hasRegex() { return !Strings.isEmpty(getRegex()); }
 
     /**
      * Specifies if the constraints use some other datatype. Target type that allows constraints to be
@@ -124,37 +193,38 @@ public class MConstraints
      */
     public MType getType()
     {
-        if (isUsesOtherType())
+        for (MConstraints lThis = this; null != lThis; lThis = lThis.getLike())
         {
-            Relator lRel = getUseRelator();
-            return (MType) (null == lRel ? null : lRel.getToItem());
+            if (lThis.isUsesOtherType())
+            {
+                Relator lRel = getUseRelator();
+                return (MType) (null == lRel ? super.getMType() : lRel.getToItem());
+            }
         }
-        else
-        {
-            return super.getMType();
-        }
+        return super.getMType();
     }
 
     /**
      * absolute min value for this type
      */
-    private final String min;
+    private String min;
     /**
      * absolute max value for this type
      */
-    private final String max;
+    private String max;
     /**
      * absolute default value for this type
      */
-    private final String dflt;
+    private String dflt;
     /**
      * specifies size constraint for this datatype
      */
-    private final int size;
+    private int size;
+
     /**
      * default regex statement if any
      */
-    private final String regex;
+    private String regex;
     /**
      * Specifies if the constraints use some other datatype. Target type that allows constraints to be
      * defined in another type (useful for strings etc.) If range specification requires a different type

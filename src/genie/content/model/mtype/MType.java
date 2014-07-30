@@ -17,6 +17,8 @@ public class MType extends SubModuleItem
 {
     public static final Cat MY_CAT = Cat.getCreate("mtype");
     public static final RelatorCat SUPER_CAT = RelatorCat.getCreate("type:super", Cardinality.SINGLE);
+    public static final RelatorCat LIKE_CAT = RelatorCat.getCreate("primitive:like", Cardinality.SINGLE);
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // CONSTRUCTION
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -290,6 +292,72 @@ public class MType extends SubModuleItem
         return lRet;
     }
 
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIMITIVE LIKE API
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void addLiketype(String aInTargetGName)
+    {
+        if (!Strings.isEmpty(aInTargetGName))
+        {
+            if (!isBuiltIn())
+            {
+                Severity.DEATH.report(this.toString(), "add like-type", "built-in/base type can't have like-types",
+                                      "can't derive from " + aInTargetGName);
+            }
+            else if (getGID().getName().equals(aInTargetGName))
+            {
+                Severity.DEATH
+                        .report(this.toString(), "add like-type", "can't reference self", "can't derive from self");
+            }
+            LIKE_CAT.add(MY_CAT, getGID().getName(), MY_CAT, aInTargetGName);
+        }
+    }
+
+    /**
+     * retrieves relator representing liketype relationship
+     * @return relator that represents liketype relationship with another type, null if doesn't exist
+     */
+    public Relator getLiketypeRelator()
+    {
+        return LIKE_CAT.getRelator(getGID().getName());
+    }
+
+    /**
+     * checks if the type has a liketype
+     * @return returns true if this type has liketype, false otherwise
+     */
+    public boolean hasLiketype()
+    {
+        Relator lRel = LIKE_CAT.getRelator(getGID().getName());
+        return null != lRel && lRel.hasTo();
+    }
+
+    /**
+     * retrieves liketpype of this class
+     * @return liketype if liketype exists, null otherwise
+     */
+    public MType getLiketype()
+    {
+        Relator lRel = getLiketypeRelator();
+        return (MType) (null == lRel ? null : lRel.getToItem());
+    }
+
+    /**
+     * retrieves all liketypes for this type. liketypes are added in order of distance from the subtype.
+     * @param aOut collection of liketypes
+     * @param aInIncludeSelf identifies whether to include this type
+     */
+    public void getLiketypes(Collection<MType> aOut, boolean aInIncludeSelf)
+    {
+        for (MType lThat = aInIncludeSelf ? this : getLiketype();
+             null != lThat;
+             lThat = lThat.getLiketype())
+        {
+            aOut.add(lThat);
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // BUILT-IN LANGUAGE BINDING AND HINTs APIs
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -301,8 +369,11 @@ public class MType extends SubModuleItem
      */
     public MLanguageBinding getLanguageBinding(Language aIn)
     {
-        MLanguageBinding lLb =
-                (MLanguageBinding) getBuiltInType().getChildItem(MLanguageBinding.MY_CAT,aIn.getName());
+        MLanguageBinding lLb = null;
+        for (MType lThis = getBuiltInType(); null != lThis && null == lLb; lThis = lThis.getLiketype())
+        {
+            lLb = (MLanguageBinding) lThis.getChildItem(MLanguageBinding.MY_CAT, aIn.getName());
+        }
 
         if (null == lLb)
         {
@@ -311,7 +382,8 @@ public class MType extends SubModuleItem
                     "language binding retrieval",
                     "language binding not found",
                     "no language binding defined for " +
-                    aIn);
+                    aIn +
+                    ": has like type: " + hasLiketype() + " : " + getLiketype());
         }
 
         return lLb;
@@ -323,9 +395,11 @@ public class MType extends SubModuleItem
      */
     public MTypeHint getTypeHint()
     {
-        MTypeHint lTh =
-                (MTypeHint) getBuiltInType().getChildItem(MTypeHint.MY_CAT, MTypeHint.NAME);
-
+        MTypeHint lTh = null;
+        for (MType lThis = getBuiltInType(); null != lThis && null == lTh; lThis = lThis.getLiketype())
+        {
+            lTh = (MTypeHint) lThis.getChildItem(MTypeHint.MY_CAT, MTypeHint.NAME);
+        }
         if (null == lTh)
         {
             Severity.DEATH.report(
@@ -366,7 +440,18 @@ public class MType extends SubModuleItem
              lThisType = aInCheckSuperTypes ? lThisType.getSupertype() : null)
         {
             lConst = lThisType.getConst(aInName);
+
+            if (null != lConst && lThisType.isBase())
+            {
+                for (lThisType = lThisType.getLiketype();
+                     null != lThisType && null == lConst;
+                     lThisType = lThisType.getLiketype())
+                {
+                    lConst = lThisType.getConst(aInName);
+                }
+            }
         }
+
         return lConst;
     }
     /**
@@ -377,6 +462,17 @@ public class MType extends SubModuleItem
     {
         Collection<Item> lItems = new LinkedList<Item>();
         getChildItems(MConst.MY_CAT,lItems);
+
+        if (isBase())
+        {
+            for (MType lThisType = this.getLiketype();
+                 null != lThisType;
+                 lThisType = lThisType.getLiketype())
+            {
+                lThisType.getChildItems(MConst.MY_CAT,lItems);
+
+            }
+        }
         for (Item lItem : lItems)
         {
             if (!aOut.containsKey(lItem.getLID().getName()))
@@ -385,6 +481,7 @@ public class MType extends SubModuleItem
             }
         }
     }
+
 
     /**
      * retrieves all constants defined under this type or, if specified, any of the supertypes
@@ -397,7 +494,7 @@ public class MType extends SubModuleItem
              null != lThisType;
              lThisType = aInCheckSuperTypes ? lThisType.getSupertype() : null)
         {
-            getConst(aOut);
+            lThisType.getConst(aOut);
         }
     }
 
@@ -431,6 +528,15 @@ public class MType extends SubModuleItem
              lThisType = aInCheckSuperTypes ? lThisType.getSupertype() : null)
         {
             lValidator = lThisType.getValidator(aInName);
+            if (null != lValidator && lThisType.isBase())
+            {
+                for (lThisType = lThisType.getLiketype();
+                     null != lThisType && null == lValidator;
+                     lThisType = lThisType.getLiketype())
+                {
+                    lValidator = lThisType.getValidator(aInName);
+                }
+            }
         }
         return lValidator;
     }
@@ -442,6 +548,16 @@ public class MType extends SubModuleItem
     {
         Collection<Item> lItems = new LinkedList<Item>();
         getChildItems(MValidator.MY_CAT,lItems);
+        if (isBase())
+        {
+            for (MType lThisType = this.getLiketype();
+                 null != lThisType;
+                 lThisType = lThisType.getLiketype())
+            {
+                lThisType.getChildItems(MValidator.MY_CAT,lItems);
+
+            }
+        }
         for (Item lItem : lItems)
         {
             if (!aOut.containsKey(lItem.getLID().getName()))
@@ -462,7 +578,7 @@ public class MType extends SubModuleItem
              null != lThisType;
              lThisType = aInCheckSuperTypes ? lThisType.getSupertype() : null)
         {
-            getValidator(aOut);
+            lThisType.getValidator(aOut);
         }
     }
 

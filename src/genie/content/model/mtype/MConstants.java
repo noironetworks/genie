@@ -1,6 +1,7 @@
 package genie.content.model.mtype;
 
 import genie.engine.model.Cat;
+import modlan.report.Severity;
 import modlan.utils.Strings;
 
 /**
@@ -9,7 +10,7 @@ import modlan.utils.Strings;
 public class MConstants
         extends SubTypeItem
 {
-    public static final Cat MY_CAT = Cat.getCreate("type:language:constants");
+    public static final Cat MY_CAT = Cat.getCreate("primitive:language:constants");
     public static final String NAME = "constants";
     public MConstants(
             MLanguageBinding aIn,
@@ -23,35 +24,83 @@ public class MConstants
         suffix = aInSuffix;
     }
 
+    public MConstants getLike()
+    {
+        MConstants lThis = null;
+        for (MLanguageBinding lLB = getLanguageBinding().getLike(); null != lLB && null == lThis; lLB = lLB.getLike())
+        {
+            lThis = (MConstants) lLB.getChildItem(MConstants.MY_CAT,MConstraints.NAME);
+        }
+        return lThis;
+    }
+
     /**
      * retrieves what format values are to be defined.
      * for example: dec, hex, octal, ...
      * @return format in which constant values are defined in
      */
-    public DefinedIn getDefinedIn() { return definedIn; }
+    public DefinedIn getDefinedIn()
+    {
+        if (DefinedIn.UNKNOWN == (definedIn))
+        {
+            MConstants lCs = getLike();
+            if (null != lCs)
+            {
+                definedIn = lCs.getDefinedIn();
+            }
+        }
+        if (DefinedIn.UNKNOWN == (definedIn))
+        {
+            Severity.WARN.report(this.toString(),"defined-in-format","","no rule defined: assuming special");
+            definedIn = DefinedIn.SPECIAL;
+        }
+        return definedIn;
+    }
     /**
      * retrieves a literal prefix that is required before constant definition.
      * as in 0x.... or something like that
      * @return constant's literal prefix
      */
-    public String getPrefix() { return prefix; }
+    public String getPrefix()
+    {
+        if (Strings.isEmpty(prefix))
+        {
+            MConstants lCs = getLike();
+            if (null != lCs)
+            {
+                prefix = lCs.getPrefix();
+            }
+        }
+        return prefix;
+    }
 
     /**
      * @return whether the corresponding constants have literal prefix
      */
-    public boolean hasPrefix() { return !Strings.isEmpty(prefix); }
+    public boolean hasPrefix() { return !Strings.isEmpty(getPrefix()); }
 
     /**
      * retrieves literal suffix that is required before constant definition.
      * as in ll, ull: ... = ...6666ull
      * @return constant's literal suffix
      */
-    public String getSuffix() { return suffix; }
+    public String getSuffix()
+    {
+        if (Strings.isEmpty(suffix))
+        {
+            MConstants lCs = getLike();
+            if (null != lCs)
+            {
+                suffix = lCs.getSuffix();
+            }
+        }
+        return suffix;
+    }
 
     /**
      * @return whether the corresponding constants have literal suffix
      */
-    public boolean hasSuffix() { return !Strings.isEmpty(suffix); }
+    public boolean hasSuffix() { return !Strings.isEmpty(getSuffix()); }
 
     public MLanguageBinding getLanguageBinding()
     {
@@ -79,15 +128,15 @@ public class MConstants
      * specifies what format values are to be defined.
      * for example: dec, hex, octal, ...
      */
-    private final DefinedIn definedIn;
+    private DefinedIn definedIn;
     /**
      * a literal prefix that is required before constant definition.
      * as in 0x.... or something like that
      */
-    private final String prefix;
+    private String prefix;
     /**
      * literal suffix that is required before constant definition.
      * as in ll, ull: ... = ...6666ull
      */
-    private final String suffix;
+    private String suffix;
 }

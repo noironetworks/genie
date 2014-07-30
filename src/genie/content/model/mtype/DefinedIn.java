@@ -14,13 +14,14 @@ public enum DefinedIn
     BIN,
     CHAR,
     STRING,
-    SPECIAL
+    SPECIAL,
+    UNKNOWN
     ;
     public static DefinedIn get(String aIn)
     {
         if (Strings.isEmpty(aIn))
         {
-            return SPECIAL;
+            return UNKNOWN;
         }
         for (DefinedIn lThis : DefinedIn.values())
         {

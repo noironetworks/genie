@@ -7,7 +7,13 @@ metadata
              inherit-props=no;
              ]
         {
+            # name of the primitive type
             qual[name]
+
+            # specifies if primitive type is like some other primitive type
+            # this means that all language bindings, constants and validators are borrowed
+            # like=/<module-name>/<primitive-name>
+            prop[like]
 
             node[hint; namespace=type]
             {
@@ -37,6 +43,11 @@ metadata
 
                 # required include statement for this type
                 prop[include]
+
+                # specifies if language binding is like some other language binding
+                # this means that all constraints and constants rules are borrowed
+                # like=/<module-name>/<primitive-name>/<language>
+                prop[like]
 
                 # type constraints
                 node[constraints;

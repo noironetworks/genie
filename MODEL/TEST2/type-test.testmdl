@@ -1,4 +1,4 @@
-module[scalar]
+module[testo]
 {
     primitive[int]
     {

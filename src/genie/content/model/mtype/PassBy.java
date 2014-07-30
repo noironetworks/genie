@@ -10,13 +10,14 @@ public enum PassBy
 {
     VALUE,
     REFERENCE,
-    POINTER
+    POINTER,
+    UNKNOWN
     ;
     public static PassBy get(String aIn)
     {
         if (Strings.isEmpty(aIn))
         {
-            return REFERENCE;
+            return UNKNOWN;
         }
         for (PassBy lThis : PassBy.values())
         {
