@@ -1,0 +1,9 @@
+module[gbp]
+{
+    class[Contract;
+          super=gbp/AccessBehavioralGroup;
+          abstract]
+    {
+
+    }
+}

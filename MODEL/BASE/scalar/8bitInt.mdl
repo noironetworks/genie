@@ -13,7 +13,7 @@ module[scalar]
             constraints[default=0;
                         min=-127;
                         max=127;
-                        size=8;
+                        size=1;
                         ]
 
             constants[defined-in=dec;]
@@ -35,7 +35,7 @@ module[scalar]
             constraints[default=0;
                         min=0;
                         max=255;
-                        size=8;
+                        size=1;
                         ]
 
             constants[defined-in=dec;]

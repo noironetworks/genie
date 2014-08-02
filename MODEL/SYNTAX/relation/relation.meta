@@ -1,0 +1,85 @@
+# module[stuff]
+# {
+#     class[awesome;
+#           abstract;
+#           super=...]
+#
+#     relate
+#     [
+#         name=
+#     ]
+#     {
+#         from
+#         [
+#             name=class;
+#             cardinality=one|many;
+#         ]
+#
+#         to
+#         [
+#             name=class;
+#            cardinality=one|many;
+#         ]
+#     }
+#
+#     dependency[name]
+#     {
+#         from[
+#             class;
+#             cardinality=one|many;
+#             ]
+#
+#         to[class;
+#            cardinality=one|many;
+#            ]
+#     }
+# }
+metadata
+{
+    ref[module]
+    {
+        ref[class]
+        {
+            node[relation;
+                 use=module/class/dependency;
+                 namespace=reference]
+            {
+                qual[name]
+
+                node[to;
+                     use=module/class/dependency/to;
+                     namespace=reference
+                     ]
+            }
+
+            node[dependency;
+                 use=module/dependency/from;
+                 namespace=reference]
+            {
+                qual[name]
+
+                node[to;
+                     use=module/dependency/to;
+                     namespace=reference
+                     ]
+            }
+        }
+
+        node[dependency;
+             namespace=reference]
+        {
+            qual[name]
+
+            node[from;
+                 use=module/dependency/to;
+                 namespace=reference]
+
+            node[to;
+                 namespace=reference]
+            {
+                qual[class]
+                prop[cardinality]
+            }
+        }
+    }
+}

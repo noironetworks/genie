@@ -1,0 +1,19 @@
+module[gbp]
+{
+    class[L3BehaviouralGroup;
+          super=gbp/ForwardingBehavioralGroup;
+          abstract]
+
+    class[RoutingDomain;
+          super=gbp/L3BehaviouralGroup;
+          concrete]
+
+    class[Subnet;
+          super=gbp/L3BehaviouralGroup;
+          concrete]
+
+    class[Subnets;
+          super=gbp/L3BehaviouralGroup;
+          concrete]
+
+}

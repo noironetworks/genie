@@ -1,0 +1,29 @@
+module[gbp]
+{
+    class[EpGroup;
+          super=gbp/BehaviouralGroup;
+          concrete;
+          ]
+    {
+        dependency[networkDomain;
+                   cardinality=single;
+                   ]
+        {
+            to[class=gbp/BridgeDomain;
+               cardinality=many;
+               ]
+
+            to[class=gbp/FloodDomain;
+               cardinality=many;
+               ]
+
+            to[class=gbp/RoutingDomain;
+               cardinality=many;
+               ]
+
+            to[class=gbp/Subnets;
+                cardinality=many;
+                ]
+        }
+    }
+}

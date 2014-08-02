@@ -14,8 +14,19 @@ public class Module extends Item
     {
         return get(aInName, false);
     }
-    public static Module get(String aInName, boolean aInCreateIfNotFound)
+    public static synchronized  Module get(String aInName, boolean aInCreateIfNotFound)
     {
+        Module lModule = (Module) MY_CAT.getItem(aInName);
+        if (null == lModule && aInCreateIfNotFound)
+        {
+
+            if (null == MY_CAT.getItem(aInName))
+            {
+                lModule = new Module(aInName);
+            }
+        }
+        return lModule;
+        /**
         Module lModule = (Module) MY_CAT.getItem(aInName);
         if (null == lModule && aInCreateIfNotFound)
         {
@@ -28,6 +39,7 @@ public class Module extends Item
             }
         }
         return lModule;
+         */
     }
 
     private Module(String aInLName)

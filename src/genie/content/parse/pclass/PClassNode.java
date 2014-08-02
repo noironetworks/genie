@@ -7,6 +7,7 @@ import genie.engine.model.Pair;
 import genie.engine.parse.model.ParseNode;
 import genie.engine.parse.modlan.Node;
 import genie.engine.parse.modlan.ParseDirective;
+import modlan.report.Severity;
 import modlan.utils.Strings;
 
 /**
@@ -25,6 +26,12 @@ public class PClassNode
 
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)
     {
+        if (null == aInParentItem)
+        {
+            aInParentItem = Module.get(aInData.getParent().getNamedValue(Strings.NAME, null, true), true);
+
+            Severity.WARN.report(toString(),"parsing", "null parent for: " + aInData, "assuming autoretrieved: " + aInParentItem);
+        }
         // GET NAME
         String lName = aInData.getNamedValue(Strings.NAME,null,true);
 
@@ -39,6 +46,7 @@ public class PClassNode
                 (Module) aInParentItem,
                 lName,
                 lIsConcrete);
+
 
         // ADD SUPERCLASS IF ONE IS DECLARED
         String lSuper = aInData.getNamedValue(Strings.SUPER,null,false);

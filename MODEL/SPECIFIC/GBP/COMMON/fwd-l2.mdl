@@ -1,0 +1,21 @@
+module[gbp]
+{
+    class[L2BehaviouralGroup;
+          super=gbp/ForwardingBehavioralGroup;
+          abstract]
+
+    class[BridgeDomain;
+          super=gbp/L2BehaviouralGroup;
+          concrete]
+    {
+
+    }
+
+    class[FloodDomain;
+          super=gbp/L2BehaviouralGroup;
+          concrete]
+    {
+
+    }
+
+}

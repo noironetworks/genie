@@ -1,0 +1,31 @@
+metadata
+{
+    ref[module]
+    {
+        ref[class]
+        {
+            node[contained;
+                 use=module/contained;
+                 inherit-props=no;
+                 ]
+            {
+                node[parent;
+                     use=module/contained
+                     ]
+            }
+        }
+        node[contained;
+             namespace=containment;
+             ]
+        {
+            prop[child]
+            node[parent;
+                 namespace=containment;]
+            {
+               # access rules
+               # hide properties
+               # ...
+            }
+        }
+    }
+}

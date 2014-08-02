@@ -1,0 +1,24 @@
+module[policy]
+{
+    # definition of the policy space. a policy space is a policy resolution name space
+    # in which policy definitions are contained.
+    class[Space;
+          abstract;
+          ]
+
+    # named policy space
+    class[NamedSpace;
+          super=policy/Space;
+          abstract;
+          ]
+    {
+        member[name; type=policy/Name]
+    }
+
+    # name resolved policy space. this policy space is resolvable by name in the hierarchy,
+    # the same way as policy definitions.
+    class[NamedResolvedSpace;
+              super=policy/NamedSpace;
+              abstract;
+              ]
+}

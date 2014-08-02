@@ -1,0 +1,6 @@
+module[gbp]
+{
+    class[Classifier;
+          super=gbp/AccessBehavioralGroup;
+          concrete]
+}
