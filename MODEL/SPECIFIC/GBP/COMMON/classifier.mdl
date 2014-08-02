@@ -3,4 +3,14 @@ module[gbp]
     class[Classifier;
           super=gbp/AccessBehavioralGroup;
           concrete]
+    {
+        named
+        {
+            parent[class=*;]
+            {
+                component[prefix=classifier;
+                          member=name]
+            }
+        }
+    }
 }

@@ -28,13 +28,26 @@ module[gbp]
                cardinality=many;
                ]
         }
+        named
+        {
+            parent[class=*;]
+            {
+                component[member=name]
+            }
+        }
     }
 
     class[Subnets;
           super=gbp/L3BehaviouralGroup;
           concrete]
     {
-
+        named
+        {
+            parent[class=*;]
+            {
+                component[member=name]
+            }
+        }
     }
 
     contained[class=gbp/Subnet]

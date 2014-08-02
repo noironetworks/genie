@@ -4,6 +4,13 @@ module[gbp]
           super=gbp/AccessBehavioralGroup;
           abstract]
     {
-
+        named
+        {
+            parent[class=*;]
+            {
+                component[prefix=contract;
+                          member=name]
+            }
+        }
     }
 }

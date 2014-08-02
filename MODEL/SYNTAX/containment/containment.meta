@@ -10,24 +10,33 @@ metadata
                  ]
             {
                 node[parent;
-                     use=module/contained;
                      use=module/contained/parent
                      ]
             }
         }
         node[contained;
              namespace=containment;
+             use=contained
              ]
         {
             prop[class]
             node[parent;
-                 namespace=containment;]
-            {
-               prop[class]
-               # access rules
-               # hide properties
-               # ...
-            }
+                 namespace=containment;
+                 use=contained]
+        }
+    }
+    node[contained;
+         namespace=containment;
+         ]
+    {
+        prop[class]
+        node[parent;
+             namespace=containment;]
+        {
+           prop[class]
+           # access rules
+           # hide properties
+           # ...
         }
     }
 }

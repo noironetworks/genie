@@ -16,6 +16,14 @@ module[gbp]
                cardinality=many;
                ]
         }
+        named
+        {
+            parent[class=*;]
+            {
+                component[prefix=bd;
+                          member=name]
+            }
+        }
     }
 
     class[FloodDomain;
@@ -28,6 +36,14 @@ module[gbp]
             to[class=gbp/BridgeDomain;
                cardinality=many;
                ]
+        }
+        named
+        {
+            parent[class=*;]
+            {
+                component[prefix=fd;
+                          member=name]
+            }
         }
     }
 }
