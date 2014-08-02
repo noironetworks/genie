@@ -17,7 +17,24 @@ metadata
                          use=module/named/parent/component]
                 }
             }
+            ref[contained]
+            {
+                ref[parent]
+                {
+                    node[component;
+                         use=module/named/parent/component]
+                }
+            }
         }
+        ref[contained]
+        {
+            ref[parent]
+            {
+                node[component;
+                     use=module/named/parent/component]
+            }
+        }
+
         node[named;
              use=named;
              inherit-props=no
@@ -30,6 +47,14 @@ metadata
                 node[component;
                      use=named/parent/component]
             }
+        }
+    }
+    ref[contained]
+    {
+        ref[parent]
+        {
+            node[component;
+                 use=named/parent/component]
         }
     }
     node[named;

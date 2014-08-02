@@ -51,6 +51,7 @@ public class FMetaDef
             TreeMap<String, MNodeProp> lNodeProps = new TreeMap<String, MNodeProp>();
             aInNode.getProps(lNodeProps);
             LinkedList<String> lComms = new LinkedList<String>();
+            lComms.add("NODE: " + aInNode.getGID().getName());
             aInNode.getComments(lComms);
             getPropComments(lNodeProps.values(), lComms);
             genComments(aInIndent, aInNode, lComms);
