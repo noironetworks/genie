@@ -10,7 +10,8 @@ metadata
                  ]
             {
                 node[parent;
-                     use=module/contained
+                     use=module/contained;
+                     use=module/contained/parent
                      ]
             }
         }
@@ -18,10 +19,11 @@ metadata
              namespace=containment;
              ]
         {
-            prop[child]
+            prop[class]
             node[parent;
                  namespace=containment;]
             {
+               prop[class]
                # access rules
                # hide properties
                # ...

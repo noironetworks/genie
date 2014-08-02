@@ -11,9 +11,34 @@ module[gbp]
     class[Subnet;
           super=gbp/L3BehaviouralGroup;
           concrete]
+    {
+        dependency[networkDomain;
+                   cardinality=single;
+                   ]
+        {
+            to[class=gbp/BridgeDomain;
+               cardinality=many;
+               ]
+
+            to[class=gbp/FloodDomain;
+               cardinality=many;
+               ]
+
+            to[class=gbp/RoutingDomain;
+               cardinality=many;
+               ]
+        }
+    }
 
     class[Subnets;
           super=gbp/L3BehaviouralGroup;
           concrete]
+    {
 
+    }
+
+    contained[class=gbp/Subnet]
+    {
+        parent[class=gbp/Subnets]
+    }
 }

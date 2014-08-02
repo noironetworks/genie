@@ -8,14 +8,26 @@ module[gbp]
           super=gbp/L2BehaviouralGroup;
           concrete]
     {
-
+        dependency[networkDomain;
+                   cardinality=single;
+                   ]
+        {
+            to[class=gbp/RoutingDomain;
+               cardinality=many;
+               ]
+        }
     }
 
     class[FloodDomain;
           super=gbp/L2BehaviouralGroup;
           concrete]
     {
-
+        dependency[networkDomain;
+                   cardinality=single;]
+        {
+            to[class=gbp/BridgeDomain;
+               cardinality=many;
+               ]
+        }
     }
-
 }
