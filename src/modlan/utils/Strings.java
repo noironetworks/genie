@@ -9,6 +9,7 @@ public class Strings
     public static final String ANY = "any";
     public static final String ASTERISK = "*";
     public static final String CATEGORY = " category";
+    public static final String CLASS = "class";
     public static final String CONCRETE = "concrete";
     public static final String DEFAULT = "default";
     public static final String EMPTY = "";
@@ -22,6 +23,7 @@ public class Strings
     public static final String PROP = "prop";
     public static final String QUAL = "qual";
     public static final String REGEX = "regex";
+    public static final String ROOT = "root";
     public static final String SUPER = "super";
     public static final String STAR = ASTERISK;
     public static final String TARGET = "target";

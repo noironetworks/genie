@@ -23,4 +23,9 @@ public class Pair<F, S>
     {
         return second;
     }
+
+    public String toString()
+    {
+        return "PAIR[" + first +"," + second + "]";
+    }
 }

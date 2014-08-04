@@ -73,19 +73,12 @@ public class MContainer
      * @param aInCreateIfNotFound specifies whether container needs to be created if not found
      * @return container associated with a class corresponding to the name passed in
      */
-    static MContainer get(String aInGName, boolean aInCreateIfNotFound)
+    static synchronized MContainer get(String aInGName, boolean aInCreateIfNotFound)
     {
         MContainer lContr = get(aInGName);
         if (null == lContr && aInCreateIfNotFound)
         {
-            synchronized (MY_CAT)
-            {
-                lContr = get(aInGName);
-                if (null != lContr)
-                {
-                    lContr = new MContainer(aInGName);
-                }
-            }
+            lContr = new MContainer(aInGName);
         }
         return lContr;
     }
@@ -128,18 +121,15 @@ public class MContainer
      * @param aInClassGName global name of the associated contained class
      * @return child containment rule found or created
      */
-    public MChild getMChild(String aInClassGName, boolean aInCreateIfNotFound)
+    public synchronized MChild getMChild(String aInClassGName, boolean aInCreateIfNotFound)
     {
         MChild lMChild = getMChild(aInClassGName);
         if (null == lMChild && aInCreateIfNotFound)
         {
-            synchronized (this)
+            lMChild = getMChild(aInClassGName);
+            if (null == lMChild)
             {
-                lMChild = getMChild(aInClassGName);
-                if (null == lMChild)
-                {
-                    lMChild = new MChild(this, aInClassGName);
-                }
+                lMChild = new MChild(this, aInClassGName);
             }
         }
         return lMChild;

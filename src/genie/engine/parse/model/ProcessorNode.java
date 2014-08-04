@@ -88,6 +88,11 @@ public abstract class ProcessorNode
         parent = aInParent;
     }
 
+    public ProcessorNode getParent()
+    {
+        return parent;
+    }
+
     protected ProcessorNode(String aInName, boolean aInIsRecursive)
     {
         name = aInName;

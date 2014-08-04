@@ -10,21 +10,38 @@ metadata
                  ]
             {
                 node[parent;
-                     use=module/contained/parent
+                     use=module/contained/parent;
                      ]
             }
+            node[root;
+                 use=module/root;
+                 inherit-props=no]
         }
+
+        node[root;
+             use=root
+             ]
+
+
         node[contained;
              namespace=containment;
              use=contained
              ]
         {
-            prop[class]
             node[parent;
                  namespace=containment;
-                 use=contained]
+                 use=contained/parent]
         }
     }
+
+    node[root;
+         use=contained;
+         inherit-props=no
+         ]
+    {
+        prop[class]
+    }
+
     node[contained;
          namespace=containment;
          ]
