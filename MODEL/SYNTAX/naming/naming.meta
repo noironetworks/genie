@@ -21,7 +21,7 @@ metadata
             {
                 ref[parent]
                 {
-                    node[component;
+                    node[name-component;
                          use=module/named/parent/component]
                 }
             }
@@ -30,7 +30,7 @@ metadata
         {
             ref[parent]
             {
-                node[component;
+                node[name-component;
                      use=module/named/parent/component]
             }
         }
@@ -53,7 +53,7 @@ metadata
     {
         ref[parent]
         {
-            node[component;
+            node[name-component;
                  use=named/parent/component]
         }
     }
