@@ -144,16 +144,22 @@ public class MContainer
     {
         LinkedList<Item> lItems = new LinkedList<Item>();
         getChildItems(MChild.MY_CAT, lItems);
+//        System.out.println(this + ".getChildClasses("+ aInResolveToConcrete + ") has child items: " + (!lItems.isEmpty()));
         for (Item lIt : lItems)
         {
             MChild lChild = (MChild) lIt;
             MClass lThat = lChild.getTarget();
+
+//            System.out.println(this + ".getChildClasses("+ aInResolveToConcrete + ") CHILD: " + lChild + " :: " + lThat);
+
             if (aInResolveToConcrete && !lThat.isConcrete())
             {
+//                System.out.println(this + ".getChildClasses(): resolving subclasses; concrete: " + lThat.isConcrete());
                 lThat.getSubclasses(aOut,false,aInResolveToConcrete);
             }
             else
             {
+//                System.out.println(this + ".getChildClasses(): no need to resolve subclasses; concrete: " + lThat.isConcrete());
                 aOut.put(lThat.getGID(), lThat);
             }
         }

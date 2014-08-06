@@ -5,6 +5,7 @@ import genie.content.model.module.Module;
 import genie.engine.model.Cardinality;
 import genie.engine.model.Cat;
 import genie.engine.model.RelatorCat;
+import modlan.report.Severity;
 
 /**
  * Created by dvorkinista on 7/8/14.
@@ -52,4 +53,15 @@ public class MChild extends MContRuleItem
     {
         return getMContained().getMParent(getContainer().getLID().getName());
     }
+
+    public void validateCb()
+    {
+        super.validateCb();
+        /**Severity.WARN.report(toString(),"validate", "",
+                             "\n\tcontainer: " + getContainer() + "\n" +
+                             "\tcontainer class: " + getContainerClass() + "\n" +
+                             "\tcontained: " + getMContained() + "\n" +
+                             "\tmparent: " + getMParent());**/
+    }
+
 }

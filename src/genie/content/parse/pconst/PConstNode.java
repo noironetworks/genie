@@ -34,19 +34,42 @@ public class PConstNode
 
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)
     {
-//        System.out.println(" ----------->" + this + ".beginCb(" + aInData + ", " + aInParentItem + ")");
-        MConst lConst = new MConst(aInParentItem,aInData.getNamedValue(Strings.NAME,null,true),action,scope);
-        String lIndirectionTarget = aInData.getNamedValue(Strings.TARGET,null,action.hasExplicitIndirection());
-        if (!Strings.isEmpty(lIndirectionTarget))
+        String lName = (action == ConstAction.DEFAULT) ?
+                            Strings.DEFAULT :
+                            (action == ConstAction.EXCLUSIVE) ?
+                                    Strings.EXCLUSIVE :
+                                    aInData.getNamedValue(Strings.NAME, null, true);
+
+        String lIndirectionTarget = (action == ConstAction.DEFAULT || action == ConstAction.EXCLUSIVE) ?
+                aInData.getNamedValue(Strings.NAME, null, true) :
+                aInData.getNamedValue(Strings.TARGET, null, action.hasExplicitIndirection());
+
+        String lValue = aInData.getNamedValue(Strings.VALUE, null, action.hasMandatoryValue());
+
+        MConst lConst = factory(action, aInParentItem, lName, lIndirectionTarget, lValue);
+
+        if (ConstAction.EXCLUSIVE == action)
         {
-            new MIndirection(lConst,lIndirectionTarget);
+            // FOR EXCLUSIVE, NEED TO
+            factory(ConstAction.DEFAULT, aInParentItem, Strings.DEFAULT, lIndirectionTarget, null);
         }
-        String lValue = aInData.getNamedValue(Strings.VALUE,null,action.hasMandatoryValue());
-        if (!Strings.isEmpty(lValue))
+
+        return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE, lConst);
+    }
+
+    private MConst factory(ConstAction aInAction, Item aInParentItem, String aInName, String aInIndTarget, String aInValue)
+    {
+        MConst lConst = new MConst(aInParentItem, aInName, aInAction, scope);
+
+        if (!Strings.isEmpty(aInIndTarget))
         {
-            new MValue(lConst,lValue);
+            new MIndirection(lConst, aInIndTarget);
         }
-        return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE,lConst);
+        if (!Strings.isEmpty(aInValue))
+        {
+            new MValue(lConst, aInValue);
+        }
+        return lConst;
     }
 
     private ConstAction action;

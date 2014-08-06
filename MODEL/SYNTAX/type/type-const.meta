@@ -23,6 +23,8 @@ metadata
                  use=module/type/const]
             node[default;
                  use=module/type/const]
+            node[exclusive;
+                 use=module/type/const]
         }
     }
 }

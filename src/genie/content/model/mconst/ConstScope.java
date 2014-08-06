@@ -12,7 +12,7 @@ public enum ConstScope
     /**
      * corresponding const is bound to a property
      */
-    PROPERTY(new String[]{"member", "override", "prop", "property", "data"}),
+    PROPERTY(new String[]{"member", "override", "override-member", "prop", "property", "data"}),
 
     /**
      * corresponding const is bound to a type

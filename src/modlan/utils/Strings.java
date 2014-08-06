@@ -13,6 +13,7 @@ public class Strings
     public static final String CONCRETE = "concrete";
     public static final String DEFAULT = "default";
     public static final String EMPTY = "";
+    public static final String EXCLUSIVE = "exclusive";
     public static final String MAX = "max";
     public static final String METADATA = "metadata";
     public static final String META = "meta";

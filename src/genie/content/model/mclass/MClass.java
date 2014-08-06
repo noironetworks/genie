@@ -8,6 +8,8 @@ import genie.content.model.module.Module;
 import genie.content.model.module.SubModuleItem;
 import genie.content.model.mprop.MProp;
 import genie.engine.model.*;
+import modlan.report.Severity;
+import modlan.utils.Strings;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -71,6 +73,11 @@ public class MClass
     public boolean isConcrete()
     {
         return isConcrete;
+    }
+
+    public String getFullConcatenatedName()
+    {
+        return Strings.upFirstLetter(getModule().getLID().getName()) + Strings.upFirstLetter(getLID().getName());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -259,6 +266,15 @@ public class MClass
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
+     * containment root accessor: dmtree/Root
+     * @return containment root
+     */
+    public static MClass getContainmentRoot()
+    {
+        return get(ROOT_CLASS_GNAME);
+    }
+
+    /**
      * Gets the rule item that represents who contains by this class.
      * @return containment rule item representing who contains this class
      */
@@ -391,11 +407,18 @@ public class MClass
      */
     public void getContainsClasses(Map<Ident,MClass> aOut, boolean aInIsResolveToConcrete)
     {
+        //System.out.println(this + ".getContains()");
         MContainer lCont = getContains();
         if (null != lCont)
         {
             lCont.getChildClasses(aOut, aInIsResolveToConcrete);
         }
+        /**
+        else
+        {
+            Severity.WARN.report(toString(), "retrieval of contained classes", "no container", "container not found");
+        }
+         **/
     }
 
     /**

@@ -45,6 +45,11 @@ public enum ConstAction
     DEFAULT("default", "default"), // acts as default value
 
     /**
+     * specifies that the constant is exclusive: no peer or derived constants
+     */
+    EXCLUSIVE("exclusive", "exclusive"), // acts as default value
+
+    /**
      * indicates that the constant has value, but can't be set administratively
      */
     UNSETTABLE("unsettable", "unsettable-const"), // unsettable administratively
@@ -56,7 +61,7 @@ public enum ConstAction
      */
     public boolean hasExplicitIndirection()
     {
-        return DEFAULT == this || AUTO_TRANSITION == this  || MAPPED == this;
+        return EXCLUSIVE == this || DEFAULT == this || AUTO_TRANSITION == this  || MAPPED == this;
     }
 
     /**
@@ -120,7 +125,7 @@ public enum ConstAction
      */
     public boolean isMapped()
     {
-        return DEFAULT == this || MAPPED == this;
+        return EXCLUSIVE == this || DEFAULT == this || MAPPED == this;
     }
 
     /**

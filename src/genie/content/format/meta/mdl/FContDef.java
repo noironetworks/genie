@@ -1,0 +1,88 @@
+package genie.content.format.meta.mdl;
+
+import genie.content.model.mclass.MClass;
+import genie.content.model.mprop.MProp;
+import genie.engine.file.WriteStats;
+import genie.engine.format.*;
+import genie.engine.model.Ident;
+import modlan.utils.Strings;
+
+import java.util.Map;
+import java.util.TreeMap;
+
+/**
+ * Created by midvorki on 8/4/14.
+ */
+public class FContDef
+        extends GenericFormatterTask
+{
+    public FContDef(
+            FormatterCtx aInFormatterCtx,
+            FileNameRule aInFileNameRule,
+            Indenter aInIndenter,
+            BlockFormatDirective aInHeaderFormatDirective,
+            BlockFormatDirective aInCommentFormatDirective,
+            String aInName,
+            boolean aInIsUserFile,
+            WriteStats aInStats)
+    {
+        super(aInFormatterCtx, aInFileNameRule, aInIndenter, aInHeaderFormatDirective, aInCommentFormatDirective, aInName, aInIsUserFile, aInStats);
+    }
+
+    public void generate()
+    {
+        out.println();
+        MClass lRoot = MClass.getContainmentRoot();
+        genClass(0, lRoot);
+    }
+
+    private void genClass(int aInIndent, MClass aInClass)
+    {
+        out.print(aInIndent, aInClass.getFullConcatenatedName());
+        genProps(aInIndent + 1, aInClass);
+        genContained(aInIndent, aInClass);
+    }
+
+    private void genProps(int aInIndent, MClass aInClass)
+    {
+        TreeMap<String,MProp> lProps = new TreeMap<String, MProp>();
+        aInClass.findProp(lProps, false);
+        if (!lProps.isEmpty())
+        {
+            out.print('[');
+            for (MProp lProp : lProps.values())
+            {
+                genProp(aInIndent,lProp);
+            }
+            out.println(']');
+        }
+        else
+        {
+            out.println();
+        }
+    }
+
+    private void genProp(int aInIndent, MProp aInProp)
+    {
+        out.println();
+        out.print(aInIndent,
+                  aInProp.getLID().getName() +
+                  "=<" +
+                  aInProp.getType(false).getFullConcatenatedName() + "/" + aInProp.getType(true).getFullConcatenatedName() + ">;");
+    }
+
+    private void genContained(int aInIndent, MClass aInParent)
+    {
+        TreeMap<Ident,MClass> lContained = new TreeMap<Ident,MClass>();
+        aInParent.getContainsClasses(lContained, true, true);
+        if (!lContained.isEmpty())
+        {
+            out.println(aInIndent, '{');
+            for (MClass lClass : lContained.values())
+            {
+                genClass(aInIndent+1, lClass);
+            }
+            out.println(aInIndent, '}');
+        }
+    }
+}

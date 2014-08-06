@@ -4,6 +4,26 @@ metadata
     {
         ref[class]
         {
+            ref[override-member]
+            {
+                node[const;
+                     use=module/type/const]
+                node[map-const;
+                     use=module/type/map-const]
+                node[remove-const;
+                     use=module/type/remove-const]
+                node[revertive-const;
+                     use=module/type/revertive-const]
+                node[transitive-const;
+                     use=module/type/transitive-const]
+                node[unsettable-const;
+                     use=module/type/unsettable-const]
+                node[default;
+                     use=module/type/default]
+                node[exclusive;
+                     use=module/type/exclusive]
+            }
+
             ref[member]
             {
                 node[const;
@@ -20,6 +40,8 @@ metadata
                      use=module/type/unsettable-const]
                 node[default;
                      use=module/type/default]
+                node[exclusive;
+                     use=module/type/exclusive]
             }
         }
     }

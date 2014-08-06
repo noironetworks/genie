@@ -1,16 +1,13 @@
 package genie.content.parse.pcontainment;
 
 import genie.content.model.mclass.MClass;
-import genie.content.model.mcont.DefinitionScope;
 import genie.content.model.mcont.MContained;
 import genie.content.model.mcont.MContainer;
-import genie.content.model.mcont.MParent;
 import genie.engine.model.Item;
 import genie.engine.model.Pair;
 import genie.engine.parse.model.ParseNode;
 import genie.engine.parse.modlan.Node;
 import genie.engine.parse.modlan.ParseDirective;
-import modlan.report.Severity;
 import modlan.utils.Strings;
 
 /**
@@ -34,7 +31,7 @@ public class PParentNode extends ParseNode
 
         Pair<MContained, MContainer> lRule = MContained.addRule(lContainerClassName,lContainedClassName);
 
-        Severity.WARN.report(this.toString(),"","","CONT RULE ADDED: " + lRule);
+//        Severity.WARN.report(this.toString(),"","","CONT RULE ADDED: " + lRule);
         MContainer lContainer = lRule.getSecond();
 
         return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE, lContainer);

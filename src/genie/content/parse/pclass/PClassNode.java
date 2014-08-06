@@ -35,12 +35,12 @@ public class PClassNode
         // GET NAME
         String lName = aInData.getNamedValue(Strings.NAME,null,true);
 
+
         // DETERMINE IF THIS CLASS IS CONCRETE
-        boolean lIsConcrete = aInData.getNamedOption(
-                                   Strings.CONCRETE,
-                                   !aInData.getNamedOption(
-                                           Strings.ABSTRACT,
-                                           false));
+        boolean lIsAbstract = aInData.checkFlag(Strings.ABSTRACT);
+
+        boolean lIsConcrete = (!lIsAbstract) &&
+                              aInData.checkFlag(Strings.CONCRETE);
         // CREATE A CLASS
         MClass lClass = new MClass(
                 (Module) aInParentItem,

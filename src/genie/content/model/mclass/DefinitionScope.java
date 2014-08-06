@@ -1,4 +1,4 @@
-package genie.content.model.mcont;
+package genie.content.model.mclass;
 
 /**
  * Created by midvorki on 8/4/14.
