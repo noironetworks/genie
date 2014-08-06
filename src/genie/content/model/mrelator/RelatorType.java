@@ -7,11 +7,12 @@ import modlan.report.Severity;
  */
 public enum RelatorType
 {
-    DIRECT_ASSOCIATION,
-    NAMED_ASSOCIATION,
-    DIRECT_DEPENDENCY,
-    NAMED_DEPENDENCY,
-    REFERENCE;
+    DIRECT_ASSOCIATION(false, true, true, false),
+    NAMED_ASSOCIATION(true, true, true, false),
+    DIRECT_DEPENDENCY(false, true, true, true),
+    NAMED_DEPENDENCY(true, true, true, true),
+    REFERENCE(false, true, false, false);
+
     public static RelatorType get(String aIn)
     {
         for (RelatorType lThis : RelatorType.values())
@@ -25,4 +26,27 @@ public enum RelatorType
 
         return NAMED_DEPENDENCY;
     }
+    private RelatorType(
+            boolean aInIsNamed,
+            boolean aInHasSourceObject,
+            boolean aInHasTargetObject,
+            boolean aInHasResolverObject)
+    {
+        isNamed = aInIsNamed;
+        hasSourceObject = aInHasSourceObject;
+        hasTargetObject = aInHasTargetObject;
+        hasResolverObject = aInHasResolverObject;
+    }
+
+    public boolean isNamed() { return isNamed; }
+    public boolean isDirect() { return !isNamed; }
+
+    public boolean hasSourceObject() { return hasSourceObject; }
+    public boolean hasTargetObject() { return hasTargetObject; }
+    public boolean hasResolverObject() { return hasResolverObject; }
+
+    private final boolean hasSourceObject;
+    private final boolean hasTargetObject;
+    private final boolean hasResolverObject;
+    private final boolean isNamed;
 }
