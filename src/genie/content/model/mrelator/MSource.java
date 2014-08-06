@@ -5,6 +5,8 @@ import genie.engine.model.Cardinality;
 import genie.engine.model.Cat;
 import genie.engine.model.RelatorCat;
 
+import java.util.Collection;
+
 /**
  * Created by midvorki on 8/5/14.
  */
@@ -38,6 +40,16 @@ public class MSource extends MRelatorRuleItem
     public MTarget getMTarget()
     {
         return getMRelator().getMTarget(getRelated().getLID().getName());
+    }
+
+    public MRelationship getRelationship(String aInName)
+    {
+        return getMTarget().getRelationship(aInName);
+    }
+
+    public void getRelationships(Collection<MRelationship> aOut)
+    {
+        getMTarget().getRelationships(aOut);
     }
 
     public void validateCb()

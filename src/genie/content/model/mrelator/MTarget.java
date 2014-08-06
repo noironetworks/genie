@@ -4,7 +4,11 @@ import genie.content.model.mclass.MClass;
 
 import genie.engine.model.Cardinality;
 import genie.engine.model.Cat;
+import genie.engine.model.Item;
 import genie.engine.model.RelatorCat;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Created by midvorki on 8/5/14.
@@ -39,6 +43,21 @@ public class MTarget extends MRelatorRuleItem
     public MSource getMSource()
     {
         return getMRelated().getMSource(getRelator().getLID().getName());
+    }
+
+    public MRelationship getRelationship(String aInName)
+    {
+        return (MRelationship) getChildItem(MRelationship.MY_CAT, aInName);
+    }
+
+    public void getRelationships(Collection<MRelationship> aOut)
+    {
+        LinkedList<Item> lRels = new LinkedList<Item>();
+        getChildItems(MRelationship.MY_CAT, lRels);
+        for (Item lThis : lRels)
+        {
+            aOut.add((MRelationship) lThis);
+        }
     }
 
     public void validateCb()

@@ -35,6 +35,7 @@ public class MRelatorItem
         return (MClass) getTargetRelatorCat().getRelator(getGID().getName()).getToItem();
     }
 
+    public String getTargetGName() { return getTargetRelatorCat().getRelator(getGID().getName()).getItemGName(); }
     /**
      * registers super type for this type. super type is the type from which this type is derived
      * @param aInTargetGName super type global name
