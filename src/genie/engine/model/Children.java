@@ -76,37 +76,17 @@ public class Children
      * @param aInCreateIfDoesNotExist indicates whether to create a category tracker if one does not exist
      * @return category tracker
      */
-    private CatEntry getEntry(Cat aIn, boolean aInCreateIfDoesNotExist)
+    private synchronized CatEntry getEntry(Cat aIn, boolean aInCreateIfDoesNotExist)
     {
-        if (null == children)
+        if (null == children && aInCreateIfDoesNotExist)
         {
-            if (aInCreateIfDoesNotExist)
-            {
-                synchronized (this)
-                {
-                    if (null == children)
-                    {
-                        children = new TreeMap<Cat, CatEntry>();
-                    }
-                }
-            }
+            children = new TreeMap<Cat, CatEntry>();
         }
-        CatEntry lPerCat = null;
-        if (null != children)
+        CatEntry lPerCat = children.get(aIn);
+        if (null == lPerCat && aInCreateIfDoesNotExist)
         {
-            synchronized (children)
-            {
-                lPerCat = children.get(aIn);
-                if (aInCreateIfDoesNotExist)
-                {
-                    if (null == lPerCat)
-                    {
-                        lPerCat = new CatEntry(aIn, name, false);
-                        children.put(aIn, lPerCat);
-                        //System.out.println(this + ".getEntry(" + aIn + "," + aInCreateIfDoesNotExist + "): put: " + lPerCat);
-                    }
-                }
-            }
+            lPerCat = new CatEntry(aIn, name, false);
+            children.put(aIn, lPerCat);
         }
         //System.out.println(this + ".getEntry():" + lPerCat + " :: ALL CHILDREN: " + children.keySet());
         return lPerCat;
@@ -127,7 +107,7 @@ public class Children
      * @param aInLName name for which ID is allocated
      * @return allocated id
      */
-    public int allocateId(Cat aInCat, String aInLName)
+    public synchronized int allocateId(Cat aInCat, String aInLName)
     {
         return getEntry(aInCat, true).allocateId(aInLName);
     }

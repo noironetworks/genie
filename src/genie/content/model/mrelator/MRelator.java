@@ -30,12 +30,27 @@ public class MRelator
      * @param aInSourceGName global name of the source class
      * @return pair of relator and related objects
      */
-    public static final Pair<MRelator, MRelated> addRule(String aInTargetGName, String aInSourceGName)
+    public static final Pair<MRelator, MRelated> addRule(
+            RelatorType aInType,
+            String aInName,
+            String aInSourceGName,
+            PointCardinality aInSourceCard,
+            String aInTargetGName,
+            PointCardinality aInTargetCard
+            )
     {
         MRelator lContd = MRelator.get(aInSourceGName, true);
-        lContd.getMTarget(aInTargetGName, true);
+        MTarget lTarget = lContd.getMTarget(aInTargetGName, true);
+
+        new MRelationship(
+                lTarget,
+                aInName,
+                aInType,
+                aInSourceCard,
+                aInTargetCard);
 
         MRelated lContr = MRelated.addRule(aInTargetGName, aInSourceGName);
+
 
         return new Pair<MRelator, MRelated>(lContd,lContr);
     }
@@ -56,19 +71,12 @@ public class MRelator
      * @param aInCreateIfNotFound indicates that the rule needs to be created if not found.
      * @return relator rule associated with class identified by the global named passed in.
      */
-    public static MRelator get(String aInGName, boolean aInCreateIfNotFound)
+    public static synchronized MRelator get(String aInGName, boolean aInCreateIfNotFound)
     {
         MRelator lContd = get(aInGName);
         if (null == lContd && aInCreateIfNotFound)
         {
-            synchronized (MY_CAT)
-            {
-                lContd = get(aInGName);
-                if (null == lContd)
-                {
-                    lContd = new MRelator(aInGName);
-                }
-            }
+            lContd = new MRelator(aInGName);
         }
         return lContd;
     }
@@ -119,19 +127,12 @@ public class MRelator
      * @param aInClassGName global name of the target class
      * @param aInCreateIfNotFound specifies need of creation, if the rue is not found
      */
-    public MTarget getMTarget(String aInClassGName, boolean aInCreateIfNotFound)
+    public synchronized MTarget getMTarget(String aInClassGName, boolean aInCreateIfNotFound)
     {
         MTarget lMTarget = getMTarget(aInClassGName);
         if (null == lMTarget && aInCreateIfNotFound)
         {
-            synchronized (this)
-            {
-                lMTarget = getMTarget(aInClassGName);
-                if (null == lMTarget)
-                {
-                    lMTarget = new MTarget(this, aInClassGName);
-                }
-            }
+            lMTarget = new MTarget(this, aInClassGName);
         }
         return lMTarget;
     }

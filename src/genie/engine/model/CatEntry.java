@@ -162,7 +162,7 @@ public class CatEntry
             Severity.DEATH.report(
                     aIn,
                     "id allocation", "id allocated",
-                    "already exists in context for category " + cat +
+                    "local name " + aIn + " already exists in context for category " + cat +
                     "\n:::: " + byId);
         }
         return lRet;

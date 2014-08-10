@@ -10,6 +10,7 @@ public class Strings
     public static final String ASTERISK = "*";
     public static final String CATEGORY = " category";
     public static final String CLASS = "class";
+    public static final String CARDINALITY = "cardinality";
     public static final String CONCRETE = "concrete";
     public static final String DEFAULT = "default";
     public static final String EMPTY = "";

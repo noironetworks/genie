@@ -29,7 +29,7 @@ public class MRelated
      * @param aInSourceGName name of the source class
      * @return related corresponding to the target name passed in.
      */
-    static final MRelated addRule(String aInTargetGName, String aInSourceGName)
+    static final synchronized  MRelated addRule(String aInTargetGName, String aInSourceGName)
     {
         MRelated lContr = MRelated.get(aInTargetGName, true);
         lContr.getMSource(aInSourceGName, true);

@@ -7,19 +7,27 @@ import modlan.report.Severity;
  */
 public enum RelatorType
 {
-    DIRECT_ASSOCIATION(false, true, true, false),
-    NAMED_ASSOCIATION(true, true, true, false),
-    DIRECT_DEPENDENCY(false, true, true, true),
-    NAMED_DEPENDENCY(true, true, true, true),
-    REFERENCE(false, true, false, false);
+    DIRECT_ASSOCIATION(new String[]{"direct-association", "relation"} , false, true, true, false),
+    NAMED_ASSOCIATION(new String[]{"named-association"}, true, true, true, false),
+    DIRECT_DEPENDENCY(new String[]{"direct-dependency"}, false, true, true, true),
+    NAMED_DEPENDENCY(new String[]{"named-dependency", "dependency"}, true, true, true, true),
+    REFERENCE(new String[]{"reference"}, false, true, false, false);
 
     public static RelatorType get(String aIn)
     {
         for (RelatorType lThis : RelatorType.values())
         {
+
             if (lThis.toString().equalsIgnoreCase(aIn))
             {
                 return lThis;
+            }
+            for (String lName : lThis.names)
+            {
+                if (lName.equalsIgnoreCase(aIn))
+                {
+                    return lThis;
+                }
             }
         }
         Severity.DEATH.report("relator-type", "get", "", "no relator type: " + aIn);
@@ -27,11 +35,13 @@ public enum RelatorType
         return NAMED_DEPENDENCY;
     }
     private RelatorType(
+            String[] aInNames,
             boolean aInIsNamed,
             boolean aInHasSourceObject,
             boolean aInHasTargetObject,
             boolean aInHasResolverObject)
     {
+        names = aInNames;
         isNamed = aInIsNamed;
         hasSourceObject = aInHasSourceObject;
         hasTargetObject = aInHasTargetObject;
@@ -45,6 +55,7 @@ public enum RelatorType
     public boolean hasTargetObject() { return hasTargetObject; }
     public boolean hasResolverObject() { return hasResolverObject; }
 
+    private final String[] names;
     private final boolean hasSourceObject;
     private final boolean hasTargetObject;
     private final boolean hasResolverObject;

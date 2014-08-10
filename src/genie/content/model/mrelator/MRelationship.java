@@ -5,6 +5,7 @@ import genie.content.model.mcont.MContained;
 import genie.content.model.module.Module;
 import genie.engine.model.Cat;
 import genie.engine.model.Item;
+import modlan.report.Severity;
 import modlan.utils.Strings;
 
 /**
@@ -21,18 +22,19 @@ public class MRelationship extends Item
             PointCardinality aInSourceCard,
             PointCardinality aInTargetCard)
     {
-        super(MY_CAT,aInParent,aInName);
+        super(MY_CAT, aInParent, aInName);
+        String lSrcClassGName = getSourceClassGName();
+        int lSlashIdx = lSrcClassGName.indexOf('/');
+        moduleName = lSrcClassGName.substring(0, lSlashIdx);
+        sourceClassLocalName = lSrcClassGName.substring(lSlashIdx + 1, lSrcClassGName.length());
+        Severity.WARN.report("","","",this + ":: CREATING NEW MRelationship(source: " + getSourceClassGName() + "; target: " + getTargetClassGName() + ")");
+
         type = aInType;
         sourceCardinality = aInSourceCard;
         targetCardinality = aInTargetCard;
         sourceRelnClass = initSourceRelnClass();
         targetRelnClass = initTargetRelnClass();
         resolverRelnClass = initResolverRelnClass();
-
-        String lSrcClassGName = getSourceClassGName();
-        int lSlashIdx = lSrcClassGName.indexOf('/');
-        moduleName = lSrcClassGName.substring(0, lSlashIdx);
-        sourceClassLocalName = lSrcClassGName.substring(0, lSrcClassGName.length());
     }
 
 
@@ -70,10 +72,7 @@ public class MRelationship extends Item
         if (type.hasSourceObject())
         {
             // CLASS NAME FORMAT: module/ReSrc<LocalClassName><Name>
-            String lClassName = "ReSrc" + sourceClassLocalName + Strings.upFirstLetter(getLID().getName());
-            Module lModule = Module.get(moduleName, true);
-            lClass = new MClass(lModule, lClassName, true);
-            lClass.addSuperclass(type.isNamed() ? "relator/NameResolvedRelSource" : "relator/DirectRelSource");
+            lClass = initClass("ReSrc", type.isNamed() ? "relator/NameResolvedRelSource" : "relator/DirectRelSource");
 
             MContained.addRule(getSourceClassGName(), lClass.getGID().getName());
 
@@ -89,12 +88,10 @@ public class MRelationship extends Item
         if (type.hasTargetObject())
         {
             // CLASS NAME FORMAT: module/ReTgt<LocalClassName><Name>
-            String lClassName = "ReTgt" + sourceClassLocalName + Strings.upFirstLetter(getLID().getName());
-            Module lModule = Module.get(moduleName, true);
-            lClass = new MClass(lModule, lClassName, true);
-            lClass.addSuperclass("relator/Target");
+            lClass = initClass("ReTgt", "relator/Target");
 
-            MContained.addRule(getTargetClassGName(), lClass.getGID().getName());
+            Severity.WARN.report(toString(),"","","--> " + getTargetClassGName());
+            //TODO: BUG: MContained.addRule(getTargetClassGName(), lClass.getGID().getName());
 
             // TODO: PROPERTIES
             // TODO: ADD NAMING
@@ -108,15 +105,26 @@ public class MRelationship extends Item
         if (type.hasTargetObject())
         {
             // CLASS NAME FORMAT: module/ReRes<LocalClassName><Name>
-            String lClassName = "ReTgt" + sourceClassLocalName + Strings.upFirstLetter(getLID().getName());
-            Module lModule = Module.get(moduleName, true);
-            lClass = new MClass(lModule, lClassName, true);
-            lClass.addSuperclass("relator/Resolver");
+            lClass = initClass("ReRes", "relator/Resolver");
 
             // TODO: WHAT SHOULD IT BE PARENTED BY? MContained.addRule(getSourceClassGName(), lClass.getGID().getName());
 
             // TODO: PROPERTIES
+
             // TODO: ADD NAMING
+        }
+        return lClass;
+    }
+
+    private MClass initClass(String aInClassPrefix, String aInSuperClass)
+    {
+        String lClassName = aInClassPrefix + sourceClassLocalName + Strings.upFirstLetter(getLID().getName());
+        Module lModule = Module.get(moduleName, true);
+        MClass lClass = (MClass) lModule.getChildItem(MClass.MY_CAT,lClassName);
+        if (null == lClass)
+        {
+            lClass = new MClass(lModule, lClassName, true);
+            lClass.addSuperclass(aInSuperClass);
         }
         return lClass;
     }

@@ -10,7 +10,7 @@ public enum PointCardinality
     SINGLE,
     MANY,
     ;
-    public PointCardinality get(String aIn)
+    public static PointCardinality get(String aIn)
     {
         for (PointCardinality lThis : PointCardinality.values())
         {

@@ -139,17 +139,11 @@ public class Node implements Validatable
 
     }
 
-    public Children getChildren(boolean aInCreateIfDoesNotExist)
+    public synchronized Children getChildren(boolean aInCreateIfDoesNotExist)
     {
-        if (null == children)
+        if (null == children && aInCreateIfDoesNotExist)
         {
-            synchronized (this)
-            {
-                if (null == children)
-                {
-                    children = new Children(getGID().getName());
-                }
-            }
+            children = new Children(getGID().getName());
         }
         return children;
     }
