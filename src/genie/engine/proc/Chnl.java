@@ -10,19 +10,19 @@ import java.util.Queue;
  */
 public class Chnl
 {
-	public synchronized void doneCb()
-	{
-		if (0 == --procCount &&
-		    Status.SUSPEND == status)
-		{
-			//Severity.INFO.report("processor:chnl", "doneCb", "", "UNSUSPENDING: ALL TASKS DONE");
-			status = Status.RUNNING;
-			notifyAll();
-		}
-	}
+    public synchronized void doneCb()
+    {
+        if (0 == --procCount &&
+            Status.SUSPEND == status)
+        {
+            //Severity.INFO.report("processor:chnl", "doneCb", "", "UNSUSPENDING: ALL TASKS DONE");
+            status = Status.RUNNING;
+            notifyAll();
+        }
+    }
 
-	public Task poll()
-	{
+    public Task poll()
+    {
         Task lTask = null;
 
         synchronized (this)
@@ -55,29 +55,29 @@ public class Chnl
             }
              **/
         }
-		return lTask;
-	}
+        return lTask;
+    }
 
     /*
-	public synchronized void suspendUntilDrained()
-	{
-		if (!isDeath())
-		{
-			if (hasOutstandingTasks())
-			{
-				Severity.INFO.report("processor:chnl", "suspend", "", "SUSPENDING CHNL!!");
-				status = Status.SUSPEND;
-			}
-			else
-			{
-				Severity.INFO.report("processor:chnl", "suspend", "", "NO TASKS: NO SUSPENSION NECESSARY!!");
-			}
-		}
-		else
-		{
-			notifyAll();
-		}
-	}
+    public synchronized void suspendUntilDrained()
+    {
+        if (!isDeath())
+        {
+            if (hasOutstandingTasks())
+            {
+                Severity.INFO.report("processor:chnl", "suspend", "", "SUSPENDING CHNL!!");
+                status = Status.SUSPEND;
+            }
+            else
+            {
+                Severity.INFO.report("processor:chnl", "suspend", "", "NO TASKS: NO SUSPENSION NECESSARY!!");
+            }
+        }
+        else
+        {
+            notifyAll();
+        }
+    }
     */
     public void suspendUntilDrained()
     {
@@ -116,20 +116,20 @@ public class Chnl
     }
 
     public boolean isDeath()
-	{
+    {
         synchronized (this)
         {
             return Status.DEATH == status;
         }
-	}
+    }
 
     private boolean hasOutstandingTasks()
     {
         return (!queue.isEmpty()) || (0 < procCount);
     }
 
-	public void markForDeath()
-	{
+    public void markForDeath()
+    {
         synchronized (this)
         {
             Severity.INFO.report(
@@ -153,10 +153,10 @@ public class Chnl
 
             notifyAll();
         }
-	}
+    }
 
-	public void put(Task aInTask)
-	{
+    public void put(Task aInTask)
+    {
         synchronized (this)
         {
             if (!isDeath())
@@ -183,10 +183,10 @@ public class Chnl
                 notifyAll();
             }
         }
-	}
+    }
 
-	private int procCount = 0;
-	private Queue<Task> queue = new LinkedList<Task>();
-	private Status status = Status.RUNNING;
+    private int procCount = 0;
+    private Queue<Task> queue = new LinkedList<Task>();
+    private Status status = Status.RUNNING;
 
 }

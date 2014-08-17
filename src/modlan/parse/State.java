@@ -99,12 +99,12 @@ public enum State
         return blankIncl;
     }
 
-	public Incl getSpecialIncl()
-	{
-		return getBlankIncl();
-	}
+    public Incl getSpecialIncl()
+    {
+        return getBlankIncl();
+    }
 
-	public String getBeginCb()
+    public String getBeginCb()
     {
         return beginCb;
     }

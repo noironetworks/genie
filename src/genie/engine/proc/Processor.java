@@ -14,22 +14,22 @@ import modlan.report.Severity;
  */
 public class Processor
 {
-	public Processor(
-			int aInParallelism,
+    public Processor(
+            int aInParallelism,
             String aInMetadataLoadPathsInOrder[][],
-			String aInModelPreLoadPathsInOrder[][],
-			ProcessorTree aInPTree,
-	        FormatterCtx[] aInFormatterCtxs
-	        )
-	{
+            String aInModelPreLoadPathsInOrder[][],
+            ProcessorTree aInPTree,
+            FormatterCtx[] aInFormatterCtxs
+            )
+    {
         INSTANCE = this;
-		dsp = new Dsptchr(aInParallelism);
-		pTree = aInPTree;
+        dsp = new Dsptchr(aInParallelism);
+        pTree = aInPTree;
         metadataLoadPaths = aInMetadataLoadPathsInOrder;
         modelPreLoadPaths = aInModelPreLoadPathsInOrder;
         formatterCtxs = aInFormatterCtxs;
-		process();
-	}
+        process();
+    }
 
     public static Processor get()
     {
@@ -46,8 +46,8 @@ public class Processor
         return pTree;
     }
 
-	private void process()
-	{
+    private void process()
+    {
         Severity.INFO.report(this.toString(), "processing", "model processing", "BEGIN");
         try
         {
@@ -73,7 +73,7 @@ public class Processor
         {
             Severity.INFO.report(this.toString(), "processing", "model processing", "END");
         }
-	}
+    }
 
     private void preloadClasses()
     {
@@ -93,8 +93,8 @@ public class Processor
         Cat.postLoad();
         Cat.validateAll();
     }
-	private void load()
-	{
+    private void load()
+    {
         Severity.INFO.report(this.toString(), "load", "model loading", "BEGIN");
 
         int i, j, m;
@@ -133,8 +133,8 @@ public class Processor
     }
     private final String metadataLoadPaths[][];
     private final String modelPreLoadPaths[][];
-	private final ProcessorTree pTree;
+    private final ProcessorTree pTree;
     private final FormatterCtx[] formatterCtxs;
-	private final Dsptchr dsp;
+    private final Dsptchr dsp;
     private static Processor INSTANCE = null;
 }

@@ -151,7 +151,7 @@ public class Engine
         lNextState = getNextState(aInThisChar);
         if (null != lNextState && state != lNextState)
         {
-	        //reportInfo("checkHandleNextState", (lNextState.isSelfContained() ? "SELF CONTAINED > " : "NON-SELF-CONT > ") + "NEW STATE: '" + lNextState + "' ON CHAR: '" + aInThisChar + "'");
+            //reportInfo("checkHandleNextState", (lNextState.isSelfContained() ? "SELF CONTAINED > " : "NON-SELF-CONT > ") + "NEW STATE: '" + lNextState + "' ON CHAR: '" + aInThisChar + "'");
             if (lNextState.isSelfContained())
             {
                 if (ctx.hasMore())
@@ -169,31 +169,31 @@ public class Engine
             }
             else
             {
-	            if (Req.NONE != lNextState.getTextReq())
-	            {
-		            // CHECK IF STATE IS NAMED
-		            if (!lNextState.isNamed())
-		            {
+                if (Req.NONE != lNextState.getTextReq())
+                {
+                    // CHECK IF STATE IS NAMED
+                    if (!lNextState.isNamed())
+                    {
 
-			            // IF STATE IS NOT NAMED; ADVANCE TO THE NEXT CHAR
-			            // WE NEED TO ADVANCE OVER THE CHARACTER THAT IDENTIFIED
-			            // TRANSITION AND IS NOT PART OF THE LITERAL TO FOLLOW.
-			            // FOR NAMED, FIRST CHARACTER IS NOT SPECIAL, AND IS PART
-			            // OF LITERAL NAME
-			            if (ctx.hasMore())
-			            {
-				            ctx.getNext();
-			            }
-		            }
-		            handleLiterals(lNextState);
-		            // IF THIS IS NAMED ITEM, WE NEED TO HOLD THE LAST CHAR
-		            //if (state.isNamed())
-		            {
-			            ctx.holdThisForNext();
-		            }
-	            }
+                        // IF STATE IS NOT NAMED; ADVANCE TO THE NEXT CHAR
+                        // WE NEED TO ADVANCE OVER THE CHARACTER THAT IDENTIFIED
+                        // TRANSITION AND IS NOT PART OF THE LITERAL TO FOLLOW.
+                        // FOR NAMED, FIRST CHARACTER IS NOT SPECIAL, AND IS PART
+                        // OF LITERAL NAME
+                        if (ctx.hasMore())
+                        {
+                            ctx.getNext();
+                        }
+                    }
+                    handleLiterals(lNextState);
+                    // IF THIS IS NAMED ITEM, WE NEED TO HOLD THE LAST CHAR
+                    //if (state.isNamed())
+                    {
+                        ctx.holdThisForNext();
+                    }
+                }
 
-	            //reportInfo("checkHandleNextState", "NEW STATE: " + lNextState + "(" + literals + ")");
+                //reportInfo("checkHandleNextState", "NEW STATE: " + lNextState + "(" + literals + ")");
 
 
                 state = lNextState;
@@ -206,12 +206,12 @@ public class Engine
             }
             lRet = true;
         }
-	    /**
-	    try
-	    {
-		    Thread.sleep(2000);
-	    }
-	    catch (Throwable e) {}**/
+        /**
+        try
+        {
+            Thread.sleep(2000);
+        }
+        catch (Throwable e) {}**/
         return lRet;
     }
 
@@ -277,9 +277,9 @@ public class Engine
 
     private void handleLiterals(State aInState)
     {
-	    //reportInfo("handleLiterals(" + aInState + ")", "begin");
+        //reportInfo("handleLiterals(" + aInState + ")", "begin");
 
-	    literals.reset();
+        literals.reset();
         char lThisChar = ctx.getThis();
 
         // FAST FORWARD TO THE END OF NAME
@@ -287,16 +287,16 @@ public class Engine
         {
             if (aInState.isEnd(lThisChar))
             {
-	            // END OF STATE
-	            //reportInfo("handleLiterals(" + aInState + ")", "DONE: @end with: " + literals);
+                // END OF STATE
+                //reportInfo("handleLiterals(" + aInState + ")", "DONE: @end with: " + literals);
                 return;
             }
             else if (null != TransitionTable.get(aInState, lThisChar))
             {
-	            // NEXT STATE IS BEGINNING
-	            //reportInfo("handleLiterals(" + aInState + ")",
-	            //           "DONE: @next state '" + TransitionTable.get(aInState, lThisChar) + "' on '" + lThisChar + "' with: " + literals);
-	            return;
+                // NEXT STATE IS BEGINNING
+                //reportInfo("handleLiterals(" + aInState + ")",
+                //           "DONE: @next state '" + TransitionTable.get(aInState, lThisChar) + "' on '" + lThisChar + "' with: " + literals);
+                return;
             }
             else if (Character.isLetter(lThisChar) ||
                 Character.isDigit(lThisChar) ||
@@ -306,74 +306,74 @@ public class Engine
                 literals.append(lThisChar);
             }
             else if ('\n' == lThisChar ||
-		            '\r' == lThisChar)
+                    '\r' == lThisChar)
             {
-	            // SKIP
+                // SKIP
             }
             else if (' ' == lThisChar ||
                      '\t' == lThisChar)
             {
-	            /**if (aInState.isSelfContained())
-	            {
-		            switch (aInState.getBlankIncl())
-		            {
-			            case DISALLOW:
+                /**if (aInState.isSelfContained())
+                {
+                    switch (aInState.getBlankIncl())
+                    {
+                        case DISALLOW:
 
-				            reportDeadly(
-						            "parsing " + aInState.getName() + "[" + literals.toString() + "]",
-						            "unexpected blank space");
+                            reportDeadly(
+                                    "parsing " + aInState.getName() + "[" + literals.toString() + "]",
+                                    "unexpected blank space");
 
-				            break;
+                            break;
 
-			            case SKIP:
+                        case SKIP:
 
-				            // NO PARSING OF THIS CHARACTER
-				            break;
+                            // NO PARSING OF THIS CHARACTER
+                            break;
 
-			            case ALLOW:
-			            default:
+                        case ALLOW:
+                        default:
 
-				            literals.append(lThisChar);
-				            break;
-		            }
-	            }
-	             **/
-	            switch (aInState.getBlankIncl())
-	            {
-		            case DISALLOW:
+                            literals.append(lThisChar);
+                            break;
+                    }
+                }
+                 **/
+                switch (aInState.getBlankIncl())
+                {
+                    case DISALLOW:
 
-			            reportDeadly(
-					            "parsing " + aInState.getName() + "[" + literals.toString() + "]",
-					            "unexpected blank space");
+                        reportDeadly(
+                                "parsing " + aInState.getName() + "[" + literals.toString() + "]",
+                                "unexpected blank space");
 
-			            break;
+                        break;
 
-		            case SKIP:
+                    case SKIP:
 
-			            // NO PARSING OF THIS CHARACTER
-			            break;
+                        // NO PARSING OF THIS CHARACTER
+                        break;
 
-		            case ALLOW:
-		            default:
+                    case ALLOW:
+                    default:
 
-			            literals.append(lThisChar);
-			            break;
-	            }
-	            //literals.append(lThisChar);
-	        }
+                        literals.append(lThisChar);
+                        break;
+                }
+                //literals.append(lThisChar);
+            }
             else if (Incl.ALLOW == aInState.getSpecialIncl())
             {
-	            literals.append(lThisChar);
+                literals.append(lThisChar);
             }
-			else
+            else
             {
-	            reportDeadly(
-			            "parsing literal",
-			            "in state " + state + "/" + aInState +
-			            ", special character'" + lThisChar +
-			            "' are not allowed: only letters and numbers; literal so far: " +
-			            literals
-	                    );
+                reportDeadly(
+                        "parsing literal",
+                        "in state " + state + "/" + aInState +
+                        ", special character'" + lThisChar +
+                        "' are not allowed: only letters and numbers; literal so far: " +
+                        literals
+                        );
             }
 
             if (ctx.hasMore())
@@ -382,8 +382,8 @@ public class Engine
             }
             else
             {
-	            //reportInfo("handleLiterals(" + aInState + ")", "DONE: OUT OF CHARS: " + literals);
-	            return;
+                //reportInfo("handleLiterals(" + aInState + ")", "DONE: OUT OF CHARS: " + literals);
+                return;
             }
         }
     }

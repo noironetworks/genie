@@ -32,7 +32,7 @@ public enum Transition
     CONTENT_TO_COMMENT(State.CONTENT, State.COMMENT, Attach.FOLLOWING, new char[]{'#'}),
     CONTENT_TO_NODE(State.CONTENT, State.NODE, Attach.CONTAINING, new char[]{'*'}),
     // --> VALUE_TO_TEXT(Status.VALUE, Status.TEXT, Attach.CONTAINING, new char[]{'"'}),
-	//NODE_TO_TEXT(Status.NODE, Status.TEXT, Attach.CONTAINING, new char[]{'"'}),
+    //NODE_TO_TEXT(Status.NODE, Status.TEXT, Attach.CONTAINING, new char[]{'"'}),
     ;
     private Transition(
                   State aInFromState,

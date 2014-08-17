@@ -7,44 +7,44 @@ import modlan.report.Severity;
  */
 public class Doer extends Thread
 {
-	public Doer(int aInId, Chnl aInChnl)
-	{
-		super("doer(" + aInId + ")");
-		id = aInId;
-		chnl = aInChnl;
-	}
+    public Doer(int aInId, Chnl aInChnl)
+    {
+        super("doer(" + aInId + ")");
+        id = aInId;
+        chnl = aInChnl;
+    }
 
-	public void run()
-	{
-		while (!chnl.isDeath())
-		{
-			Task lTask = chnl.poll();
-			if (null != lTask)
-			{
-				try
-				{
-					//Severity.INFO.report(toString(), "run", "task", "BEGIN: " + lTask);
-					lTask.run();
-					//Severity.INFO.report(toString(), "run", "task", "END:" + lTask);
-				}
+    public void run()
+    {
+        while (!chnl.isDeath())
+        {
+            Task lTask = chnl.poll();
+            if (null != lTask)
+            {
+                try
+                {
+                    //Severity.INFO.report(toString(), "run", "task", "BEGIN: " + lTask);
+                    lTask.run();
+                    //Severity.INFO.report(toString(), "run", "task", "END:" + lTask);
+                }
                 catch(Throwable lT)
                 {
                     Severity.DEATH.report(toString(),"run","exception eoncountered",lT);
                 }
-				finally
-				{
-					chnl.doneCb();
-				}
-			}
-		}
-		Severity.INFO.report(toString(), "run", "task", "DEATH.");
-	}
+                finally
+                {
+                    chnl.doneCb();
+                }
+            }
+        }
+        Severity.INFO.report(toString(), "run", "task", "DEATH.");
+    }
 
-	public String toString()
-	{
-		return getName();
-	}
+    public String toString()
+    {
+        return getName();
+    }
 
-	private final Chnl chnl;
-	private final int id;
+    private final Chnl chnl;
+    private final int id;
 }
