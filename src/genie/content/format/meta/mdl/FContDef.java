@@ -68,7 +68,7 @@ public class FContDef
         out.print(aInIndent,
                   aInProp.getLID().getName() +
                   "=<" +
-                  aInProp.getType(false).getFullConcatenatedName() + "/" + aInProp.getType(true).getFullConcatenatedName() + ">;");
+                  aInProp.getType(false).getFullConcatenatedName() + "/" + aInProp.getType(true).getFullConcatenatedName() + "|group:" + aInProp.getGroup() + ">;");
     }
 
     private void genContained(int aInIndent, MClass aInParent)

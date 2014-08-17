@@ -25,7 +25,11 @@ public class MPropGroup extends SubStructItem
 
     public void getProps(Map<String,MProp> aOutProps)
     {
-        MClass lClass = getMClass();
-        lClass.findProp(aOutProps, getLID().getName());
+        getProps(getMClass(),aOutProps);
+    }
+
+    public void getProps(MClass aInClass, Map<String,MProp> aOutProps)
+    {
+        aInClass.findProp(aOutProps, getLID().getName());
     }
 }

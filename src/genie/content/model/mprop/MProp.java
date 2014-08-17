@@ -176,16 +176,20 @@ public class MProp extends SubStructItem
      */
     public MProp getOverridden(boolean aInIsBase)
     {
+        //Severity.WARN.report(this.toString(),"getOverridden()","",":::isBase:" + isBase());
         MProp lRet = null;
         if (!isBase())
         {
+
             for (MClass lThisClass = getMClass().getSuperclass();
                  null != lThisClass;
                  lThisClass = lThisClass.getSuperclass())
             {
                 lRet = lThisClass.getProp(getLID().getName());
-                if (null != lRet && (lRet.isBase()) || (!aInIsBase)) // if we need base and this is base OR we don't care about base
+                if (null != lRet && (lRet.isBase() || (!aInIsBase))) // if we need base and this is base OR we don't care about base
                 {
+                    //Severity.WARN.report(this.toString(),"getOverridden()","","++++:::ret:::" + lRet);
+
                     return lRet;
                 }
             }
@@ -195,6 +199,7 @@ public class MProp extends SubStructItem
                     "no target found",
                     "no base definition is found for prop " + getLID().getName());
         }
+        //Severity.WARN.report(this.toString(),"getOverridden()","",":::ret:" + lRet);
         return lRet;
     }
 

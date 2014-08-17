@@ -27,6 +27,10 @@ public class Doer extends Thread
 					lTask.run();
 					//Severity.INFO.report(toString(), "run", "task", "END:" + lTask);
 				}
+                catch(Throwable lT)
+                {
+                    Severity.DEATH.report(toString(),"run","exception eoncountered",lT);
+                }
 				finally
 				{
 					chnl.doneCb();
