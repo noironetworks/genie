@@ -7,6 +7,7 @@ import genie.content.model.mtype.MType;
 import genie.content.model.mvalidation.MValidator;
 import genie.engine.model.*;
 import modlan.report.Severity;
+import modlan.utils.Strings;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -27,6 +28,11 @@ public class MProp extends SubStructItem
     {
         super(MY_CAT, aInParent, aInLName);
         action = aInAction;
+        if (action.isDefine())
+        {
+            // IF THIS IS ORIGINAL DEFINITION, JUST SET THE PROP GROUP AS DEFAULT. WON'T HURT
+            setGroup(Strings.DEFAULT);
+        }
     }
 
     public static MProp get(String aInGName)
@@ -313,6 +319,36 @@ public class MProp extends SubStructItem
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // PROP GROUP APIs
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * property group name accessor: retrieves properrty group name for this property
+     * @return property group name
+     */
+    public String getGroup()
+    {
+        return Strings.isEmpty(group) ?
+                (isBase() ?
+                    Strings.DEFAULT :
+                    getOverridden(false).getGroup()) :
+                group;
+    }
+
+    /**
+     * property group name mutator: sets property group name
+     * @param aIn property group name
+     */
+    public void setGroup(String aIn)
+    {
+        if (!Strings.isEmpty(aIn))
+        {
+            getMClass().getPropGroup(aIn,true);
+        }
+        group = aIn;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // VALIDATOR APIs
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -384,5 +420,6 @@ public class MProp extends SubStructItem
         }
     }
 
+    private String group = null;
     private final PropAction action;
 }

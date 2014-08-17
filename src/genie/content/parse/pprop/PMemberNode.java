@@ -29,6 +29,11 @@ public class PMemberNode
     {
         String lName = aInData.getNamedValue(Strings.NAME,null, true);
         MProp lProp = new MProp((MClass)aInParentItem,lName,action);
+        String lGroup = aInData.getNamedValue("group",action.isDefine() ? Strings.DEFAULT : null, false);
+        if (!Strings.isEmpty(lGroup))
+        {
+            lProp.setGroup(lGroup);
+        }
         String lType = aInData.getNamedValue(Strings.TYPE,null,false);
         if (!Strings.isEmpty(lType))
         {

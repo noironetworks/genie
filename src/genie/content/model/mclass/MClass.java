@@ -7,6 +7,7 @@ import genie.content.model.mcont.MParent;
 import genie.content.model.module.Module;
 import genie.content.model.module.SubModuleItem;
 import genie.content.model.mprop.MProp;
+import genie.content.model.mprop.MPropGroup;
 import genie.engine.model.*;
 import modlan.report.Severity;
 import modlan.utils.Strings;
@@ -14,6 +15,7 @@ import modlan.utils.Strings;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Created by dvorkinista on 7/6/14.
@@ -476,6 +478,36 @@ public class MClass
     }
 
     /**
+     * internal method to retrieve all properties of this given class that match the group passed in and not contained in the exclusion list passed in
+     * @param aOut found properties
+     * @param aInOutExcluded exclusion list
+     * @param aInGroup name of the property group for which properties are retrieved
+     */
+    private void getProp(Map<String, MProp> aOut, Collection<String> aInOutExcluded, String aInGroup)
+    {
+        LinkedList<Item> lProps = new LinkedList<Item>();
+        getChildItems(MProp.MY_CAT, lProps);
+        for (Item lItem : lProps)
+        {
+            MProp lProp = (MProp) lItem;
+            if (!aInOutExcluded.contains(lProp.getLID().getName()))
+            {
+                if (!aOut.containsKey(lProp.getLID().getName()))
+                {
+                    if (lProp.getGroup().equals(aInGroup))
+                    {
+                        aOut.put(lProp.getLID().getName(), lProp);
+                    }
+                    else
+                    {
+                        aInOutExcluded.add(lProp.getLID().getName());
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Finds a property by passed in name in this class or any of its superclasses.
      * @param aInName name of the property to be found
      * @param aInIsBase specifies if only the base property is to be found
@@ -505,6 +537,79 @@ public class MClass
              lThisClass = lThisClass.getSuperclass())
         {
             lThisClass.getProp(aOut,aInIsBaseOnly);
+        }
+    }
+
+    /**
+     * finds all properties of the class that belong to a property group passed in
+     * @param aOut properties that match the group
+     * @param aInGroup group for which properties are being retrieved
+     */
+    public void findProp(Map<String, MProp> aOut, String aInGroup)
+    {
+        TreeSet<String> lExcluded = new TreeSet<String>();
+        for (MClass lThisClass = this;
+             null != lThisClass;
+             lThisClass = lThisClass.getSuperclass())
+        {
+            lThisClass.getProp(aOut,lExcluded,aInGroup);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // PROPERTY GROUP APIs
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public synchronized MPropGroup getPropGroup(String aIn, boolean aInCreateIfDoesnExist)
+    {
+        MPropGroup lGroup = getPropGroup(aIn);
+        if (null == lGroup)
+        {
+            lGroup = new MPropGroup(this,aIn);
+        }
+        return lGroup;
+    }
+
+    public MPropGroup getPropGroup(String aIn)
+    {
+        return (MPropGroup) getChildItem(MPropGroup.MY_CAT,aIn);
+    }
+
+    public void getPropGroup(Map<String, MPropGroup> aOut)
+    {
+        LinkedList<Item> lItems = new LinkedList<Item>();
+        getChildItems(MPropGroup.MY_CAT,lItems);
+        for (Item lIt : lItems)
+        {
+            if (!aOut.containsKey(lIt.getLID().getName()))
+            {
+                aOut.put(lIt.getLID().getName(), (MPropGroup) lIt);
+            }
+        }
+    }
+
+    public MPropGroup findGroup(String aIn)
+    {
+        MPropGroup lRet = null;
+        for (MClass lThisClass = this;
+             null != lThisClass && null == lRet;
+             lThisClass = lThisClass.getSuperclass())
+        {
+            lRet = lThisClass.getPropGroup(aIn);
+        }
+        if (null == lRet)
+        {
+            Severity.DEATH.report(this.toString(),"prop group retrieval", "prop group not found", "no prop group with name " + aIn);
+        }
+        return lRet;
+    }
+
+    public void findGroup(Map<String, MPropGroup> aOut)
+    {
+        for (MClass lThisClass = this;
+             null != lThisClass;
+             lThisClass = lThisClass.getSuperclass())
+        {
+            lThisClass.getPropGroup(aOut);
         }
     }
 
