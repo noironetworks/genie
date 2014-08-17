@@ -4,6 +4,7 @@ import genie.content.model.mclass.MClass;
 import genie.engine.model.Cat;
 import genie.engine.model.Item;
 import genie.engine.model.RelatorCat;
+import modlan.report.Severity;
 
 /**
  * Created by midvorki on 8/5/14.
@@ -35,7 +36,10 @@ public class MRelatorItem
         return (MClass) getTargetRelatorCat().getRelator(getGID().getName()).getToItem();
     }
 
-    public String getTargetGName() { return getTargetRelatorCat().getRelator(getGID().getName()).getItemGName(); }
+    public String getTargetGName()
+    {
+        return getTargetRelatorCat().getRelator(getGID().getName()).getToItemGName();
+    }
     /**
      * registers super type for this type. super type is the type from which this type is derived
      * @param aInTargetGName super type global name

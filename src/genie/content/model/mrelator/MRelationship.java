@@ -27,8 +27,6 @@ public class MRelationship extends Item
         int lSlashIdx = lSrcClassGName.indexOf('/');
         moduleName = lSrcClassGName.substring(0, lSlashIdx);
         sourceClassLocalName = lSrcClassGName.substring(lSlashIdx + 1, lSrcClassGName.length());
-        Severity.WARN.report("","","",this + ":: CREATING NEW MRelationship(source: " + getSourceClassGName() + "; target: " + getTargetClassGName() + ")");
-
         type = aInType;
         sourceCardinality = aInSourceCard;
         targetCardinality = aInTargetCard;
@@ -72,8 +70,7 @@ public class MRelationship extends Item
         if (type.hasSourceObject())
         {
             // CLASS NAME FORMAT: module/ReSrc<LocalClassName><Name>
-            lClass = initClass("ReSrc", type.isNamed() ? "relator/NameResolvedRelSource" : "relator/DirectRelSource");
-
+            lClass = initClass("RSrc", type.isNamed() ? "relator/NameResolvedRelSource" : "relator/DirectRelSource");
             MContained.addRule(getSourceClassGName(), lClass.getGID().getName());
 
             // TODO: PROPERTIES
@@ -88,10 +85,8 @@ public class MRelationship extends Item
         if (type.hasTargetObject())
         {
             // CLASS NAME FORMAT: module/ReTgt<LocalClassName><Name>
-            lClass = initClass("ReTgt", "relator/Target");
-
-            Severity.WARN.report(toString(),"","","--> " + getTargetClassGName());
-            //TODO: BUG: MContained.addRule(getTargetClassGName(), lClass.getGID().getName());
+            lClass = initClass("RTgt", "relator/Target");
+            MContained.addRule(getTargetClassGName(), lClass.getGID().getName());
 
             // TODO: PROPERTIES
             // TODO: ADD NAMING
@@ -105,7 +100,7 @@ public class MRelationship extends Item
         if (type.hasTargetObject())
         {
             // CLASS NAME FORMAT: module/ReRes<LocalClassName><Name>
-            lClass = initClass("ReRes", "relator/Resolver");
+            lClass = initClass("RRes", "relator/Resolver");
 
             // TODO: WHAT SHOULD IT BE PARENTED BY? MContained.addRule(getSourceClassGName(), lClass.getGID().getName());
 
@@ -118,7 +113,7 @@ public class MRelationship extends Item
 
     private MClass initClass(String aInClassPrefix, String aInSuperClass)
     {
-        String lClassName = aInClassPrefix + sourceClassLocalName + Strings.upFirstLetter(getLID().getName());
+        String lClassName = sourceClassLocalName + Strings.upFirstLetter(getLID().getName()) + aInClassPrefix;
         Module lModule = Module.get(moduleName, true);
         MClass lClass = (MClass) lModule.getChildItem(MClass.MY_CAT,lClassName);
         if (null == lClass)

@@ -6,6 +6,7 @@ import genie.engine.model.Cardinality;
 import genie.engine.model.Cat;
 import genie.engine.model.Item;
 import genie.engine.model.RelatorCat;
+import modlan.report.Severity;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -16,7 +17,7 @@ import java.util.LinkedList;
 public class MTarget extends MRelatorRuleItem
 {
     public static final Cat MY_CAT = Cat.getCreate("rel:target");
-    public static final RelatorCat TARGET_CAT = RelatorCat.getCreate("rel:target:target", Cardinality.SINGLE);
+    public static final RelatorCat TARGET_CAT = RelatorCat.getCreate("rel:target:targetref", Cardinality.SINGLE);
 
     MTarget(
             MRelator aInSource,

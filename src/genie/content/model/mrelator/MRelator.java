@@ -2,6 +2,7 @@ package genie.content.model.mrelator;
 
 import genie.content.model.mclass.MClass;
 import genie.engine.model.*;
+import modlan.report.Severity;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -39,8 +40,8 @@ public class MRelator
             PointCardinality aInTargetCard
             )
     {
-        MRelator lContd = MRelator.get(aInSourceGName, true);
-        MTarget lTarget = lContd.getMTarget(aInTargetGName, true);
+        MRelator lSrc = MRelator.get(aInSourceGName, true);
+        MTarget lTarget = lSrc.getMTarget(aInTargetGName, true);
 
         new MRelationship(
                 lTarget,
@@ -51,8 +52,7 @@ public class MRelator
 
         MRelated lContr = MRelated.addRule(aInTargetGName, aInSourceGName);
 
-
-        return new Pair<MRelator, MRelated>(lContd,lContr);
+        return new Pair<MRelator, MRelated>(lSrc,lContr);
     }
 
     /**

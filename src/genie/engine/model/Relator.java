@@ -227,6 +227,11 @@ public class Relator extends Item
         return null == lRel ? null : lRel.getTargetItem();
     }
 
+    public String getToItemGName()
+    {
+        Relator lRel = getToRelator();
+        return null == lRel ? null : lRel.itemGName;
+    }
     /**
      * For any relationship (singular or multi),
      * find the set of destination/target nodes of this relationship.
