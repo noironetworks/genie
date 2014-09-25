@@ -263,6 +263,18 @@ public class MClass
         getSubclasses(lRet, true, aInIsConcreteOnly);
         return lRet;
     }
+
+    public boolean isInstanceOf(String aInSuperClassGlobalName)
+    {
+        return getGID().getName().equals(aInSuperClassGlobalName) ||
+               (hasSuperclass() && getSuperclass().isInstanceOf(aInSuperClassGlobalName));
+    }
+
+    public boolean isSubclassOf(String aInSuperClassGlobalName)
+    {
+        return (hasSuperclass() && getSuperclass().isInstanceOf(aInSuperClassGlobalName));
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // CONTAINMENTS APIs
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -611,6 +623,11 @@ public class MClass
         {
             lThisClass.getPropGroup(aOut);
         }
+    }
+
+    public String getOwnerName()
+    {
+        return "superowner"; // TODO: IMPLEMENT ME
     }
 
     private final boolean isConcrete;

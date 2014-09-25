@@ -12,11 +12,17 @@ public class MTypeHint
     public static final String NAME = "hint";
 
     public MTypeHint(
-            MType aInType
-                    )
+            MType aInType,
+            TypeInfo aInTypeInfo)
     {
         super(MY_CAT, aInType, NAME);
+        info = aInTypeInfo;
     }
 
-    // TODO: NEED TO IMPLEMENT TYPE HINT
+    public TypeInfo getInfo()
+    {
+        return info;
+    }
+
+    private TypeInfo info;
 }

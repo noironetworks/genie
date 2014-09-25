@@ -3,7 +3,7 @@ module[ascii]
     # 8 bit ascii character
     primitive[Char]
     {
-        hint[ascii-char]
+        hint[ascii:char]
         language[cpp;
                  syntax=unsigned char;
                  pass-by=value;

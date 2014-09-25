@@ -23,8 +23,39 @@ public enum FileTypeMeta
                      "*/",
                      1)
              ),
-    C_SOURCE("c:header",
+    C_SOURCE("c:source",
              ".c",
+             new Indenter(10, 4, true),
+             new BlockFormatDirective(
+                     "/**",
+                     "* ",
+                     null,
+                     "*/",
+                     1),
+             new BlockFormatDirective(
+                     "/*",
+                     "*",
+                     null,
+                     "*/",
+                     1)),
+    CPP_HEADER("cpp:header",
+             ".hpp",
+             new Indenter(10, 4, true),
+             new BlockFormatDirective(
+                     "/**",
+                     "* ",
+                     null,
+                     "*/",
+                     1),
+             new BlockFormatDirective(
+                     "/*",
+                     "* ",
+                     null,
+                     "*/",
+                     1)
+    ),
+    CPP_SOURCE("cpp:source",
+             ".cpp",
              new Indenter(10, 4, true),
              new BlockFormatDirective(
                      "/**",

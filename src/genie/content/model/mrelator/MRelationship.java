@@ -70,7 +70,7 @@ public class MRelationship extends Item
         if (type.hasSourceObject())
         {
             // CLASS NAME FORMAT: module/ReSrc<LocalClassName><Name>
-            lClass = initClass("RSrc", type.isNamed() ? "relator/NameResolvedRelSource" : "relator/DirectRelSource");
+            lClass = initClass("RSrc", "To", type.isNamed() ? "relator/NameResolvedRelSource" : "relator/DirectRelSource");
             MContained.addRule(getSourceClassGName(), lClass.getGID().getName());
 
             // TODO: PROPERTIES
@@ -85,7 +85,7 @@ public class MRelationship extends Item
         if (type.hasTargetObject())
         {
             // CLASS NAME FORMAT: module/ReTgt<LocalClassName><Name>
-            lClass = initClass("RTgt", "relator/Target");
+            lClass = initClass("RTgt", "From", "relator/Target");
             MContained.addRule(getTargetClassGName(), lClass.getGID().getName());
 
             // TODO: PROPERTIES
@@ -100,7 +100,7 @@ public class MRelationship extends Item
         if (type.hasTargetObject())
         {
             // CLASS NAME FORMAT: module/ReRes<LocalClassName><Name>
-            lClass = initClass("RRes", "relator/Resolver");
+            lClass = initClass("RRes", "To", "relator/Resolver");
 
             // TODO: WHAT SHOULD IT BE PARENTED BY? MContained.addRule(getSourceClassGName(), lClass.getGID().getName());
 
@@ -111,9 +111,9 @@ public class MRelationship extends Item
         return lClass;
     }
 
-    private MClass initClass(String aInClassPrefix, String aInSuperClass)
+    private MClass initClass(String aInClassPrefix, String aInClassSuffix, String aInSuperClass)
     {
-        String lClassName = sourceClassLocalName + Strings.upFirstLetter(getLID().getName()) + aInClassPrefix;
+        String lClassName = sourceClassLocalName + aInClassSuffix + Strings.upFirstLetter(getLID().getName()) + aInClassPrefix;
         Module lModule = Module.get(moduleName, true);
         MClass lClass = (MClass) lModule.getChildItem(MClass.MY_CAT,lClassName);
         if (null == lClass)

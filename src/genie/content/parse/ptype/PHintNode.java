@@ -3,6 +3,7 @@ package genie.content.parse.ptype;
 import genie.content.model.module.Module;
 import genie.content.model.mtype.MType;
 import genie.content.model.mtype.MTypeHint;
+import genie.content.model.mtype.TypeInfo;
 import genie.engine.model.Item;
 import genie.engine.model.Pair;
 import genie.engine.parse.model.ParseNode;
@@ -26,8 +27,7 @@ public class PHintNode
 
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)
     {
-        MTypeHint lHint = new MTypeHint((MType)aInParentItem);
+        MTypeHint lHint = new MTypeHint((MType)aInParentItem, TypeInfo.get(aInData.getNamedValue(Strings.NAME,null,true)));
         return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE,lHint);
     }
-
 }

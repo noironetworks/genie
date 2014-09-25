@@ -3,7 +3,7 @@ module[ascii]
     # ascii string
     primitive[String]
     {
-        hint[ascii-string]
+        hint[ascii:string]
 
         language[cpp;
                  syntax=String;
