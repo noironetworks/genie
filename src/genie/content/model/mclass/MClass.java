@@ -4,6 +4,8 @@ import genie.content.model.mcont.MChild;
 import genie.content.model.mcont.MContained;
 import genie.content.model.mcont.MContainer;
 import genie.content.model.mcont.MParent;
+import genie.content.model.mnaming.MNameRule;
+import genie.content.model.mnaming.MNamer;
 import genie.content.model.module.Module;
 import genie.content.model.module.SubModuleItem;
 import genie.content.model.mprop.MProp;
@@ -12,10 +14,7 @@ import genie.engine.model.*;
 import modlan.report.Severity;
 import modlan.utils.Strings;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Created by dvorkinista on 7/6/14.
@@ -628,6 +627,39 @@ public class MClass
     public String getOwnerName()
     {
         return "superowner"; // TODO: IMPLEMENT ME
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // NAMING APIs
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public MNamer findNamer()
+    {
+        MNamer lNamer = null;
+        for (MClass lThis = this; null != lThis && null == lNamer; lThis = lThis.getSuperclass())
+        {
+            lNamer = MNamer.get(lThis.getGID().getName(), false);
+        }
+        return lNamer;
+    }
+
+    public void findNamingRules(Map<String, MNameRule> aOut)
+    {
+        for (MClass lThis = this; null != lThis; lThis = lThis.getSuperclass())
+        {
+            MNamer lNamer = MNamer.get(lThis.getGID().getName(), false);
+            if (null != lNamer)
+            {
+                lNamer.getNamingRules(aOut);
+            }
+        }
+    }
+
+    public Collection<MNameRule> findNamingRules()
+    {
+        TreeMap<String,MNameRule> lR = new TreeMap<String, MNameRule>();
+        findNamingRules(lR);
+        return lR.values();
     }
 
     private final boolean isConcrete;

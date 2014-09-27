@@ -3,6 +3,7 @@ package genie.content.parse.pcontainment;
 import genie.content.model.mclass.MClass;
 import genie.content.model.mcont.MContained;
 import genie.content.model.mcont.MContainer;
+import genie.content.model.mcont.MParent;
 import genie.engine.model.Item;
 import genie.engine.model.Pair;
 import genie.engine.parse.model.ParseNode;
@@ -29,10 +30,10 @@ public class PParentNode extends ParseNode
                                             MClass.ROOT_CLASS_GNAME :
                                             aInData.getNamedValue(Strings.CLASS, null, true);
 
-        Pair<MContained, MContainer> lRule = MContained.addRule(lContainerClassName,lContainedClassName);
+        Pair<MContained, MParent> lRule = MContained.addRule(lContainerClassName,lContainedClassName);
 
 //        Severity.WARN.report(this.toString(),"","","CONT RULE ADDED: " + lRule);
-        MContainer lContainer = lRule.getSecond();
+        MParent lContainer = lRule.getSecond();
 
         return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE, lContainer);
     }

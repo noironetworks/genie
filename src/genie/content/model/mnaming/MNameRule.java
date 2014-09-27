@@ -8,6 +8,7 @@ import modlan.report.Severity;
 import modlan.utils.Strings;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -93,5 +94,33 @@ public class MNameRule extends Item
         }
     }
 
+    public int getCurrCompCount()
+    {
+        return componentCount;
+    }
+
+    public String getNextComponentName()
+    {
+        return "" + (++componentCount);
+    }
+
+    public void getComponents(Collection<MNameComponent> aOut)
+    {
+        LinkedList<Item> lChildren = new LinkedList<Item>();
+        getChildItems(MNameComponent.MY_CAT,lChildren);
+        for (Item lIt : lChildren)
+        {
+            aOut.add((MNameComponent) lIt);
+        }
+    }
+
+    public Collection<MNameComponent> getComponents()
+    {
+        LinkedList<MNameComponent> lComps = new LinkedList<MNameComponent>();
+        getComponents(lComps);
+        return lComps;
+    }
+
     private final boolean isAnyTarget;
+    private int componentCount = 0;
 }

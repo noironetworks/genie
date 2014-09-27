@@ -41,14 +41,14 @@ public class MContained
      * @param aInChildGName global name of the child class
      * @return pair of contained and container objects
      */
-    public static final Pair<MContained, MContainer> addRule(String aInParentGName, String aInChildGName)
+    public static final Pair<MContained, MParent> addRule(String aInParentGName, String aInChildGName)
     {
         MContained lContd = MContained.get(aInChildGName, true);
-        lContd.getMParent(aInParentGName, true);
+        MParent lMParent = lContd.getMParent(aInParentGName, true);
 
         MContainer lContr = MContainer.addRule(aInParentGName, aInChildGName);
 
-        return new Pair<MContained, MContainer>(lContd,lContr);
+        return new Pair<MContained, MParent>(lContd,lMParent);
     }
 
     /**

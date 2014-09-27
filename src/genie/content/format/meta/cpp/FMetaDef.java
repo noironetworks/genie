@@ -1,6 +1,9 @@
 package genie.content.format.meta.cpp;
 
 import genie.content.model.mclass.MClass;
+import genie.content.model.mnaming.MNameComponent;
+import genie.content.model.mnaming.MNameRule;
+import genie.content.model.mnaming.MNamer;
 import genie.content.model.mprop.MProp;
 import genie.content.model.mtype.MType;
 import genie.content.model.mtype.MTypeHint;
@@ -8,7 +11,9 @@ import genie.engine.file.WriteStats;
 import genie.engine.format.*;
 import genie.engine.model.Ident;
 import genie.engine.model.Item;
+import modlan.utils.Strings;
 
+import java.util.Collection;
 import java.util.TreeMap;
 
 /**
@@ -83,6 +88,18 @@ public class FMetaDef
         {
             return "ClassInfo::OBSERVABLE";
         }
+        else if (isRelationshipSource(aIn))
+        {
+            return "ClassInfo::RELATIONSHIP";
+        }
+        else if (isRelationshipTarget(aIn))
+        {
+            return "ClassInfo::INVERSE_RELATIONSHIP";
+        }
+        else  if (isRelationshipResolver(aIn))
+        {
+            return "ClassInfo::RESOLVER";
+        }
         else
         {
             return "ClassInfo::LOCAL_ONLY";
@@ -97,6 +114,21 @@ public class FMetaDef
     public static boolean isObservable(MClass aIn)
     {
         return aIn.isSubclassOf("observer/Component") || aIn.isSubclassOf("observer/Definition"); //TODO: WHAT SHOULD THESE CLASSES BE?
+    }
+
+    public static boolean isRelationshipSource(MClass aIn)
+    {
+        return aIn.isSubclassOf("relator/Source");
+    }
+
+    public static boolean isRelationshipTarget(MClass aIn)
+    {
+        return aIn.isSubclassOf("relator/Target");
+    }
+
+    public static boolean isRelationshipResolver(MClass aIn)
+    {
+        return aIn.isSubclassOf("relator/Resolver");
     }
 
     private void genMo(int aInIndent, MClass aInClass)
@@ -133,7 +165,9 @@ public class FMetaDef
                     MType lPrimitiveType = lPropType.getBuiltInType();
                     MTypeHint lHint = lPrimitiveType.getTypeHint();
 
-                    out.println(aInIndent + 1, "(PropertyInfo(" + (++lCount) + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPrimitiveType.getLID().getName().toUpperCase() + ", PropertyInfo::" + lHint.getInfo().toString() + ")) // " + lProp.toString());
+                    int lLocalId = (++lCount);
+                    out.println(aInIndent + 1, "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPrimitiveType.getLID().getName().toUpperCase() + ", PropertyInfo::" + lHint.getInfo().toString() + ")) // " + lProp.toString());
+                    propIds.put(lProp.getLID().getName(),lLocalId);
                 }
 
 
@@ -147,8 +181,51 @@ public class FMetaDef
         }
     }
 
+    private MNameRule getNamingRule(MClass aInClass)
+    {
+        Collection<MNameRule> lNrs = aInClass.findNamingRules();
+        return lNrs.isEmpty() ? null : lNrs.iterator().next();
+    }
+
     private void genNamingProps(int aInIndent, MClass aInClass)
     {
+        MNameRule lNr = getNamingRule(aInClass);
 
+        if (null == lNr)
+        {
+            out.println(aInIndent, "std::vector<PropertyInfo>() // no naming rule; assume cardinality of 1 in any containment rule");
+        }
+        else
+        {
+            Collection<MNameComponent> lComps = lNr.getComponents();
+            int lNamePropsCount = 0;
+            for (MNameComponent lIt : lComps)
+            {
+                if (lIt.hasPropName())
+                {
+                    lNamePropsCount++;
+                }
+            }
+            if (0 == lNamePropsCount)
+            {
+                out.println(aInIndent, "std::vector<PropertyInfo>() // no naming props in rule " + lNr + "; assume cardinality of 1");
+            }
+            else
+            {
+                out.println(aInIndent, "list_of // " + lNr);
+                for (MNameComponent lIt : lComps)
+                {
+                    if (lIt.hasPropName())
+                    {
+                        MProp lProp = aInClass.findProp(lIt.getPropName(),false);
+                        if (null != lProp)
+                        {
+                            out.println(aInIndent + 1, "(" + propIds.get(lProp.getLID().getName()) + ") //" + lProp + " of name component " + lIt);
+                        }
+                    }
+                }
+            }
+        }
     }
+    private TreeMap<String, Integer> propIds = new TreeMap<String, Integer>();
 }

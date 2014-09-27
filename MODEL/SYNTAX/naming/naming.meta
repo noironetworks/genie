@@ -57,6 +57,7 @@ metadata
                  use=named/parent/component]
         }
     }
+
     node[named;
          namespace=naming;
          ]
