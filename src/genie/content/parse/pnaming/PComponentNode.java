@@ -36,7 +36,6 @@ public class PComponentNode extends ParseNode
         // IF IT IS, WE NEED TO ALLOCATE THE NAME RULE THAT SHADOWS THE CONTAINMENT RULE
         if (isPartOfContainmentDef)
         {
-            Severity.WARN.report("","","","PARSING NAME COMPONENT UNDER CONTAINMENT: PARENT: " + aInParentItem + "::" + (aInParentItem.getClass()));
             MParent lParent = (MParent) aInParentItem;
             MContained lContd = lParent.getContained();
             MNamer lNamer = MNamer.get(lContd.getLID().getName(), true);
