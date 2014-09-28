@@ -8,6 +8,8 @@ import genie.content.model.mnaming.MNameRule;
 import genie.content.model.mnaming.MNamer;
 import genie.content.model.module.Module;
 import genie.content.model.module.SubModuleItem;
+import genie.content.model.mownership.MOwned;
+import genie.content.model.mownership.MOwner;
 import genie.content.model.mprop.MProp;
 import genie.content.model.mprop.MPropGroup;
 import genie.engine.model.*;
@@ -624,9 +626,55 @@ public class MClass
         }
     }
 
-    public String getOwnerName()
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // OWNER APIs
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void addOwner(String aInOwner)
     {
-        return "superowner"; // TODO: IMPLEMENT ME
+        if (null == getChildItem(MOwned.MY_CAT, aInOwner))
+        {
+            new MOwned(this, aInOwner);
+        }
+    }
+
+    public void findOwned(TreeMap<String, MOwned> aOut)
+    {
+        LinkedList<Item> ll = new LinkedList<Item>();
+        for (MClass lThis = this; lThis != null; lThis = lThis.getSuperclass())
+        {
+            lThis.getChildItems(MOwned.MY_CAT,ll);
+        }
+        for (Item lIt : ll)
+        {
+            if (!aOut.containsKey(lIt.getLID().getName()))
+            {
+                aOut.put(lIt.getLID().getName(), (MOwned) lIt);
+            }
+        }
+    }
+
+    public void findOwners(TreeMap<String, MOwner> aOut)
+    {
+        LinkedList<Item> ll = new LinkedList<Item>();
+        for (MClass lThis = this; lThis != null; lThis = lThis.getSuperclass())
+        {
+            lThis.getChildItems(MOwned.MY_CAT,ll);
+        }
+        for (Item lIt : ll)
+        {
+            if (!aOut.containsKey(lIt.getLID().getName()))
+            {
+                aOut.put(lIt.getLID().getName(), ((MOwned) lIt).getOwner());
+            }
+        }
+    }
+
+    public Collection<MOwner> findOwners()
+    {
+        TreeMap<String, MOwner> lOwners = new TreeMap<String, MOwner>();
+        findOwners(lOwners);
+        return lOwners.values();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -661,6 +709,7 @@ public class MClass
         findNamingRules(lR);
         return lR.values();
     }
+
 
     private final boolean isConcrete;
 }

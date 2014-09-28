@@ -1,7 +1,6 @@
 package genie.content.parse.pnaming;
 
 import genie.content.model.mcont.MContained;
-import genie.content.model.mcont.MContainer;
 import genie.content.model.mcont.MParent;
 import genie.content.model.mnaming.MNameComponent;
 import genie.content.model.mnaming.MNameRule;
@@ -12,7 +11,6 @@ import genie.engine.parse.model.ParseNode;
 import genie.engine.parse.model.ProcessorNode;
 import genie.engine.parse.modlan.Node;
 import genie.engine.parse.modlan.ParseDirective;
-import modlan.report.Severity;
 
 /**
  * Created by midvorki on 8/1/14.

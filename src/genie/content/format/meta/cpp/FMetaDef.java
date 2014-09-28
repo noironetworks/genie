@@ -4,6 +4,7 @@ import genie.content.model.mclass.MClass;
 import genie.content.model.mnaming.MNameComponent;
 import genie.content.model.mnaming.MNameRule;
 import genie.content.model.mnaming.MNamer;
+import genie.content.model.mownership.MOwner;
 import genie.content.model.mprop.MProp;
 import genie.content.model.mtype.MType;
 import genie.content.model.mtype.MTypeHint;
@@ -131,10 +132,16 @@ public class FMetaDef
         return aIn.isSubclassOf("relator/Resolver");
     }
 
+    public static String getOwner(MClass aIn)
+    {
+        Collection<MOwner> lOwners = aIn.findOwners();
+        return lOwners.isEmpty() ? "default" : lOwners.iterator().next().getLID().getName();
+    }
+
     private void genMo(int aInIndent, MClass aInClass)
     {
         out.println(aInIndent, '(');
-            out.println(aInIndent + 1, "ClassInfo(" + aInClass.getGID().getId() + ", " + getClassType(aInClass) + ", \"" + aInClass.getFullConcatenatedName() + "\", \"" + aInClass.getOwnerName() + "\",");
+            out.println(aInIndent + 1, "ClassInfo(" + aInClass.getGID().getId() + ", " + getClassType(aInClass) + ", \"" + aInClass.getFullConcatenatedName() + "\", \"" + getOwner(aInClass) + "\",");
                 genProps(aInIndent + 2, aInClass);
                 genNamingProps(aInIndent + 2, aInClass);
                 out.println(aInIndent + 2, ")");
