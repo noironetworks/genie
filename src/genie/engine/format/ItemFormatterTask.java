@@ -14,7 +14,8 @@ public abstract class ItemFormatterTask extends FormatterTask
         item = aInItem;
     }
 
-    protected ItemFormatterTask(FormatterCtx aInFormatterCtx,
+    protected ItemFormatterTask(
+            FormatterCtx aInFormatterCtx,
             FileNameRule aInFileNameRule,
             Indenter aInIndenter,
             BlockFormatDirective aInHeaderFormatDirective,

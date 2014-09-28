@@ -175,7 +175,7 @@ public class Cat extends Ident implements Validatable
     {
         if (isValidated())
         {
-            Severity.WARN.report(aIn.toString(),"register","","register after validation");
+            Severity.INFO.report(aIn.toString(),"register","","NOTHING TO PANIC ABOUT: register after validation");
         }
         if (null != nameToCatTable.put(aIn.getName(), aIn))
         {

@@ -299,7 +299,7 @@ public class FormattedFile
         lSb.append(lFnSb);
         fullPath = lSb.toString();
         fullFileName = lFnSb.toString();
-        //System.out.println("|||||||||||||||" + this + "--> " + fullPath);
+        //Severity.WARN.report(fileName,"","","|||||||||||||||" + this + "--> " + fullPath);
     }
 
     public File getDir()

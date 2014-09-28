@@ -8,7 +8,7 @@ public class Strings
     public static final String ABSTRACT = "abstract";
     public static final String ANY = "any";
     public static final String ASTERISK = "*";
-    public static final String CATEGORY = " category";
+    public static final String CATEGORY = "category";
     public static final String CLASS = "class";
     public static final String CARDINALITY = "cardinality";
     public static final String CONCRETE = "concrete";

@@ -41,7 +41,7 @@ public class FormatterTaskMeta
                             String.class,
                             boolean.class,
                             WriteStats.class,
-                            Cat.class,
+                            // NO NEED FOR CATEGRY: Cat.class,
                             Item.class);
                     break;
                 }
@@ -95,6 +95,12 @@ public class FormatterTaskMeta
         isEnabled = aIn;
     }
 
+    private static String getModuleContext(Item aInIt)
+    {
+        Item lParentIt = aInIt.getParent();
+        return null == lParentIt ? null : lParentIt.getGID().getName();
+    }
+
     public void process(FormatterCtx aInCtx)
     {
         //System.out.println(this + ".process()");
@@ -108,17 +114,16 @@ public class FormatterTaskMeta
                     {
                         FormatterTask lTask = taskConstr.newInstance(
                                 aInCtx,
-                                fileNameRule,
+                                fileNameRule.makeSpecific(getModuleContext(lItem)),
                                 file.getIndenter(),
                                 file.getHeaderFormatDirective(),
                                 file.getCommentFormatDirective(),
-                                name,
+                                lItem.getLID().getName(), //name,
                                 isUser,
                                 aInCtx.getStats(),
-                                catOrNull,
+                                //NO NEED FOR CATEGORY: catOrNull,
                                 lItem);
                         Processor.get().getDsp().trigger(lTask);
-
                     }
                     break;
                 }

@@ -15,13 +15,13 @@ public enum FileTypeMeta
                     "* ",
                     null,
                     "*/",
-                    1),
+                    0),
              new BlockFormatDirective(
                      "/*",
                      "* ",
                      null,
                      "*/",
-                     1)
+                     0)
              ),
     C_SOURCE("c:source",
              ".c",
@@ -31,13 +31,13 @@ public enum FileTypeMeta
                      "* ",
                      null,
                      "*/",
-                     1),
+                     0),
              new BlockFormatDirective(
                      "/*",
                      "*",
                      null,
                      "*/",
-                     1)),
+                     0)),
     CPP_HEADER("cpp:header",
              ".hpp",
              new Indenter(10, 4, true),
@@ -46,13 +46,13 @@ public enum FileTypeMeta
                      "* ",
                      null,
                      "*/",
-                     1),
+                     0),
              new BlockFormatDirective(
                      "/*",
                      "* ",
                      null,
                      "*/",
-                     1)
+                     0)
     ),
     CPP_SOURCE("cpp:source",
              ".cpp",
@@ -62,13 +62,13 @@ public enum FileTypeMeta
                      "* ",
                      null,
                      "*/",
-                     1),
+                     0),
              new BlockFormatDirective(
                      "/*",
                      "*",
                      null,
                      "*/",
-                     1)),
+                     0)),
     MDL_META("meta",
               ".meta",
               new Indenter(10, 4, true),
