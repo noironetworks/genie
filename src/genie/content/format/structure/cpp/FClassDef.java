@@ -1,12 +1,18 @@
 package genie.content.format.structure.cpp;
 
 import genie.content.model.mclass.MClass;
+import genie.content.model.mprop.MProp;
+import genie.content.model.mtype.Language;
+import genie.content.model.mtype.MType;
 import genie.engine.file.WriteStats;
 import genie.engine.format.*;
 import genie.engine.model.Ident;
 import genie.engine.model.Item;
 import modlan.report.Severity;
+import modlan.utils.Strings;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.TreeMap;
 
 /**
@@ -145,7 +151,7 @@ public class FClassDef extends ItemFormatterTask
         for (MClass lThis : lConts.values())
         {
             out.printIncodeComment(aInIndent, "contains: " + lThis);
-            out.println(aInIndent,getInclude(lThis), false);
+            out.println(aInIndent, getInclude(lThis), false);
         }
     }
 
@@ -177,6 +183,148 @@ public class FClassDef extends ItemFormatterTask
             out.println(aInIndent + 1, ": public opflex::modb::mointernal::MO");
         }
         out.println(aInIndent, "{");
+            genPublic(aInIndent + 1, aInClass);
         out.println(aInIndent, "}; // class " + aInClass.getLID().getName());
     }
+
+    private void genPublic(int aInIndent, MClass aInClass)
+    {
+        out.println(aInIndent, "public:");
+        out.println();
+        genClassId(aInIndent + 1, aInClass);
+        genProps(aInIndent + 1, aInClass);
+    }
+
+    private void genClassId(int aInIndent, MClass aInClass)
+    {
+        out.println(aInIndent, "static const opflex::modb::class_id_t CLASS_ID = " + aInClass.getGID().getId() + ";");
+        out.println();
+    }
+
+    private void genProps(int aInIndent, MClass aInClass)
+    {
+        TreeMap<String, MProp> lProps = new TreeMap<String, MProp>();
+        aInClass.findProp(lProps, false);
+        int lCnt=0;
+        for (MProp lProp : lProps.values())
+        {
+            propNameToId.put(lProp.getLID().getName(),++lCnt);
+            // ONLY IF THIS PROPERTY IS DEFINED LOCALLY
+            if (lProp.getBase().getMClass() == aInClass)
+            {
+                genProp(aInIndent, aInClass, lProp, lCnt);
+            }
+        }
+    }
+
+    private void genProp(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx)
+    {
+        MProp lBaseProp = aInProp.getBase();
+        MType lType = lBaseProp.getType(false);
+        MType lBaseType = lType.getBuiltInType();
+
+        LinkedList<String> lComments = new LinkedList<String>();
+        aInProp.getComments(lComments);
+
+
+        genPropCheck(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments);
+        genPropAccessor(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments);
+        genPropDefaultedAccessor(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments);
+
+    }
+
+    private void genPropCheck(
+            int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments)
+    {
+        //
+        // COMMENT
+        //
+        int lCommentSize = 2 + aInComments.size();
+        String lComment[] = new String[lCommentSize];
+        int lCommentIdx = 0;
+        lComment[lCommentIdx++] = "Check whether " + aInProp.getLID().getName() + " has been set";
+        for (String lCommLine : aInComments)
+        {
+            lComment[lCommentIdx++] = lCommLine;
+        }
+        lComment[lCommentIdx++] = "@return true if " + aInProp.getLID().getName() + " has been set";
+        out.printHeaderComment(aInIndent,lComment);
+        //
+        // METHOD DEFINITION
+        //
+        out.println(aInIndent,"boolean is" + Strings.upFirstLetter(aInProp.getLID().getName()) + "Set()");
+
+        //
+        // METHOD BODY
+        //
+        out.println(aInIndent,"{");
+            out.println(aInIndent + 1, "return getObjectInstance().isSet(" + aInPropIdx +
+                                       ", opflex::modb::PropertyInfo::" + aInBaseType.getLID().getName().toUpperCase() + ");");
+        out.println(aInIndent,"}");
+        out.println();
+    }
+
+    /**
+    boost::optional<int64_t> getProp4()
+    {
+        if (isProp4Set())
+            return getObjectInstance().getInt64(4);
+         return boost::none;
+    }
+    **/
+    private void genPropAccessor(
+            int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments)
+    {
+        //
+        // COMMENT
+        //
+        int lCommentSize = 2 + aInComments.size();
+        String lComment[] = new String[lCommentSize];
+        int lCommentIdx = 0;
+        lComment[lCommentIdx++] = "Get the value of " + aInProp.getLID().getName() + " if it has been set.";
+
+        for (String lCommLine : aInComments)
+        {
+            lComment[lCommentIdx++] = lCommLine;
+        }
+        lComment[lCommentIdx++] = "@return the value of " + aInProp.getLID().getName() + " or boost::none if not set";
+        out.printHeaderComment(aInIndent,lComment);
+        out.println(aInIndent,"boost::optional<" + aInBaseType.getLanguageBinding(Language.CPP).getSyntax() + "> get" + Strings.upFirstLetter(aInProp.getLID().getName()) + "()");
+        out.println(aInIndent,"{");
+            out.println(aInIndent + 1,"return is" + Strings.upFirstLetter(aInProp.getLID().getName()) + "Set() ?");
+                out.println(aInIndent + 2,"getObjectInstance().get" + Strings.upFirstLetter(aInBaseType.getLID().getName()) + "(" + aInPropIdx + ") :");
+                out.println(aInIndent + 2,"boost::none;");
+        out.println(aInIndent,"}");
+        out.println();
+    }
+
+    private void genPropDefaultedAccessor(
+            int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments)
+    {
+        //
+        // COMMENT
+        //
+        int lCommentSize = 3 + aInComments.size();
+        String lComment[] = new String[lCommentSize];
+        int lCommentIdx = 0;
+        lComment[lCommentIdx++] = "Get the value of " + aInProp.getLID().getName() + " if set, otherwise the value of default passed in.";
+
+        for (String lCommLine : aInComments)
+        {
+            lComment[lCommentIdx++] = lCommLine;
+        }
+        lComment[lCommentIdx++] = "@param defaultValue default value returned if the property is not set";
+        lComment[lCommentIdx++] = "@return the value of " + aInProp.getLID().getName() + " if set, otherwise the value of default passed in";
+        out.printHeaderComment(aInIndent,lComment);
+        String lSyntax = aInBaseType.getLanguageBinding(Language.CPP).getSyntax();
+        out.println(aInIndent, lSyntax + " get" + Strings.upFirstLetter(aInProp.getLID().getName()) + "(" + lSyntax + " defaultValue)");
+        out.println(aInIndent,"{");
+            out.println(aInIndent + 1, "return get" + Strings.upFirstLetter(aInProp.getLID().getName()) + "().get_value_or(defaultValue);");
+        out.println(aInIndent,"}");
+        out.println();
+    }
+    private TreeMap<String, Integer> propNameToId = new TreeMap<String, Integer>();
 }

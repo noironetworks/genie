@@ -6,7 +6,7 @@ module[ascii]
         hint[ascii:string]
 
         language[cpp;
-                 syntax=String;
+                 syntax=std::string;
                  pass-by=reference;
                  pass-const=yes]
         {
