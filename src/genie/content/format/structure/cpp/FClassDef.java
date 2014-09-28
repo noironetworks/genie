@@ -193,6 +193,7 @@ public class FClassDef extends ItemFormatterTask
         out.println();
         genClassId(aInIndent + 1, aInClass);
         genProps(aInIndent + 1, aInClass);
+        genConstructor(aInIndent + 1, aInClass);
     }
 
     private void genClassId(int aInIndent, MClass aInClass)
@@ -228,8 +229,8 @@ public class FClassDef extends ItemFormatterTask
 
 
         genPropCheck(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments);
-        genPropAccessor(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments);
-        genPropDefaultedAccessor(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments);
+        genPropAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
+        genPropDefaultedAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
 
     }
 
@@ -325,6 +326,44 @@ public class FClassDef extends ItemFormatterTask
             out.println(aInIndent + 1, "return get" + Strings.upFirstLetter(aInProp.getLID().getName()) + "().get_value_or(defaultValue);");
         out.println(aInIndent,"}");
         out.println();
+    }
+
+
+    private void genConstructor(int aInIdent, MClass aInClass)
+    {
+        if (aInClass.hasSubclasses())
+        {
+            out.println(aInIdent, aInClass.getLID().getName() + "(");
+            out.println(aInIdent + 1, "opflex::ofcore::OFFramework& framework,");
+            out.println(aInIdent + 1, "opflex::modb::ClassId classId,");
+            out.println(aInIdent + 1, "const opflex::modb::URI& uri,");
+            out.println(aInIdent + 1, "const boost::shared_ptr<const opflex::modb::mointernal::ObjectInstance>& oi)");
+            if (aInClass.hasSuperclass())
+            {
+                MClass lSuperclass = aInClass.getSuperclass();
+                out.println(aInIdent + 2, ": " + getClassName(lSuperclass,true) + "(framework, classId, uri, oi) {}");
+            }
+            else
+            {
+                out.println(aInIdent + 2, ": MO(framework, classId, uri, oi) { }");
+            }
+        }
+        if (aInClass.isConcrete())
+        {
+            out.println(aInIdent, aInClass.getLID().getName() + "(");
+            out.println(aInIdent + 1, "opflex::ofcore::OFFramework& framework,");
+            out.println(aInIdent + 1, "const opflex::modb::URI& uri,");
+            out.println(aInIdent + 1, "const boost::shared_ptr<const opflex::modb::mointernal::ObjectInstance>& oi)");
+            if (aInClass.hasSuperclass())
+            {
+                MClass lSuperclass = aInClass.getSuperclass();
+                out.println(aInIdent + 2, ": " + getClassName(lSuperclass,true) + "(framework, CLASS_ID, uri, oi) {}");
+            }
+            else
+            {
+                out.println(aInIdent + 2, ": MO(framework, CLASS_ID, uri, oi) { }");
+            }
+        }
     }
     private TreeMap<String, Integer> propNameToId = new TreeMap<String, Integer>();
 }
