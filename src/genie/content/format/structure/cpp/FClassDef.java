@@ -231,7 +231,7 @@ public class FClassDef extends ItemFormatterTask
         genPropCheck(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments);
         genPropAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
         genPropDefaultedAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
-
+        genPropMutator(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
     }
 
     private void genPropCheck(
@@ -266,14 +266,6 @@ public class FClassDef extends ItemFormatterTask
         out.println();
     }
 
-    /**
-    boost::optional<int64_t> getProp4()
-    {
-        if (isProp4Set())
-            return getObjectInstance().getInt64(4);
-         return boost::none;
-    }
-    **/
     private void genPropAccessor(
             int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
             Collection<String> aInComments)
@@ -317,17 +309,58 @@ public class FClassDef extends ItemFormatterTask
         {
             lComment[lCommentIdx++] = lCommLine;
         }
+        //
+        // DEF
+        //
         lComment[lCommentIdx++] = "@param defaultValue default value returned if the property is not set";
         lComment[lCommentIdx++] = "@return the value of " + aInProp.getLID().getName() + " if set, otherwise the value of default passed in";
         out.printHeaderComment(aInIndent,lComment);
         String lSyntax = aInBaseType.getLanguageBinding(Language.CPP).getSyntax();
         out.println(aInIndent, lSyntax + " get" + Strings.upFirstLetter(aInProp.getLID().getName()) + "(" + lSyntax + " defaultValue)");
+        //
+        // BODY
+        //
         out.println(aInIndent,"{");
             out.println(aInIndent + 1, "return get" + Strings.upFirstLetter(aInProp.getLID().getName()) + "().get_value_or(defaultValue);");
         out.println(aInIndent,"}");
         out.println();
     }
 
+    private void genPropMutator(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments)
+    {
+        //
+        // COMMENT
+        //
+        int lCommentSize = 5 + aInComments.size();
+        String lComment[] = new String[lCommentSize];
+        int lCommentIdx = 0;
+        lComment[lCommentIdx++] = "set " + aInProp.getLID().getName() + " to the specified value in the currently-active mutator.";
+
+        for (String lCommLine : aInComments)
+        {
+            lComment[lCommentIdx++] = lCommLine;
+        }
+        lComment[lCommentIdx++] = "@param newValue the new value to set.";
+        lComment[lCommentIdx++] = "@return a reference to the current object";
+        lComment[lCommentIdx++] = "@throws std::logic_error if no mutator is active";
+        lComment[lCommentIdx++] = "@see opflex::modb::Mutator";
+        out.printHeaderComment(aInIndent,lComment);
+        //
+        // DEF
+        //
+        String lSyntax = aInBaseType.getLanguageBinding(Language.CPP).getSyntax();
+
+        out.println(aInIndent,  getClassName(aInClass, true) + "& set" + Strings.upFirstLetter(aInProp.getLID().getName()) + "(" + lSyntax + " newValue)");
+        //
+        // BODY
+        //
+        out.println(aInIndent,"{");
+        out.println(aInIndent + 1, "getTLMutator().modify(CLASS_ID, getURI())->set" + Strings.upFirstLetter(aInBaseType.getLID().getName()) + "(4, newValue);");
+        out.println(aInIndent + 1, "return *this;");
+        out.println(aInIndent,"}");
+        out.println();
+    }
 
     private void genConstructor(int aInIdent, MClass aInClass)
     {
