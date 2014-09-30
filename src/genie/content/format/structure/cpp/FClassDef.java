@@ -232,6 +232,7 @@ public class FClassDef extends ItemFormatterTask
         genPropAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
         genPropDefaultedAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
         genPropMutator(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
+        genPropUnset(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
     }
 
     private void genPropCheck(
@@ -356,7 +357,45 @@ public class FClassDef extends ItemFormatterTask
         // BODY
         //
         out.println(aInIndent,"{");
-        out.println(aInIndent + 1, "getTLMutator().modify(CLASS_ID, getURI())->set" + Strings.upFirstLetter(aInBaseType.getLID().getName()) + "(4, newValue);");
+        out.println(aInIndent + 1, "getTLMutator().modify(CLASS_ID, getURI())->set" + Strings.upFirstLetter(aInBaseType.getLID().getName()) + "(" + aInPropIdx + ", newValue);");
+        out.println(aInIndent + 1, "return *this;");
+        out.println(aInIndent,"}");
+        out.println();
+    }
+
+    private void genPropUnset(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments)
+    {
+        //
+        // COMMENT
+        //
+        int lCommentSize = 4 + aInComments.size();
+        String lComment[] = new String[lCommentSize];
+        int lCommentIdx = 0;
+        lComment[lCommentIdx++] = "unset " + aInProp.getLID().getName() + " in the currently-active mutator.";
+
+        for (String lCommLine : aInComments)
+        {
+            lComment[lCommentIdx++] = lCommLine;
+        }
+        lComment[lCommentIdx++] = "@throws std::logic_error if no mutator is active";
+        lComment[lCommentIdx++] = "@return a reference to the current object";
+        lComment[lCommentIdx++] = "@see opflex::modb::Mutator";
+        out.printHeaderComment(aInIndent,lComment);
+        //
+        // DEF
+        //
+        String lSyntax = aInBaseType.getLanguageBinding(Language.CPP).getSyntax();
+
+        out.println(aInIndent,  getClassName(aInClass, true) + "& unset" + Strings.upFirstLetter(aInProp.getLID().getName()) + "()");
+        //
+        // BODY
+        //
+        out.println(aInIndent,"{");
+        out.println(aInIndent + 1, "getTLMutator().modify(CLASS_ID, getURI())->unset(" + aInPropIdx + ", " +
+                                   "opflex::modb::PropertyInfo::" + aInBaseType.getLID().getName().toUpperCase() + ", " +
+                                   "opflex::modb::PropertyInfo::" +  aInBaseType.getTypeHint().getInfo().toString().toUpperCase() +
+                                   ");");
         out.println(aInIndent + 1, "return *this;");
         out.println(aInIndent,"}");
         out.println();
