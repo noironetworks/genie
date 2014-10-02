@@ -173,7 +173,7 @@ public class FMetaDef
                     MTypeHint lHint = lPrimitiveType.getTypeHint();
 
                     int lLocalId = (++lCount);
-                    out.println(aInIndent + 1, "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPrimitiveType.getLID().getName().toUpperCase() + ", PropertyInfo::" + lHint.getInfo().toString() + ")) // " + lProp.toString());
+                    out.println(aInIndent + 1, "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPrimitiveType.getLID().getName().toUpperCase() + ", PropertyInfo::SCALAR)) // " + lProp.toString());
                     propIds.put(lProp.getLID().getName(),lLocalId);
                 }
 
