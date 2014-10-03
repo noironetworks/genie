@@ -111,15 +111,20 @@ public class MRelationship extends Item
         return lClass;
     }
 
-    private MClass initClass(String aInClassPrefix, String aInClassSuffix, String aInSuperClass)
+    private MRelationshipClass initClass(String aInClassPrefix, String aInClassSuffix, String aInSuperClass)
     {
         String lClassName = sourceClassLocalName + aInClassSuffix + Strings.upFirstLetter(getLID().getName()) + aInClassPrefix;
         Module lModule = Module.get(moduleName, true);
-        MClass lClass = (MClass) lModule.getChildItem(MClass.MY_CAT,lClassName);
+        MRelationshipClass lClass = (MRelationshipClass) lModule.getChildItem(MRelationshipClass.MY_CAT,lClassName);
         if (null == lClass)
         {
-            lClass = new MClass(lModule, lClassName, true);
+            lClass = new MRelationshipClass(lModule, lClassName, this);
             lClass.addSuperclass(aInSuperClass);
+        }
+        else
+        {
+            lClass.addTargetRelationship(this);
+            //Severity.WARN.report(toString(), "init relationship class", "already exists: " + lClass, "");
         }
         return lClass;
     }

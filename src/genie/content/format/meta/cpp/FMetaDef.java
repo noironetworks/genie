@@ -6,6 +6,7 @@ import genie.content.model.mnaming.MNameRule;
 import genie.content.model.mnaming.MNamer;
 import genie.content.model.mownership.MOwner;
 import genie.content.model.mprop.MProp;
+import genie.content.model.mrelator.MRelationshipClass;
 import genie.content.model.mtype.MType;
 import genie.content.model.mtype.MTypeHint;
 import genie.engine.file.WriteStats;
@@ -141,6 +142,17 @@ public class FMetaDef
     private void genMo(int aInIndent, MClass aInClass)
     {
         out.println(aInIndent, '(');
+            if (aInClass instanceof MRelationshipClass)
+            {
+                out.printIncodeComment(aInIndent + 1, new String[]
+                        {
+                                "RELATIONSHIPS: " + ((MRelationshipClass) aInClass).getRelationships(),
+                                "NAME: " + aInClass.getGID().getName(),
+                                "CONTAINED BY: " + aInClass.getContainedByClasses(true, true),
+                                "SOURCE: " + ((MRelationshipClass) aInClass).getSourceClass().getGID().getName(),
+                                "TARGETS: " + ((MRelationshipClass) aInClass).getTargetClasses(),
+                        });
+            }
             out.println(aInIndent + 1, "ClassInfo(" + aInClass.getGID().getId() + ", " + getClassType(aInClass) + ", \"" + aInClass.getFullConcatenatedName() + "\", \"" + getOwner(aInClass) + "\",");
                 genProps(aInIndent + 2, aInClass);
                 genNamingProps(aInIndent + 2, aInClass);
@@ -163,7 +175,7 @@ public class FMetaDef
         }
         else
         {
-            int lCount = 0;
+//            int lCount = 0;
             out.println(aInIndent, "list_of");
             // HANLDE PROPS
                 for (MProp lProp : lProps.values())
@@ -172,16 +184,52 @@ public class FMetaDef
                     MType lPrimitiveType = lPropType.getBuiltInType();
                     MTypeHint lHint = lPrimitiveType.getTypeHint();
 
-                    int lLocalId = (++lCount);
-                    out.println(aInIndent + 1, "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPrimitiveType.getLID().getName().toUpperCase() + ", PropertyInfo::SCALAR)) // " + lProp.toString());
-                    propIds.put(lProp.getLID().getName(),lLocalId);
+                    int lLocalId = lProp.getLocalIdx();
+
+                    if ((lProp.getLID().getName().equalsIgnoreCase("targetName") ||
+                         lProp.getLID().getName().equalsIgnoreCase("targetClass")) &&
+                        isRelationshipSource(aInClass))
+                    {
+                        out.print(
+                                aInIndent + 1,
+                                "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPrimitiveType.getLID().getName().toUpperCase() + ", ");
+
+                        out.print("list_of");
+                        for (MClass lTargetClass : ((MRelationshipClass) aInClass).getTargetClasses())
+                        {
+                            out.print("(" + lTargetClass.getGID().getId() + "/*" + lTargetClass.getGID().getName() + "*/)");
+                        }
+                        out.println(", PropertyInfo::SCALAR)) // " + lProp.toString());
+                    }
+                    else if (lProp.getLID().getName().equalsIgnoreCase("source") && isRelationshipTarget(aInClass))
+                    {
+                        MClass lTargetClass = ((MRelationshipClass) aInClass).getSourceClass();
+                        out.println(
+                                aInIndent + 1,
+                                "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPrimitiveType.getLID().getName().toUpperCase() + ", " + lTargetClass.getGID().getId() + "/* " + lTargetClass.getGID().getName() + "*/, PropertyInfo::SCALAR)) // "
+                                + lProp.toString());
+                    }
+                    // TODO
+                    /**else if (isRelationshipResolver(aInClass))
+                    {
+
+                    }
+                     **/
+                    else
+                    {
+                        out.println(
+                                aInIndent + 1,
+                                "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPrimitiveType.getLID().getName().toUpperCase() + ", PropertyInfo::SCALAR)) // "
+                                + lProp.toString());
+                    }
+                    propIds.put(lProp.getLID().getName(), lLocalId);
                 }
 
 
             // HANDLE CONTAINED CLASSES
                 for (MClass lContained : lConts.values())
                 {
-                    out.println(aInIndent + 1, "(PropertyInfo(" + (++lCount) + ", \"" + lContained.getFullConcatenatedName() + "\", PropertyInfo::COMPOSITE, " + lContained.getGID().getId() + ")) // " + lContained.toString());
+                    out.println(aInIndent + 1, "(PropertyInfo(" + (1000 + lContained.getGID().getId()) + ", \"" + lContained.getFullConcatenatedName() + "\", PropertyInfo::COMPOSITE, " + lContained.getGID().getId() + ")) // " + lContained.toString());
                 }
 
                 out.println(aInIndent + 1, ",");

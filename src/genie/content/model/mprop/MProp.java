@@ -40,6 +40,7 @@ public class MProp extends SubStructItem
         return (MProp) MY_CAT.getItem(aInGName);
     }
 
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // PROPERTY ACTION APIs
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -425,6 +426,17 @@ public class MProp extends SubStructItem
         }
     }
 
+    public void setLocalIdx(int aIn)
+    {
+        localIdx = aIn;
+    }
+
+    public int getLocalIdx()
+    {
+        return getBase().localIdx;
+    }
+
     private String group = null;
     private final PropAction action;
+    private int localIdx = -1;
 }

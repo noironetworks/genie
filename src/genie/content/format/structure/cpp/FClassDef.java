@@ -206,14 +206,12 @@ public class FClassDef extends ItemFormatterTask
     {
         TreeMap<String, MProp> lProps = new TreeMap<String, MProp>();
         aInClass.findProp(lProps, false);
-        int lCnt=0;
         for (MProp lProp : lProps.values())
         {
-            propNameToId.put(lProp.getLID().getName(),++lCnt);
             // ONLY IF THIS PROPERTY IS DEFINED LOCALLY
             if (lProp.getBase().getMClass() == aInClass)
             {
-                genProp(aInIndent, aInClass, lProp, lCnt);
+                genProp(aInIndent, aInClass, lProp, lProp.getLocalIdx());
             }
         }
     }
@@ -226,7 +224,6 @@ public class FClassDef extends ItemFormatterTask
 
         LinkedList<String> lComments = new LinkedList<String>();
         aInProp.getComments(lComments);
-
 
         genPropCheck(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments);
         genPropAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
@@ -437,5 +434,5 @@ public class FClassDef extends ItemFormatterTask
             }
         }
     }
-    private TreeMap<String, Integer> propNameToId = new TreeMap<String, Integer>();
+    //private TreeMap<String, Integer> propNameToId = new TreeMap<String, Integer>();
 }

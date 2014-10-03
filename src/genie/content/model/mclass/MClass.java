@@ -26,7 +26,6 @@ import java.util.*;
 public class MClass
         extends SubModuleItem
 {
-
     public static final String ROOT_CLASS_GNAME = "dmtree/Root";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -367,6 +366,13 @@ public class MClass
         }
     }
 
+    public Collection<MClass> getContainedByClasses(boolean aInIncludeSuperclasses, boolean aInIsResolveToConcrete)
+    {
+        TreeMap<Ident,MClass> lOut = new TreeMap<Ident, MClass>();
+        getContainedByClasses(lOut, aInIncludeSuperclasses, aInIsResolveToConcrete);
+        return lOut.values();
+    }
+
     /**
      * Gets the rule item that represents who is contained by this class.
      * @return containment rule item representing who is contained by this class
@@ -569,6 +575,78 @@ public class MClass
         }
     }
 
+    public int countMyDefinedProps()
+    {
+        if (-1 == numOfBaseProps)
+        {
+            numOfBaseProps = 0;
+
+            Children lChildren = this.getNode().getChildren();
+            if (null != lChildren)
+            {
+                CatEntry lCatE = lChildren.getEntry(MProp.MY_CAT);
+                if (null != lCatE)
+                {
+                    for (Node lNode : lCatE.getList())
+                    {
+                        MProp lThisProp = (MProp) lNode.getItem();
+                        if (null != lThisProp)
+                        {
+                            if (lThisProp.isBase())
+                            {
+                                numOfBaseProps++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return numOfBaseProps;
+    }
+
+    public int countProps()
+    {
+        if (-1 == numOfAllBaseProps)
+        {
+            numOfAllBaseProps = 0;
+            for (MClass lThis = this; null != lThis; lThis = lThis.getSuperclass())
+            {
+                numOfAllBaseProps += lThis.countMyDefinedProps();
+            }
+        }
+        return numOfAllBaseProps;
+    }
+
+    public int countInheritedProps()
+    {
+        return hasSuperclass() ? getSuperclass().countProps() : 0;
+    }
+
+    private void initPropLocalIdx()
+    {
+        int lCurrIdx = countInheritedProps();
+
+        Children lChildren = this.getNode().getChildren();
+        if (null != lChildren)
+        {
+            CatEntry lCatE = lChildren.getEntry(MProp.MY_CAT);
+            if (null != lCatE)
+            {
+                for (Node lNode : lCatE.getList())
+                {
+                    MProp lThisProp = (MProp) lNode.getItem();
+                    if (null != lThisProp)
+                    {
+                        if (lThisProp.isBase())
+                        {
+                            lThisProp.setLocalIdx(++lCurrIdx);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // PROPERTY GROUP APIs
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -710,6 +788,14 @@ public class MClass
         return lR.values();
     }
 
+    public void loadModelCompleteCb()
+    {
+        super.loadModelCompleteCb();
+        initPropLocalIdx();
+    }
+
 
     private final boolean isConcrete;
+    private int numOfBaseProps = -1;
+    private int numOfAllBaseProps = -1;
 }
