@@ -62,7 +62,7 @@ public class FMetaDef
         for (Item lIt : MClass.MY_CAT.getNodes().getItemsList())
         {
             MClass lClass = (MClass) lIt;
-            if (lClass.isConcrete())
+            //if (lClass.isConcrete())
             {
                 genMo(7, lClass);
             }
@@ -102,6 +102,10 @@ public class FMetaDef
         {
             return "ClassInfo::RESOLVER";
         }
+        else if (!aIn.isConcrete())
+        {
+            return "ClassInfo::ABSTRACT";
+        }
         else
         {
             return "ClassInfo::LOCAL_ONLY";
@@ -120,23 +124,23 @@ public class FMetaDef
 
     public static boolean isRelationshipSource(MClass aIn)
     {
-        return aIn.isSubclassOf("relator/Source");
+        return aIn.isConcreteSuperclassOf("relator/Source");
     }
 
     public static boolean isRelationshipTarget(MClass aIn)
     {
-        return aIn.isSubclassOf("relator/Target");
+        return aIn.isConcreteSuperclassOf("relator/Target");
     }
 
     public static boolean isRelationshipResolver(MClass aIn)
     {
-        return aIn.isSubclassOf("relator/Resolver");
+        return aIn.isConcreteSuperclassOf("relator/Resolver");
     }
 
     public static String getOwner(MClass aIn)
     {
         Collection<MOwner> lOwners = aIn.findOwners();
-        return lOwners.isEmpty() ? "default" : lOwners.iterator().next().getLID().getName();
+        return lOwners.isEmpty() ? (aIn.isConcrete() ? "default" : "abstract") : lOwners.iterator().next().getLID().getName();
     }
 
     private void genMo(int aInIndent, MClass aInClass)
@@ -153,7 +157,18 @@ public class FMetaDef
                                 "TARGETS: " + ((MRelationshipClass) aInClass).getTargetClasses(),
                         });
             }
-            out.println(aInIndent + 1, "ClassInfo(" + aInClass.getGID().getId() + ", " + getClassType(aInClass) + ", \"" + aInClass.getFullConcatenatedName() + "\", \"" + getOwner(aInClass) + "\",");
+            out.print(aInIndent + 1, "ClassInfo(" + aInClass.getGID().getId() + ", ");
+            if (aInClass.hasSuperclass())
+            {
+                MClass lSuper = aInClass.getSuperclass();
+                out.print(lSuper.getGID().getId() + "/* super: " + lSuper.getGID().getName() + " */, ");
+            }
+            else
+            {
+                out.print("0 /* no superclass */, ");
+            }
+            out.println(getClassType(aInClass) + ", \"" + aInClass.getFullConcatenatedName() + "\", \"" + getOwner(aInClass) + "\",");
+
                 genProps(aInIndent + 2, aInClass);
                 genNamingProps(aInIndent + 2, aInClass);
                 out.println(aInIndent + 2, ")");
@@ -164,10 +179,11 @@ public class FMetaDef
     {
         //boolean hasDesc = aInClass.hasProps() || aInClass.hasContained();
         TreeMap<String,MProp> lProps = new TreeMap<String, MProp>();
-        aInClass.findProp(lProps,false);
+        // aInClass.findProp(lProps,false);
+        aInClass.getProp(lProps, true);
 
         TreeMap<Ident,MClass> lConts = new TreeMap<Ident, MClass>();
-        aInClass.getContainsClasses(lConts, true, true);
+        aInClass.getContainsClasses(lConts, false, true);//true, true);
 
         if (lProps.size() + lConts.size() == 0)
         {
@@ -222,7 +238,6 @@ public class FMetaDef
                                 "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPrimitiveType.getLID().getName().toUpperCase() + ", PropertyInfo::SCALAR)) // "
                                 + lProp.toString());
                     }
-                    propIds.put(lProp.getLID().getName(), lLocalId);
                 }
 
 
@@ -275,12 +290,12 @@ public class FMetaDef
                         MProp lProp = aInClass.findProp(lIt.getPropName(),false);
                         if (null != lProp)
                         {
-                            out.println(aInIndent + 1, "(" + propIds.get(lProp.getLID().getName()) + ") //" + lProp + " of name component " + lIt);
+                            out.println(aInIndent + 1, "(" + lProp.getLocalIdx() + ") //" + lProp + " of name component " + lIt);
                         }
                     }
                 }
             }
         }
     }
-    private TreeMap<String, Integer> propIds = new TreeMap<String, Integer>();
+    //private TreeMap<String, Integer> propIds = new TreeMap<String, Integer>();
 }

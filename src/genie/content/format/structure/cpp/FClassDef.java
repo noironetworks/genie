@@ -354,7 +354,7 @@ public class FClassDef extends ItemFormatterTask
         // BODY
         //
         out.println(aInIndent,"{");
-        out.println(aInIndent + 1, "getTLMutator().modify(CLASS_ID, getURI())->set" + Strings.upFirstLetter(aInBaseType.getLID().getName()) + "(" + aInPropIdx + ", newValue);");
+        out.println(aInIndent + 1, "getTLMutator().modify(getClassId(), getURI())->set" + Strings.upFirstLetter(aInBaseType.getLID().getName()) + "(" + aInPropIdx + ", newValue);");
         out.println(aInIndent + 1, "return *this;");
         out.println(aInIndent,"}");
         out.println();
@@ -389,7 +389,7 @@ public class FClassDef extends ItemFormatterTask
         // BODY
         //
         out.println(aInIndent,"{");
-        out.println(aInIndent + 1, "getTLMutator().modify(CLASS_ID, getURI())->unset(" + aInPropIdx + ", " +
+        out.println(aInIndent + 1, "getTLMutator().modify(getClassId(), getURI())->unset(" + aInPropIdx + ", " +
                                    "opflex::modb::PropertyInfo::" + aInBaseType.getLID().getName().toUpperCase() + ", " +
                                    "opflex::modb::PropertyInfo::" +  aInBaseType.getTypeHint().getInfo().toString().toUpperCase() +
                                    ");");
@@ -398,25 +398,39 @@ public class FClassDef extends ItemFormatterTask
         out.println();
     }
 
+    private void genResolvers(int aInIdent, MClass aInClass)
+    {
+        if (aInClass.isConcrete())
+        {
+            genSelfResolvers(aInIdent, aInClass);
+        }
+        genChildrenResolvers(aInIdent, aInClass);
+    }
+
+    private void genChildrenResolvers(int aInIdent, MClass aInClass)
+    {
+        TreeMap<Ident,MClass> lConts = new TreeMap<Ident, MClass>();
+        aInClass.getContainsClasses(lConts, false, true);//true, true);
+        for (MClass lChildClass : lConts.values())
+        {
+            genChildResolvers(aInIdent,aInClass,lChildClass);
+        }
+    }
+
+    private void genSelfResolvers(int aInIdent, MClass aInClass)
+    {
+        // TODO:
+    }
+
+    private void genChildResolvers(int aInIdent, MClass aInParentClass, MClass aInChildClass)
+    {
+        // TODO:
+    }
+
+
     private void genConstructor(int aInIdent, MClass aInClass)
     {
-        if (aInClass.hasSubclasses())
-        {
-            out.println(aInIdent, aInClass.getLID().getName() + "(");
-            out.println(aInIdent + 1, "opflex::ofcore::OFFramework& framework,");
-            out.println(aInIdent + 1, "opflex::modb::ClassId classId,");
-            out.println(aInIdent + 1, "const opflex::modb::URI& uri,");
-            out.println(aInIdent + 1, "const boost::shared_ptr<const opflex::modb::mointernal::ObjectInstance>& oi)");
-            if (aInClass.hasSuperclass())
-            {
-                MClass lSuperclass = aInClass.getSuperclass();
-                out.println(aInIdent + 2, ": " + getClassName(lSuperclass,true) + "(framework, classId, uri, oi) {}");
-            }
-            else
-            {
-                out.println(aInIdent + 2, ": MO(framework, classId, uri, oi) { }");
-            }
-        }
+
         if (aInClass.isConcrete())
         {
             out.println(aInIdent, aInClass.getLID().getName() + "(");
@@ -426,11 +440,31 @@ public class FClassDef extends ItemFormatterTask
             if (aInClass.hasSuperclass())
             {
                 MClass lSuperclass = aInClass.getSuperclass();
-                out.println(aInIdent + 2, ": " + getClassName(lSuperclass,true) + "(framework, CLASS_ID, uri, oi) {}");
+                out.println(aInIdent + 2, ": " + getClassName(lSuperclass,true) + "(framework, getClassId(), uri, oi) {}");
             }
             else
             {
                 out.println(aInIdent + 2, ": MO(framework, CLASS_ID, uri, oi) { }");
+            }
+        }
+        else
+        {
+            if (aInClass.hasSubclasses())
+            {
+                out.println(aInIdent, aInClass.getLID().getName() + "(");
+                out.println(aInIdent + 1, "opflex::ofcore::OFFramework& framework,");
+                out.println(aInIdent + 1, "opflex::modb::ClassId classId,");
+                out.println(aInIdent + 1, "const opflex::modb::URI& uri,");
+                out.println(aInIdent + 1, "const boost::shared_ptr<const opflex::modb::mointernal::ObjectInstance>& oi)");
+                if (aInClass.hasSuperclass())
+                {
+                    MClass lSuperclass = aInClass.getSuperclass();
+                    out.println(aInIdent + 2, ": " + getClassName(lSuperclass,true) + "(framework, classId, uri, oi) {}");
+                }
+                else
+                {
+                    out.println(aInIdent + 2, ": MO(framework, classId, uri, oi) { }");
+                }
             }
         }
     }
