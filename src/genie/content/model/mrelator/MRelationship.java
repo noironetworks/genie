@@ -72,7 +72,16 @@ public class MRelationship extends Item
             // CLASS NAME FORMAT: module/ReSrc<LocalClassName><Name>
             lClass = initClass("RSrc", "To", type.isNamed() ? "relator/NameResolvedRelSource" : "relator/DirectRelSource");
             MContained.addRule(getSourceClassGName(), lClass.getGID().getName());
+            switch (getSourceCardinality())
+            {
+                case SINGLE:
 
+                    break;
+
+                case MANY:
+
+                    break;
+            }
             // TODO: PROPERTIES
             // TODO: ADD NAMING
         }

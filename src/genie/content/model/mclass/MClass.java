@@ -294,6 +294,12 @@ public class MClass
     }
 
     /**
+     * determines whether this class is a root of containment hiercrhy
+     * @return true if this class is the root of containment hierarchy.
+     */
+    public boolean isRoot() { return getContainmentRoot() == this; }
+
+    /**
      * Gets the rule item that represents who contains by this class.
      * @return containment rule item representing who contains this class
      */
@@ -461,6 +467,70 @@ public class MClass
             for (MClass lClass = getSuperclass(); null != lClass; lClass = lClass.getSuperclass())
             {
                 lClass.getContainsClasses(aOut, aInIsResolveToConcrete);
+            }
+        }
+    }
+
+    public Collection<List<MClass>> getContainmentPaths()
+    {
+        LinkedList<List<MClass>> lRet = new LinkedList<List<MClass>>();
+        getContainmentPaths(lRet);
+        return lRet;
+    }
+
+    public void getContainmentPaths(Collection<List<MClass>> aOut)
+    {
+        if (isConcrete())
+        {
+            Stack<MClass> lStack = new Stack<MClass>();
+            exploreContainmentPaths(lStack, aOut);
+        }
+    }
+
+    private void exploreContainmentPaths(Stack<MClass> aInCurrStack, Collection<List<MClass>> aOut)
+    {
+        if (isRoot())
+        {
+            // WE STUMPLED INTO ROOT FOR THIS PATH,
+            // WE'RE AT THE END OF THE PATH:
+            // LET'S ADD THIS PATH
+            LinkedList<MClass> lPath = new LinkedList<MClass>();
+            //lPath.addAll(aInCurrStack);
+
+            for (MClass lThis : aInCurrStack)
+            {
+                lPath.addFirst(lThis);
+            }
+
+            aOut.add(lPath);
+        }
+
+        else if (isConcrete())
+        {
+            aInCurrStack.push(this);
+            Map<Ident,MClass> lContainers = new TreeMap<Ident, MClass>();
+            getContainedByClasses(lContainers, true, true);
+            if (0 == lContainers.size())
+            {
+                // NO MORE CONTAINERS,
+                // LET'S ASSUME ROOT
+                getContainmentRoot().exploreContainmentPaths(aInCurrStack, aOut);
+            }
+            else
+            {
+                for (MClass lThis : lContainers.values())
+                {
+                    lThis.exploreContainmentPaths(aInCurrStack, aOut);
+                }
+            }
+            if (aInCurrStack.peek() == this)
+            {
+                aInCurrStack.pop();
+            }
+            else
+            {
+                Severity.DEATH.report(toString(), "containment path calculation", "",
+                                      "trying to pop... unexpected class: " + aInCurrStack.peek().getGID().getName() + " ::: " + aInCurrStack);
             }
         }
     }
@@ -792,6 +862,68 @@ public class MClass
         findNamingRules(lR);
         return lR.values();
     }
+
+
+    public MNameRule findNameRule(String aInParentClassGName)
+    {
+        MNameRule lRet = null;
+        for (MNamer lThisNamer = findNamer();
+             null == lRet && null != lThisNamer;
+             lThisNamer = lThisNamer.getSuper())
+        {
+            lRet = lThisNamer.findNameRule(aInParentClassGName);
+        }
+        return lRet;
+    }
+
+    public Collection<List<MNameRule>> getNamingPaths()
+    {
+        Collection<List<MNameRule>> lRet = new LinkedList<List<MNameRule>>();
+        getNamingPaths(lRet);
+        return lRet;
+    }
+
+    public void getNamingPaths(Collection<List<MNameRule>> aOut)
+    {
+        if (isConcrete() && !isRoot())
+        {
+            Collection<List<MClass>> lContPaths = getContainmentPaths();
+            for (List<MClass> lContPath : lContPaths)
+            {
+                LinkedList<MNameRule> lNamePath = new LinkedList<MNameRule>();
+                MClass lPrevClass = null;
+                for (MClass lThisClass : lContPath)
+                {
+                    MNamer lNamer = lThisClass.findNamer();
+                    if (null != lNamer)
+                    {
+                        MNameRule lNr = lThisClass.findNameRule(null == lPrevClass ? null : lPrevClass.getGID().getName());
+                        if (null != lNr)
+                        {
+                            lNamePath.add(lNr);
+                        }
+                        else
+                        {
+                            Severity.DEATH.report(toString(), "naming path calculation", "",
+                                                  "no name for: " + lThisClass.getLID().getName() + " under " + lPrevClass + " ::: CONT PATHS: " + lContPaths);
+                        }
+                    }
+                    else
+                    {
+                        Severity.DEATH.report(toString(), "naming path calculation", "",
+                                              "no namer for: " + lThisClass.getGID().getName() + " ::: CONT PATHS: " + lContPaths);
+                    }
+                    lPrevClass = lThisClass;
+                }
+                aOut.add(lNamePath);
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // IMPLICIT CALLBACK APIs
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     public void loadModelCompleteCb()
     {

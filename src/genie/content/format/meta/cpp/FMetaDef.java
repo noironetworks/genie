@@ -137,6 +137,12 @@ public class FMetaDef
         return aIn.isConcreteSuperclassOf("relator/Resolver");
     }
 
+    public static  MNameRule getNamingRule(MClass aInClass)
+    {
+        Collection<MNameRule> lNrs = aInClass.findNamingRules();
+        return lNrs.isEmpty() ? null : lNrs.iterator().next();
+    }
+
     public static String getOwner(MClass aIn)
     {
         Collection<MOwner> lOwners = aIn.findOwners();
@@ -146,6 +152,9 @@ public class FMetaDef
     private void genMo(int aInIndent, MClass aInClass)
     {
         out.println(aInIndent, '(');
+            out.println(aInIndent, "// NAME: " + aInClass.getGID().getName());
+            out.println(aInIndent, "// CONT PATHS: " + aInClass.getContainmentPaths());
+            out.println(aInIndent, "// NAMING PATHS: " + aInClass.getNamingPaths());
             if (aInClass instanceof MRelationshipClass)
             {
                 out.printIncodeComment(aInIndent + 1, new String[]
@@ -249,12 +258,6 @@ public class FMetaDef
 
                 out.println(aInIndent + 1, ",");
         }
-    }
-
-    private MNameRule getNamingRule(MClass aInClass)
-    {
-        Collection<MNameRule> lNrs = aInClass.findNamingRules();
-        return lNrs.isEmpty() ? null : lNrs.iterator().next();
     }
 
     private void genNamingProps(int aInIndent, MClass aInClass)

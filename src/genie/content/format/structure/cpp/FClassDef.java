@@ -45,7 +45,6 @@ public class FClassDef extends ItemFormatterTask
 
     public void generate()
     {
-        Severity.WARN.report("","","","GENERATING: " + getItem());
         MClass lClass = (MClass) getItem();
         generate(0, lClass);
     }
@@ -419,6 +418,21 @@ public class FClassDef extends ItemFormatterTask
 
     private void genSelfResolvers(int aInIdent, MClass aInClass)
     {
+        String lFullyQualifiedClassName = getClassName(aInClass, true);
+        out.println(aInIdent, "static boost::optional<boost::shared_ptr<" + lFullyQualifiedClassName + "> > resolve(");
+        out.println(aInIdent + 1, "opflex::ofcore::OFFramework& framework,");
+        out.println(aInIdent + 1, "const opflex::modb::URI& uri)");
+        out.println(aInIdent, "{");
+            out.println(aInIdent + 2, "return opflex::modb::mointernal::MO::resolve<" + lFullyQualifiedClassName + ">(framework, CLASS_ID, uri);");
+        out.println(aInIdent, "}");
+        out.println();
+        out.println(aInIdent, "static boost::optional<boost::shared_ptr<" + lFullyQualifiedClassName + "> > resolve(");
+        out.println(aInIdent + 1, "const opflex::modb::URI& uri)");
+        out.println(aInIdent, "{");
+        out.println(aInIdent + 2, "return opflex::modb::mointernal::MO::resolve<" + lFullyQualifiedClassName + ">(opflex::ofcore::OFFramework::defaultInstance(), CLASS_ID, uri);");
+        out.println(aInIdent, "}");
+        out.println();
+
         // TODO:
     }
 

@@ -5,6 +5,7 @@ import genie.engine.model.Cat;
 import genie.engine.model.Item;
 import genie.engine.model.Node;
 import modlan.report.Severity;
+import modlan.utils.Strings;
 
 import java.util.LinkedList;
 import java.util.Map;
@@ -74,6 +75,41 @@ public class MNamer extends Item
         return lNr;
     }
 
+    public MNameRule findNameRule(String aInParentClassOrNull)
+    {
+        MNameRule lRet = null;
+
+        aInParentClassOrNull = (Strings.isWildCard(aInParentClassOrNull)) ?
+                                    MClass.ROOT_CLASS_GNAME :
+                                    aInParentClassOrNull;
+
+        MClass lParentClass = MClass.get(aInParentClassOrNull);
+        if (null == lParentClass)
+        {
+            Severity.DEATH.report(
+                    this.toString(),
+                    "retrieval of name rule",
+                    "class not found",
+                    "parent class not found: " +
+                    aInParentClassOrNull);
+        }
+        else
+        {
+
+            for (MClass lThisParentClass = lParentClass;
+                 null == lRet && null != lThisParentClass;
+                 lThisParentClass = lThisParentClass.getSuperclass())
+            {
+                lRet = getNameRule(lThisParentClass.getGID().getName(), false);
+            }
+            if (null == lRet)
+            {
+                lRet = getNameRule(Strings.ASTERISK, false);
+            }
+        }
+        return lRet;
+    }
+
     public void getNamingRules(Map<String, MNameRule> aOut)
     {
         LinkedList<Item> lNRs = new LinkedList<Item>();
@@ -86,5 +122,17 @@ public class MNamer extends Item
                 aOut.put(lIt.getGID().getName(), (MNameRule) lIt);
             }
         }
+    }
+
+    public MNamer getSuper()
+    {
+        MNamer lRet = null;
+        for (MClass lClass = getTargetClass().getSuperclass();
+             null == lRet && null != lClass;
+             lClass = lClass.getSuperclass())
+        {
+            lRet = MNamer.get(lClass.getGID().getName(),false);
+        }
+        return lRet;
     }
 }
