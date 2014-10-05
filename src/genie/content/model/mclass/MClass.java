@@ -4,6 +4,7 @@ import genie.content.model.mcont.MChild;
 import genie.content.model.mcont.MContained;
 import genie.content.model.mcont.MContainer;
 import genie.content.model.mcont.MParent;
+import genie.content.model.mnaming.MNameComponent;
 import genie.content.model.mnaming.MNameRule;
 import genie.content.model.mnaming.MNamer;
 import genie.content.model.module.Module;
@@ -12,6 +13,8 @@ import genie.content.model.mownership.MOwned;
 import genie.content.model.mownership.MOwner;
 import genie.content.model.mprop.MProp;
 import genie.content.model.mprop.MPropGroup;
+import genie.content.model.mtype.Language;
+import genie.content.model.mtype.MType;
 import genie.engine.model.*;
 import modlan.report.Severity;
 import modlan.utils.Strings;
@@ -878,13 +881,22 @@ public class MClass
 
     public Collection<List<MNameRule>> getNamingPaths()
     {
+        return getNamingPaths(Language.CPP);
+    }
+
+    public Collection<List<MNameRule>> getNamingPaths(Language aInLangOrNull)
+    {
         Collection<List<MNameRule>> lRet = new LinkedList<List<MNameRule>>();
-        getNamingPaths(lRet);
+        getNamingPaths(lRet, aInLangOrNull);
         return lRet;
     }
 
-    public void getNamingPaths(Collection<List<MNameRule>> aOut)
+    public boolean getNamingPaths(Collection<List<MNameRule>> aOut, Language aInLangOrNull)
     {
+        aInLangOrNull = null == aInLangOrNull ? Language.CPP : aInLangOrNull;
+
+        TreeSet<String> lSignatues = new TreeSet<String>();
+        boolean lUniqueSignatures = true;
         if (isConcrete() && !isRoot())
         {
             Collection<List<MClass>> lContPaths = getContainmentPaths();
@@ -894,6 +906,8 @@ public class MClass
                 MClass lPrevClass = null;
                 for (MClass lThisClass : lContPath)
                 {
+                    StringBuilder lPathSignature = new StringBuilder();
+
                     MNamer lNamer = lThisClass.findNamer();
                     if (null != lNamer)
                     {
@@ -901,6 +915,27 @@ public class MClass
                         if (null != lNr)
                         {
                             lNamePath.add(lNr);
+
+                            Collection<MNameComponent> lNcs = lNr.getComponents();
+                            for (MNameComponent lNc : lNcs)
+                            {
+                                if (lNc.hasPropName())
+                                {
+                                    lPathSignature.append(':');
+                                    MProp lProp = lThisClass.findProp(lNc.getPropName(), true);
+                                    if (null != lProp)
+                                    {
+                                        MType lType = lProp.getType(true);
+                                        lPathSignature.append(lType.getLanguageBinding(aInLangOrNull).getSyntax());
+                                    }
+                                    else
+                                    {
+                                        Severity.DEATH.report(toString(), "naming path calculation", "",
+                                                              "no prop" + lNc.getPropName() + " for: " + lThisClass.getLID().getName() + " ::: CONT PATHS: " + lContPaths);
+                                    }
+                                }
+                            }
+
                         }
                         else
                         {
@@ -913,11 +948,14 @@ public class MClass
                         Severity.DEATH.report(toString(), "naming path calculation", "",
                                               "no namer for: " + lThisClass.getGID().getName() + " ::: CONT PATHS: " + lContPaths);
                     }
+                    lUniqueSignatures = lSignatues.add(lPathSignature.toString()) && lUniqueSignatures;
+
                     lPrevClass = lThisClass;
                 }
                 aOut.add(lNamePath);
             }
         }
+        return lUniqueSignatures;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
