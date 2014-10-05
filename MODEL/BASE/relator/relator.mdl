@@ -89,6 +89,21 @@ module[relator]
         member[source;type=relator/RelatedURI]
     }
 
+    class[Universe;
+          concrete]
+    {
+        # relator:Universe is a root node
+        root
+
+        named
+        {
+            parent[class=*;]
+            {
+                component[prefix=resolvers]
+            }
+        }
+    }
+
     class[Resolver;
           super=relator/Item;
           abstract;
@@ -98,6 +113,10 @@ module[relator]
         override-member[role]
         {
             exclusive[resolver]
+        }
+        contained
+        {
+            parent[class=relator/Universe]
         }
     }
 }

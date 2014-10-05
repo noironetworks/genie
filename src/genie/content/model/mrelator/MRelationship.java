@@ -2,9 +2,13 @@ package genie.content.model.mrelator;
 
 import genie.content.model.mclass.MClass;
 import genie.content.model.mcont.MContained;
+import genie.content.model.mnaming.MNameComponent;
+import genie.content.model.mnaming.MNameRule;
+import genie.content.model.mnaming.MNamer;
 import genie.content.model.module.Module;
 import genie.engine.model.Cat;
 import genie.engine.model.Item;
+import genie.engine.model.Pair;
 import modlan.report.Severity;
 import modlan.utils.Strings;
 
@@ -70,20 +74,32 @@ public class MRelationship extends Item
         if (type.hasSourceObject())
         {
             // CLASS NAME FORMAT: module/ReSrc<LocalClassName><Name>
-            lClass = initClass("RSrc", "To", type.isNamed() ? "relator/NameResolvedRelSource" : "relator/DirectRelSource");
+            Pair<MRelationshipClass,Boolean> lRes = initClass("RSrc", "To", type.isNamed() ? "relator/NameResolvedRelSource" : "relator/DirectRelSource");
+            lClass = lRes.getFirst();
+
             MContained.addRule(getSourceClassGName(), lClass.getGID().getName());
-            switch (getSourceCardinality())
+
+            if (lRes.getSecond()) // IS NEW
             {
-                case SINGLE:
+                MNamer lNamer = MNamer.get(lClass.getGID().getName(), true);
+                MNameRule lNr = lNamer.getNameRule(Strings.ASTERISK,true);
 
-                    break;
+                switch (getSourceCardinality())
+                {
+                    case SINGLE:
 
-                case MANY:
+                        new MNameComponent(lNr,getLID().getName(), null);
+                        break;
 
-                    break;
+                    case MANY:
+
+                        // TODO: FIX NAMING: IF ONLY ONE CLASS IS CONTAINED IN THIS RELN, NO NEED FOR CLASS, JUST NEED NAME...
+                        new MNameComponent(lNr, getLID().getName(), "targetClass");
+                        new MNameComponent(lNr, null, "targetName");
+                        break;
+                }
             }
             // TODO: PROPERTIES
-            // TODO: ADD NAMING
         }
         return lClass;
     }
@@ -94,11 +110,28 @@ public class MRelationship extends Item
         if (type.hasTargetObject())
         {
             // CLASS NAME FORMAT: module/ReTgt<LocalClassName><Name>
-            lClass = initClass("RTgt", "From", "relator/Target");
+            Pair<MRelationshipClass,Boolean> lRes =  initClass("RTgt", "From", "relator/Target");
+            lClass = lRes.getFirst();
             MContained.addRule(getTargetClassGName(), lClass.getGID().getName());
 
-            // TODO: PROPERTIES
-            // TODO: ADD NAMING
+            if (lRes.getSecond()) // IS NEW
+            {
+                MNamer lNamer = MNamer.get(lClass.getGID().getName(), true);
+                MNameRule lNr = lNamer.getNameRule(Strings.ASTERISK,true);
+
+                switch (getTargetCardinality())
+                {
+                    case SINGLE:
+
+                        new MNameComponent(lNr,getLID().getName(), null);
+                        break;
+
+                    case MANY:
+
+                        new MNameComponent(lNr, getLID().getName(), "source");
+                        break;
+                }
+            }
         }
         return lClass;
     }
@@ -109,23 +142,27 @@ public class MRelationship extends Item
         if (type.hasTargetObject())
         {
             // CLASS NAME FORMAT: module/ReRes<LocalClassName><Name>
-            lClass = initClass("RRes", "To", "relator/Resolver");
+            Pair<MRelationshipClass,Boolean> lRes = initClass("RRes", "To", "relator/Resolver");
+            lClass = lRes.getFirst();
 
-            // TODO: WHAT SHOULD IT BE PARENTED BY? MContained.addRule(getSourceClassGName(), lClass.getGID().getName());
+            // TODO: WHAT SHOULD IT BE PARENTED BY: FOR NOW, DEFAULTED IN MODEL TO RELATOR/UNIVERSE
 
             // TODO: PROPERTIES
 
             // TODO: ADD NAMING
+            MNamer lNamer = MNamer.get(lClass.getGID().getName(), true);
+            MNameRule lNr = lNamer.getNameRule(Strings.ASTERISK,true);
         }
         return lClass;
     }
 
-    private MRelationshipClass initClass(String aInClassPrefix, String aInClassSuffix, String aInSuperClass)
+    private Pair<MRelationshipClass,Boolean> initClass(String aInClassPrefix, String aInClassSuffix, String aInSuperClass)
     {
         String lClassName = sourceClassLocalName + aInClassSuffix + Strings.upFirstLetter(getLID().getName()) + aInClassPrefix;
         Module lModule = Module.get(moduleName, true);
         MRelationshipClass lClass = (MRelationshipClass) lModule.getChildItem(MRelationshipClass.MY_CAT,lClassName);
-        if (null == lClass)
+        boolean isNew = null == lClass;
+        if (isNew)
         {
             lClass = new MRelationshipClass(lModule, lClassName, this);
             lClass.addSuperclass(aInSuperClass);
@@ -135,7 +172,7 @@ public class MRelationship extends Item
             lClass.addTargetRelationship(this);
             //Severity.WARN.report(toString(), "init relationship class", "already exists: " + lClass, "");
         }
-        return lClass;
+        return new Pair<MRelationshipClass,Boolean>(lClass,isNew);
     }
 
     private final RelatorType type;
