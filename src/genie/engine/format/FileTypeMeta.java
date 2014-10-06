@@ -9,7 +9,7 @@ public enum FileTypeMeta
 {
     C_HEADER("c:header",
              ".h",
-             new Indenter(10, 4, true),
+             new Indenter("c-header", false, 10, 4, true),
              new BlockFormatDirective(
                     "/**",
                     "* ",
@@ -25,7 +25,7 @@ public enum FileTypeMeta
              ),
     C_SOURCE("c:source",
              ".c",
-             new Indenter(10, 4, true),
+             new Indenter("c-source", false, 10, 4, true),
              new BlockFormatDirective(
                      "/**",
                      "* ",
@@ -40,7 +40,7 @@ public enum FileTypeMeta
                      0)),
     CPP_HEADER("cpp:header",
              ".hpp",
-             new Indenter(10, 4, true),
+             new Indenter("cpp-header", false, 10, 4, true),
              new BlockFormatDirective(
                      "/**",
                      "* ",
@@ -56,7 +56,7 @@ public enum FileTypeMeta
     ),
     CPP_SOURCE("cpp:source",
              ".cpp",
-             new Indenter(10, 4, true),
+             new Indenter("cpp-source", false, 10, 4, true),
              new BlockFormatDirective(
                      "/**",
                      "* ",
@@ -71,7 +71,7 @@ public enum FileTypeMeta
                      0)),
     MDL_META("meta",
               ".meta",
-              new Indenter(10, 4, true),
+              new Indenter("meta", false, 10, 4, true),
               new BlockFormatDirective(
                       "# ",
                       "# ",
@@ -86,7 +86,7 @@ public enum FileTypeMeta
                       0)),
     AUTOMAKE("automake",
              ".am",
-             new Indenter(true, 10, 1, true),
+             new Indenter("automake", true, 10, 1, true),
              new BlockFormatDirective(
                      "# ",
                      "# ",

@@ -4,6 +4,7 @@ package genie.engine.format;
  * Created by midvorki on 7/23/14.
  */
 
+import modlan.report.Severity;
 import modlan.utils.Strings;
 
 /**
@@ -46,23 +47,28 @@ public class Indenter
     static final String DEFAULT_COMMON_TAB = "\t";
 
     public Indenter(
+            String aInName,
             int aInSize,
             int aInSingleIndentSize,
             boolean aInStartWithEmpty)
     {
         this(
+            aInName,
             false,
             aInSize,
             aInSingleIndentSize,
             aInStartWithEmpty);
     }
+
     public Indenter(
+            String aInName,
             boolean aInIsTab,
             int aInSize,
             int aInSingleIndentSize,
             boolean aInStartWithEmpty)
     {
-        this(aInIsTab,
+        this(aInName,
+             aInIsTab,
              aInSize,
              aInSingleIndentSize,
              aInStartWithEmpty,
@@ -77,6 +83,7 @@ public class Indenter
      * each of (idx * aInSingleIndentSize) white spaces long.
      */
     public Indenter(
+            String aInName,
             boolean aInIsTab,
             int aInSize,
             int aInSingleIndentSize,
@@ -86,6 +93,7 @@ public class Indenter
             String aInCommon,
             boolean aInPrependWithIndex)
     {
+        name = aInName;
         isTab = aInIsTab;
         size = aInSize;
         singleIndentSize = aInSingleIndentSize;
@@ -100,6 +108,8 @@ public class Indenter
                     aInCommon);
 
         prependIndex = aInPrependWithIndex;
+
+        Severity.WARN.report(toString(),"construct","singleIndentSize=" + singleIndentSize, "");
     }
 
     /**
@@ -142,15 +152,15 @@ public class Indenter
             String aInLast,
             String aInCommon)
     {
-        boolean lIsDefault =  (isTab && (DEFAULT_FIRST.equals(aInFirst) &&
+
+        boolean lIsDefault =  ((!isTab) && (DEFAULT_FIRST.equals(aInFirst) &&
                                          DEFAULT_LAST.equals(aInLast) &&
                                          DEFAULT_COMMON.equals(aInCommon))) ||
-                               ((!isTab) && (DEFAULT_FIRST_TAB.equals(aInFirst)) &&
+                               (isTab && (DEFAULT_FIRST_TAB.equals(aInFirst)) &&
                                             (DEFAULT_LAST_TAB.equals(aInLast)) &&
                                             (DEFAULT_COMMON_TAB.equals(aInCommon)));
 
         String[] $Tbl = new String[aInSize];
-        int lThisIdx;
         for (int i = 0; i < aInSize; i++)
         {
             if (lIsDefault)
@@ -226,6 +236,10 @@ public class Indenter
         }
     }
 
+    public String toString()
+    {
+        return "Indenter[" + name + "]";
+    }
     /**
      * DEFAULT SINGLE SPACED INDENT TABLE
      */
@@ -285,6 +299,7 @@ public class Indenter
     private static final int TABLE_SIZE = SPACE_TABLE.length;
     private static final int HIGHEST = TABLE_SIZE - 1;
 
+    private final String name;
     private final String[] indent;
     private final int size;
     private final int singleIndentSize;

@@ -1,6 +1,5 @@
 package genie.content.format.structure.cpp;
 
-import genie.content.format.meta.cpp.FMetaDef;
 import genie.content.model.mclass.MClass;
 import genie.content.model.mnaming.MNameComponent;
 import genie.content.model.mnaming.MNameRule;
@@ -19,7 +18,6 @@ import genie.engine.model.Pair;
 import modlan.report.Severity;
 import modlan.utils.Strings;
 
-import java.sql.Struct;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
