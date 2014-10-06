@@ -763,20 +763,6 @@ public class FClassDef extends ItemFormatterTask
             out.println(aInIdent,"}");
             out.println();
 
-            /*
-            boost::shared_ptr<class3> addClass3(int64_t prop6Value,const std::string& prop7Value) {
-                boost::shared_ptr<class3> result =
-                        addChild<class3>(CLASS_ID, getURI(), 5, 3,
-                        opflex::modb::URIBuilder(getURI())
-                        .addElement("class3")
-                        .addElement(prop6Value)
-                        .addElement(prop7Value)
-                        .build());
-                result->setProp6(prop6Value);
-                result->setProp7(prop7Value);
-                return result;
-            }
-            */
             out.println(aInIdent, "boost::optional<boost::shared_ptr<" +  lFormattefChildClassName + "> > add" + lConcatenatedChildClassName + "(");
 
             lIsFirst = true;
