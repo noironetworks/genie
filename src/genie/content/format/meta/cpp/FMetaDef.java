@@ -58,15 +58,16 @@ public class FMetaDef
         out.println(4, "MDFixture() :");
         out.println(5, "md(");
         out.println(6, "list_of");
-        //MClass lRoot = MClass.getContainmentRoot();
+
         for (Item lIt : MClass.MY_CAT.getNodes().getItemsList())
         {
             MClass lClass = (MClass) lIt;
-            //if (lClass.isConcrete())
+            if (lClass.isConcrete())
             {
                 genMo(7, lClass);
             }
         }
+
         out.println(5, "  ) // md");
         out.println(4, "{");
         out.println(4, "}");
@@ -152,6 +153,7 @@ public class FMetaDef
     private void genMo(int aInIndent, MClass aInClass)
     {
         out.println(aInIndent, '(');
+            /**
             out.println(aInIndent, "// NAME: " + aInClass.getGID().getName());
             out.println(aInIndent, "// CONT PATHS: " + aInClass.getContainmentPaths());
             out.println(aInIndent, "// NAMING PATHS: " + aInClass.getNamingPaths());
@@ -166,18 +168,19 @@ public class FMetaDef
                                 "TARGETS: " + ((MRelationshipClass) aInClass).getTargetClasses(),
                         });
             }
+             */
             out.print(aInIndent + 1, "ClassInfo(" + aInClass.getGID().getId() + ", ");
-            if (aInClass.hasSuperclass())
-            {
-                MClass lSuper = aInClass.getSuperclass();
-                out.print(lSuper.getGID().getId() + "/* super: " + lSuper.getGID().getName() + " */, ");
-            }
-            else
-            {
-                out.print("0 /* no superclass */, ");
-            }
-            out.println(getClassType(aInClass) + ", \"" + aInClass.getFullConcatenatedName() + "\", \"" + getOwner(aInClass) + "\",");
 
+            // if (aInClass.hasSuperclass())
+            // {
+            //    MClass lSuper = aInClass.getSuperclass();
+            //    out.print(lSuper.getGID().getId() + "/* super: " + lSuper.getGID().getName() + " */, ");
+            // }
+            // else
+            // {
+            //    out.print("0 /* no superclass */, ");
+            // }
+            out.println(getClassType(aInClass) + ", \"" + aInClass.getFullConcatenatedName() + "\", \"" + getOwner(aInClass) + "\",");
                 genProps(aInIndent + 2, aInClass);
                 genNamingProps(aInIndent + 2, aInClass);
                 out.println(aInIndent + 2, ")");
@@ -188,11 +191,10 @@ public class FMetaDef
     {
         //boolean hasDesc = aInClass.hasProps() || aInClass.hasContained();
         TreeMap<String,MProp> lProps = new TreeMap<String, MProp>();
-        // aInClass.findProp(lProps,false);
-        aInClass.getProp(lProps, true);
+        aInClass.findProp(lProps,true);
 
         TreeMap<Ident,MClass> lConts = new TreeMap<Ident, MClass>();
-        aInClass.getContainsClasses(lConts, false, true);//true, true);
+        aInClass.getContainsClasses(lConts, true, true);//false, true);
 
         if (lProps.size() + lConts.size() == 0)
         {

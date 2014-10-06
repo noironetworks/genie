@@ -53,6 +53,11 @@ public class FClassDef extends ItemFormatterTask
              aInItem);
     }
 
+    public static boolean shouldTriggerTask(Item aIn)
+    {
+        return ((MClass)aIn).isConcrete();
+    }
+
     public void generate()
     {
         MClass lClass = (MClass) getItem();
@@ -149,12 +154,14 @@ public class FClassDef extends ItemFormatterTask
         out.println(aInIndent,getInclude("boost/optional.hpp", true));
         out.println(aInIndent,getInclude("opflex/modb/URIBuilder.h", false));
         out.println(aInIndent,getInclude("opflex/modb/mo-internal/MO.h", false));
+        /**
         if (aInClass.hasSuperclass())
         {
             MClass lSuper = aInClass.getSuperclass();
             out.printIncodeComment(aInIndent, "superclass: " + lSuper);
             out.println(aInIndent,getInclude(lSuper), false);
         }
+         */
         TreeMap<Ident, MClass> lConts = new TreeMap<Ident, MClass>();
         aInClass.getContainsClasses(lConts, true, true);
         for (MClass lThis : lConts.values())
@@ -182,12 +189,13 @@ public class FClassDef extends ItemFormatterTask
     private void genClass(int aInIndent, MClass aInClass)
     {
         out.println(aInIndent, "class " + aInClass.getLID().getName());
+        /**
         if (aInClass.hasSuperclass())
         {
             MClass lSuperclass = aInClass.getSuperclass();
             out.println(aInIndent + 1, ": public " + getClassName(lSuperclass,true));
         }
-        else
+        else**/
         {
             out.println(aInIndent + 1, ": public opflex::modb::mointernal::MO");
         }
@@ -216,11 +224,11 @@ public class FClassDef extends ItemFormatterTask
     private void genProps(int aInIndent, MClass aInClass)
     {
         TreeMap<String, MProp> lProps = new TreeMap<String, MProp>();
-        aInClass.findProp(lProps, false);
+        aInClass.findProp(lProps, true); // false
         for (MProp lProp : lProps.values())
         {
             // ONLY IF THIS PROPERTY IS DEFINED LOCALLY
-            if (lProp.getBase().getMClass() == aInClass)
+            //if (lProp.getBase().getMClass() == aInClass)
             {
                 genProp(aInIndent, aInClass, lProp, lProp.getPropId());
             }
@@ -440,7 +448,7 @@ public class FClassDef extends ItemFormatterTask
     private void genChildrenResolvers(int aInIdent, MClass aInClass)
     {
         TreeMap<Ident,MClass> lConts = new TreeMap<Ident, MClass>();
-        aInClass.getContainsClasses(lConts, false, true);//true, true);
+        aInClass.getContainsClasses(lConts, true, true);//true, true);
         for (MClass lChildClass : lConts.values())
         {
             genChildResolvers(aInIdent,aInClass,lChildClass);
@@ -866,12 +874,12 @@ public class FClassDef extends ItemFormatterTask
             out.println(aInIdent + 1, "opflex::ofcore::OFFramework& framework,");
             out.println(aInIdent + 1, "const opflex::modb::URI& uri,");
             out.println(aInIdent + 1, "const boost::shared_ptr<const opflex::modb::mointernal::ObjectInstance>& oi)");
-            if (aInClass.hasSuperclass())
+            /**if (aInClass.hasSuperclass())
             {
                 MClass lSuperclass = aInClass.getSuperclass();
                 out.println(aInIdent + 2, ": " + getClassName(lSuperclass,true) + "(framework, getClassId(), uri, oi) {}");
             }
-            else
+            else**/
             {
                 out.println(aInIdent + 2, ": MO(framework, CLASS_ID, uri, oi) { }");
             }
