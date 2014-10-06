@@ -203,6 +203,7 @@ public class FClassDef extends ItemFormatterTask
         genClassId(aInIndent + 1, aInClass);
         genProps(aInIndent + 1, aInClass);
         genResolvers(aInIndent + 1, aInClass);
+        genListenerReg(aInIndent + 1, aInClass);
         genConstructor(aInIndent + 1, aInClass);
     }
 
@@ -410,11 +411,40 @@ public class FClassDef extends ItemFormatterTask
 
     private void genResolvers(int aInIdent, MClass aInClass)
     {
+        if (aInClass.isRoot())
+        {
+            genRootCreation(aInIdent,aInClass);
+        }
         if (aInClass.isConcrete())
         {
             genSelfResolvers(aInIdent, aInClass);
         }
         genChildrenResolvers(aInIdent, aInClass);
+    }
+
+    private void genRootCreation(int aInIdent, MClass aInClass)
+    {
+        String lClassName = getClassName(aInClass, true);
+        out.println(aInIdent, "static boost::shared_ptr<" + lClassName + "> createRootElement(opflex::ofcore::OFFramework& framework)");
+        out.println(aInIdent,"{");
+            out.println(aInIdent + 1, "return opflex::modb::mointernal::MO::createRootElement<" + lClassName + ">(framework, CLASS_ID);");
+        out.println(aInIdent, "}");
+        out.println();
+        out.println(aInIdent, "static boost::shared_ptr<" + lClassName + "> createRootElement()");
+        out.println(aInIdent,"{");
+        out.println(aInIdent + 1, "return createRootElement(opflex::ofcore::OFFramework::defaultInstance());;");
+        out.println(aInIdent, "}");
+        out.println();
+
+
+    /*
+            static boost::shared_ptr<class1>
+            createRootElement(opflex::ofcore::OFFramework& framework) {
+                return opflex::modb::mointernal
+                    ::MO::createRootElement<class1>(framework, CLASS_ID);
+            }
+
+        */
     }
 
     private void genChildrenResolvers(int aInIdent, MClass aInClass)
@@ -804,6 +834,38 @@ public class FClassDef extends ItemFormatterTask
         }
     }
 
+    private void genListenerReg(int aInIndent, MClass aInClass)
+    {
+        if (aInClass.isConcrete())
+        {
+            out.println(aInIndent, "static void registerListener(");
+            out.println(aInIndent + 1, "opflex::ofcore::OFFramework& framework,");
+            out.println(aInIndent + 1, "opflex::modb::ObjectListener* listener)");
+            out.println(aInIndent, "{");
+            out.println(aInIndent + 1, "opflex::modb::mointernal::MO::registerListener(framework, listener, CLASS_ID);");
+            out.println(aInIndent, "}");
+            out.println();
+            out.println(aInIndent, "static void registerListener(");
+            out.println(aInIndent + 1, "opflex::modb::ObjectListener* listener)");
+            out.println(aInIndent, "{");
+            out.println(aInIndent + 1, "opflex::modb::mointernal::MO::registerListener(opflex::ofcore::OFFramework::defaultInstance(), listener);");
+            out.println(aInIndent, "}");
+            out.println();
+            out.println(aInIndent, "static void unregisterListener(");
+            out.println(aInIndent + 1, "opflex::ofcore::OFFramework& framework,");
+            out.println(aInIndent + 1, "opflex::modb::ObjectListener* listener)");
+            out.println(aInIndent, "{");
+            out.println(aInIndent + 1, "opflex::modb::mointernal::MO::unregisterListener(framework, listener, CLASS_ID);");
+            out.println(aInIndent, "}");
+            out.println();
+            out.println(aInIndent, "static void unregisterListener(");
+            out.println(aInIndent + 1, "opflex::modb::ObjectListener* listener)");
+            out.println(aInIndent, "{");
+            out.println(aInIndent + 1, "opflex::modb::mointernal::MO::unregisterListener(opflex::ofcore::OFFramework::defaultInstance(), listener);");
+            out.println(aInIndent, "}");
+            out.println();
+        }
+    }
 
     private void genConstructor(int aInIdent, MClass aInClass)
     {
@@ -845,5 +907,4 @@ public class FClassDef extends ItemFormatterTask
             }
         }
     }
-    //private TreeMap<String, Integer> propNameToId = new TreeMap<String, Integer>();
 }
