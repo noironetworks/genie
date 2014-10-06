@@ -84,6 +84,21 @@ public enum FileTypeMeta
                       null,
                       "# ",
                       0)),
+    AUTOMAKE("automake",
+             ".am",
+             new Indenter(true, 10, 4, true),
+             new BlockFormatDirective(
+                     "# ",
+                     "# ",
+                     null,
+                     "# ",
+                     0),
+             new BlockFormatDirective(
+                     "# ",
+                     "# ",
+                     null,
+                     "# ",
+                     0)),
     ;
     private FileTypeMeta(String aInName,
                          String ainFileExt,

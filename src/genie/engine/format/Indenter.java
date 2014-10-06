@@ -41,17 +41,34 @@ public class Indenter
     static final String DEFAULT_LAST = " ";
     static final String DEFAULT_COMMON = " ";
 
+    static final String DEFAULT_FIRST_TAB = "\t";
+    static final String DEFAULT_LAST_TAB = "\t";
+    static final String DEFAULT_COMMON_TAB = "\t";
+
     public Indenter(
             int aInSize,
             int aInSingleIndentSize,
             boolean aInStartWithEmpty)
     {
-        this(aInSize,
+        this(
+            false,
+            aInSize,
+            aInSingleIndentSize,
+            aInStartWithEmpty);
+    }
+    public Indenter(
+            boolean aInIsTab,
+            int aInSize,
+            int aInSingleIndentSize,
+            boolean aInStartWithEmpty)
+    {
+        this(aInIsTab,
+             aInSize,
              aInSingleIndentSize,
              aInStartWithEmpty,
-             DEFAULT_FIRST,
-             DEFAULT_LAST,
-             DEFAULT_COMMON,
+             aInIsTab ? DEFAULT_FIRST_TAB : DEFAULT_FIRST,
+             aInIsTab ? DEFAULT_LAST_TAB : DEFAULT_LAST,
+             aInIsTab ? DEFAULT_COMMON_TAB : DEFAULT_COMMON,
              false);
     }
 
@@ -60,6 +77,7 @@ public class Indenter
      * each of (idx * aInSingleIndentSize) white spaces long.
      */
     public Indenter(
+            boolean aInIsTab,
             int aInSize,
             int aInSingleIndentSize,
             boolean aInStartWithEmpty,
@@ -68,6 +86,7 @@ public class Indenter
             String aInCommon,
             boolean aInPrependWithIndex)
     {
+        isTab = aInIsTab;
         size = aInSize;
         singleIndentSize = aInSingleIndentSize;
         highestDepthInTable = aInSize - 1;
@@ -123,15 +142,18 @@ public class Indenter
             String aInLast,
             String aInCommon)
     {
-        boolean lIsDefalt =  (DEFAULT_FIRST.equals(aInFirst) &&
-                              DEFAULT_FIRST.equals(aInLast) &&
-                              DEFAULT_COMMON.equals(aInCommon));
+        boolean lIsDefault =  (isTab && (DEFAULT_FIRST.equals(aInFirst) &&
+                                         DEFAULT_LAST.equals(aInLast) &&
+                                         DEFAULT_COMMON.equals(aInCommon))) ||
+                               ((!isTab) && (DEFAULT_FIRST_TAB.equals(aInFirst)) &&
+                                            (DEFAULT_LAST_TAB.equals(aInLast)) &&
+                                            (DEFAULT_COMMON_TAB.equals(aInCommon)));
 
         String[] $Tbl = new String[aInSize];
         int lThisIdx;
         for (int i = 0; i < aInSize; i++)
         {
-            if (lIsDefalt)
+            if (lIsDefault)
             {
                 $Tbl[i] = getDefault(i, aInSingleIndentSize, aInStartWithEmpty);
             }
@@ -192,23 +214,22 @@ public class Indenter
         }
         if (TABLE_SIZE > aInDepth)
         {
-            return TABLE[aInDepth];
+            return isTab ? TAB_TABLE[aInDepth] : SPACE_TABLE[aInDepth];
         }
         else
         {
-            return TABLE[HIGHEST] +
+            return (isTab ? TAB_TABLE[HIGHEST] : SPACE_TABLE[HIGHEST]) +
                    getDefault(
                            aInDepth - HIGHEST,
                            1,
-                           false
-                             );
+                           false);
         }
     }
 
     /**
      * DEFAULT SINGLE SPACED INDENT TABLE
      */
-    private static final String[] TABLE =
+    private static final String[] SPACE_TABLE =
             {
                     "", // 0
                     " ", // 1
@@ -231,10 +252,37 @@ public class Indenter
                     "                  ", // 18
                     "                   ", // 19
                     "                    ", // 20
-
             };
 
-    private static final int TABLE_SIZE = TABLE.length;
+    /**
+     * DEFAULT SINGLE TAB INDENT TABLE
+     */
+    private static final String[] TAB_TABLE =
+            {
+                    "", // 0
+                    "\t", // 1
+                    "\t\t", // 2
+                    "\t\t\t", // 3
+                    "\t\t\t\t", // 4
+                    "\t\t\t\t\t", // 5
+                    "\t\t\t\t\t\t", // 6
+                    "\t\t\t\t\t\t\t", // 7
+                    "\t\t\t\t\t\t\t\t", // 8
+                    "\t\t\t\t\t\t\t\t\t", // 9
+                    "\t\t\t\t\t\t\t\t\t\t", // 10
+                    "\t\t\t\t\t\t\t\t\t\t\t", // 11
+                    "\t\t\t\t\t\t\t\t\t\t\t\t", // 12
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t", // 13
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t", // 14
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t", // 15
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t", // 16
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t", // 17
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t", // 18
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t", // 19
+                    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t", // 20
+            };
+
+    private static final int TABLE_SIZE = SPACE_TABLE.length;
     private static final int HIGHEST = TABLE_SIZE - 1;
 
     private final String[] indent;
@@ -243,4 +291,5 @@ public class Indenter
     private final int highestDepthInTable;
     private final boolean startWithEmpty;
     private final boolean prependIndex;
+    private final boolean isTab;
 }
