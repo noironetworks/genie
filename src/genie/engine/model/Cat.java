@@ -194,7 +194,7 @@ public class Cat extends Ident implements Validatable
         for (Cat lCat : new LinkedList<Cat>(idToCatTable.values()))
         {
             lCat.metaModelLoadCompleteCb();
-            Severity.INFO.report(lCat.toString(), "metaModelLoadComplete", "metaModelLoadComplete", "DONE");
+            //Severity.INFO.report(lCat.toString(), "metaModelLoadComplete", "metaModelLoadComplete", "DONE");
         }
     }
 
@@ -284,7 +284,7 @@ public class Cat extends Ident implements Validatable
 
         for (Cat lCat : new LinkedList<Cat>(idToCatTable.values()))
         {
-            Severity.INFO.report("CAT", "validate", "validating", lCat.toString());
+            //Severity.INFO.report("CAT", "validate", "validating", lCat.toString());
             lCat.validateCb();
             //Severity.INFO.report("CAT", "validate", "validatin", lCat.toString());
         }

@@ -89,7 +89,7 @@ public class Chnl
                 {
                     if (hasOutstandingTasks())
                     {
-                        Severity.INFO.report("processor:chnl", "suspend", "", "SUSPENDING CHNL!!");
+                        //Severity.INFO.report("processor:chnl", "suspend", "", "SUSPENDING CHNL!!");
                         status = Status.SUSPEND;
                         try
                         {
@@ -98,11 +98,11 @@ public class Chnl
                         catch (InterruptedException lE)
                         {
                         }
-                        Severity.INFO.report("processor:chnl", "suspend", "", "WAKE UP!!");
+                        //Severity.INFO.report("processor:chnl", "suspend", "", "WAKE UP!!");
                     }
                     else
                     {
-                        Severity.INFO.report("processor:chnl", "suspend", "", "NO TASKS: NO SUSPENSION NECESSARY!!");
+                        //Severity.INFO.report("processor:chnl", "suspend", "", "NO TASKS: NO SUSPENSION NECESSARY!!");
                         notifyAll();
                         return;
                     }
@@ -132,8 +132,8 @@ public class Chnl
     {
         synchronized (this)
         {
-            Severity.INFO.report(
-                            "processor:chnl", "markForDeath", "", "WILL MARK FOR DEATH.................");
+            //Severity.INFO.report(
+            //                "processor:chnl", "markForDeath", "", "WILL MARK FOR DEATH.................");
 
             while (hasOutstandingTasks())
             {
@@ -149,7 +149,7 @@ public class Chnl
             }
             status = Status.DEATH;
 
-            Severity.INFO.report("processor:chnl", "markForDeath", "", "MARKED FOR DEATH!!!!!!!!!!!!!!!!!!!");
+            //Severity.INFO.report("processor:chnl", "markForDeath", "", "MARKED FOR DEATH!!!!!!!!!!!!!!!!!!!");
 
             notifyAll();
         }
@@ -165,7 +165,7 @@ public class Chnl
 
                 while (Status.SUSPEND == status && (!(Thread.currentThread() instanceof Doer)))
                 {
-                    Severity.INFO.report("processor:chnl", "put", "task", "SUSPENDED: BLOCKING!");
+                    //Severity.INFO.report("processor:chnl", "put", "task", "SUSPENDED: BLOCKING!");
 
                     try
                     {

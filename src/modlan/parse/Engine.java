@@ -31,7 +31,7 @@ public class Engine
 
     public final void execute()
     {
-        reportInfo("execute", "begin");
+//        reportInfo("execute", "begin");
         if (null != ctx)
         {
             literals.reset();
@@ -50,7 +50,7 @@ public class Engine
         {
             endState();
         }
-        reportInfo("execute", "end");
+//        reportInfo("execute", "end");
     }
 
     private void stateMachine()

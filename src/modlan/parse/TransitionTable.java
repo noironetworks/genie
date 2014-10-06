@@ -64,13 +64,13 @@ public class TransitionTable
                         {null, null, null, null, null, null, null},
                 };
 
-        System.out.println("TransitionTable.initTransitionTable(" + lRet.length + "):BEGIN");
+        //System.out.println("TransitionTable.initTransitionTable(" + lRet.length + "):BEGIN");
 
         for (Transition lThis : Transition.values())
         {
             register(lRet, lThis);
         }
-        System.out.println("TransitionTable.initTransitionTable():DONE");
+        //System.out.println("TransitionTable.initTransitionTable():DONE");
         return lRet;
 
     }
