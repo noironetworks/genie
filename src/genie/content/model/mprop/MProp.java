@@ -436,6 +436,11 @@ public class MProp extends SubStructItem
         return getBase().localIdx;
     }
 
+    public int getPropId()
+    {
+        return getBase().getGID().getId();
+    }
+
     private String group = null;
     private final PropAction action;
     private int localIdx = -1;

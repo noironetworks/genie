@@ -86,7 +86,7 @@ public enum FileTypeMeta
                       0)),
     AUTOMAKE("automake",
              ".am",
-             new Indenter(true, 10, 4, true),
+             new Indenter(true, 10, 1, true),
              new BlockFormatDirective(
                      "# ",
                      "# ",

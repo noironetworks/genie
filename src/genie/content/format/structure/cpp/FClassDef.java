@@ -222,7 +222,7 @@ public class FClassDef extends ItemFormatterTask
             // ONLY IF THIS PROPERTY IS DEFINED LOCALLY
             if (lProp.getBase().getMClass() == aInClass)
             {
-                genProp(aInIndent, aInClass, lProp, lProp.getGID().getId());
+                genProp(aInIndent, aInClass, lProp, lProp.getPropId());
             }
         }
     }
