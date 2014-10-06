@@ -221,7 +221,7 @@ public class FClassDef extends ItemFormatterTask
             // ONLY IF THIS PROPERTY IS DEFINED LOCALLY
             if (lProp.getBase().getMClass() == aInClass)
             {
-                genProp(aInIndent, aInClass, lProp, lProp.getLocalIdx());
+                genProp(aInIndent, aInClass, lProp, lProp.getGID().getId());
             }
         }
     }
@@ -723,18 +723,9 @@ public class FClassDef extends ItemFormatterTask
         if (null != lChildNr)
         {
             String lFormattefChildClassName = getClassName(aInChildClass,true);
-            /**
-            boost::optional<boost::shared_ptr<class3> >
-            resolveClass3(int64_t prop6Value,
-            const std::string& prop7Value) {
-            return class3::resolve(getFramework(),
-                    opflex::modb::URIBuilder(getURI())
-                    .addElement("class3")
-                    .addElement(prop6Value)
-                    .addElement(prop7Value)
-                    .build());
-            }**/
-            out.println(aInIdent, "boost::optional<boost::shared_ptr<" +  lFormattefChildClassName + "> > resolve" + aInChildClass.getFullConcatenatedName() + "(");
+            String lConcatenatedChildClassName = aInChildClass.getFullConcatenatedName();
+            String lUriBuilder = getUriBuilder(aInParentClass,aInChildClass, lChildNr);
+            out.println(aInIdent, "boost::optional<boost::shared_ptr<" +  lFormattefChildClassName + "> > resolve" + lConcatenatedChildClassName + "(");
 
                 boolean lIsFirst = true;
                 Collection<MNameComponent> lNcs = lChildNr.getComponents();
@@ -762,8 +753,64 @@ public class FClassDef extends ItemFormatterTask
                     out.println(")");
                 }
             out.println(aInIdent,"{");
-                out.println(aInIdent + 1, "return " + lFormattefChildClassName + "::resolve(getFramework(), " + getUriBuilder(aInParentClass,aInChildClass, lChildNr) + ");");
+                out.println(aInIdent + 1, "return " + lFormattefChildClassName + "::resolve(getFramework(), " + lUriBuilder + ");");
             out.println(aInIdent,"}");
+            out.println();
+            out.println(aInIdent,"void resolve" + lConcatenatedChildClassName + "( /* out */ std::vector<boost::shared_ptr<" + lFormattefChildClassName+ "> >& out)");
+            out.println(aInIdent,"{");
+                out.println(aInIdent + 1, "return opflex::modb::mointernal::MO::resolveChildren<" + lFormattefChildClassName + ">(");
+                    out.println(aInIdent + 2, "CLASS_ID, getURI()," + (aInChildClass.getGID().getId() + 1000) + "," + aInChildClass.getGID().getId() + ", out);");
+            out.println(aInIdent,"}");
+            out.println();
+
+            /*
+            boost::shared_ptr<class3> addClass3(int64_t prop6Value,const std::string& prop7Value) {
+                boost::shared_ptr<class3> result =
+                        addChild<class3>(CLASS_ID, getURI(), 5, 3,
+                        opflex::modb::URIBuilder(getURI())
+                        .addElement("class3")
+                        .addElement(prop6Value)
+                        .addElement(prop7Value)
+                        .build());
+                result->setProp6(prop6Value);
+                result->setProp7(prop7Value);
+                return result;
+            }
+            */
+            out.println(aInIdent, "boost::optional<boost::shared_ptr<" +  lFormattefChildClassName + "> > add" + lConcatenatedChildClassName + "(");
+
+            lIsFirst = true;
+            for (MNameComponent lNc : lNcs)
+            {
+                if (lNc.hasPropName())
+                {
+                    if (lIsFirst)
+                    {
+                        lIsFirst = false;
+                    }
+                    else
+                    {
+                        out.println(",");
+                    }
+                    out.print(aInIdent + 1, getPropParamDef(aInChildClass, lNc.getPropName()));
+                }
+            }
+            if (lIsFirst)
+            {
+                out.println(aInIdent + 1, ")");
+            }
+            else
+            {
+                out.println(")");
+            }
+            out.println(aInIdent,"{");
+                out.println(aInIdent + 1, "boost::shared_ptr<" + lFormattefChildClassName + "> result = addChild<" + lFormattefChildClassName+ ">(");
+                    out.println(aInIdent + 2, "CLASS_ID, getURI(), " + (aInChildClass.getGID().getId() + 1000) + ", " + aInChildClass.getGID().getId() + ",");
+                    out.println(aInIdent + 2, lUriBuilder);
+                    out.println(aInIdent + 2, ");");
+                out.println(aInIdent + 1, "return result;");
+            out.println(aInIdent,"}");
+            out.println();
         }
         else
         {
