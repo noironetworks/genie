@@ -202,7 +202,7 @@ public class FClassDef extends ItemFormatterTask
         out.println();
         genClassId(aInIndent + 1, aInClass);
         genProps(aInIndent + 1, aInClass);
-        genResolvers(aInIndent + 1,aInClass);
+        genResolvers(aInIndent + 1, aInClass);
         genConstructor(aInIndent + 1, aInClass);
     }
 
@@ -588,6 +588,32 @@ public class FClassDef extends ItemFormatterTask
         aOut.append(".build()");
     }
 
+    public static String getUriBuilder(MClass aInParentClass,MClass aInChildClass, MNameRule aInNamingRule)
+    {
+        StringBuilder lSb = new StringBuilder();
+        getUriBuilder(aInParentClass, aInChildClass, aInNamingRule, lSb);
+        return lSb.toString();
+
+    }
+    public static void getUriBuilder(MClass aInParentClass,MClass aInChildClass, MNameRule aInNamingRule, StringBuilder aOut)
+    {
+        aOut.append("opflex::modb::URIBuilder(getURI())");
+        aOut.append(".addElement(\"");
+        aOut.append(aInChildClass.getFullConcatenatedName());
+        aOut.append("\")");
+        Collection<MNameComponent> lNcs = aInNamingRule.getComponents();
+        for (MNameComponent lNc : lNcs)
+        {
+            if (lNc.hasPropName())
+            {
+                aOut.append(".addElement(");
+                getPropParamName(aInChildClass, lNc.getPropName(), aOut);
+                aOut.append(")");
+            }
+        }
+        aOut.append(".build()");
+    }
+
     public static String getNamingPropList(MClass aInClass, List<Pair<String, MNameRule>> aInNamingPath)
     {
         StringBuilder lSb = new StringBuilder();
@@ -675,7 +701,14 @@ public class FClassDef extends ItemFormatterTask
                 }
             }
         }
-        out.println(")");
+        if (lIsFirst)
+        {
+            out.println(aInIdent + 1, ")");
+        }
+        else
+        {
+            out.println(")");
+        }
         out.println(aInIdent,"{");
         out.println(aInIdent + 1, lMethodName + "(opflex::ofcore::OFFramework::defaultInstance()," + getNamingPropList(aInClass, aInNamingPath) + ");");
         out.println(aInIdent,"}");
@@ -687,9 +720,54 @@ public class FClassDef extends ItemFormatterTask
     {
         MNamer lChildNamer = MNamer.get(aInChildClass.getGID().getName(),false);
         MNameRule lChildNr = lChildNamer.findNameRule(aInParentClass.getGID().getName());
-        if (null != lChildNamer)
+        if (null != lChildNr)
         {
+            String lFormattefChildClassName = getClassName(aInChildClass,true);
+            /**
+            boost::optional<boost::shared_ptr<class3> >
+            resolveClass3(int64_t prop6Value,
+            const std::string& prop7Value) {
+            return class3::resolve(getFramework(),
+                    opflex::modb::URIBuilder(getURI())
+                    .addElement("class3")
+                    .addElement(prop6Value)
+                    .addElement(prop7Value)
+                    .build());
+            }**/
+            out.println(aInIdent, "boost::optional<boost::shared_ptr<" +  lFormattefChildClassName + "> > resolve" + aInChildClass.getFullConcatenatedName() + "(");
 
+                boolean lIsFirst = true;
+                Collection<MNameComponent> lNcs = lChildNr.getComponents();
+                for (MNameComponent lNc : lNcs)
+                {
+                    if (lNc.hasPropName())
+                    {
+                        if (lIsFirst)
+                        {
+                            lIsFirst = false;
+                        }
+                        else
+                        {
+                            out.println(",");
+                        }
+                        out.print(aInIdent + 1, getPropParamDef(aInChildClass, lNc.getPropName()));
+                    }
+                }
+                if (lIsFirst)
+                {
+                    out.println(aInIdent + 1, ")");
+                }
+                else
+                {
+                    out.println(")");
+                }
+            out.println(aInIdent,"{");
+                out.println(aInIdent + 1, "return " + lFormattefChildClassName + "::resolve(getFramework(), " + getUriBuilder(aInParentClass,aInChildClass, lChildNr) + ");");
+            out.println(aInIdent,"}");
+        }
+        else
+        {
+            Severity.DEATH.report(aInParentClass.toString(), "child object resolver for " + aInChildClass.getGID().getName()," no naming rule", "");
         }
     }
 
