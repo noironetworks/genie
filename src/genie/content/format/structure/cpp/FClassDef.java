@@ -435,16 +435,6 @@ public class FClassDef extends ItemFormatterTask
         out.println(aInIdent + 1, "return createRootElement(opflex::ofcore::OFFramework::defaultInstance());;");
         out.println(aInIdent, "}");
         out.println();
-
-
-    /*
-            static boost::shared_ptr<class1>
-            createRootElement(opflex::ofcore::OFFramework& framework) {
-                return opflex::modb::mointernal
-                    ::MO::createRootElement<class1>(framework, CLASS_ID);
-            }
-
-        */
     }
 
     private void genChildrenResolvers(int aInIdent, MClass aInClass)
