@@ -1,9 +1,7 @@
 package genie.content.model.mnaming;
 
 import genie.content.model.mclass.MClass;
-import genie.engine.model.Cat;
-import genie.engine.model.Ident;
-import genie.engine.model.Item;
+import genie.engine.model.*;
 import modlan.report.Severity;
 import modlan.utils.Strings;
 
@@ -92,6 +90,32 @@ public class MNameRule extends Item
             }
 
         }
+    }
+
+    public int countNamingProps()
+    {
+        int lCount = 0;
+        Children lChildren = getNode().getChildren();
+        if (null != lChildren)
+        {
+            CatEntry lCatEntry = lChildren.getEntry(MNameComponent.MY_CAT);
+            if (null != lCatEntry)
+            {
+                Collection<Node> lNodes = lCatEntry.getList();
+                if (null != lNodes)
+                {
+                    for (Node lNode : lNodes)
+                    {
+                        MNameComponent lComp = (MNameComponent) lNode.getItem();
+                        if (lComp.hasPropName())
+                        {
+                              lCount++;
+                        }
+                    }
+                }
+            }
+        }
+        return lCount;
     }
 
     public int getCurrCompCount()

@@ -1,18 +1,28 @@
 package genie.content.format.structure.cpp;
 
+import genie.content.format.meta.cpp.FMetaDef;
 import genie.content.model.mclass.MClass;
+import genie.content.model.mnaming.MNameComponent;
+import genie.content.model.mnaming.MNameRule;
+import genie.content.model.mnaming.MNamer;
+import genie.content.model.module.Module;
 import genie.content.model.mprop.MProp;
 import genie.content.model.mtype.Language;
+import genie.content.model.mtype.MLanguageBinding;
 import genie.content.model.mtype.MType;
+import genie.content.model.mtype.PassBy;
 import genie.engine.file.WriteStats;
 import genie.engine.format.*;
 import genie.engine.model.Ident;
 import genie.engine.model.Item;
+import genie.engine.model.Pair;
 import modlan.report.Severity;
 import modlan.utils.Strings;
 
+import java.sql.Struct;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeMap;
 
 /**
@@ -192,6 +202,7 @@ public class FClassDef extends ItemFormatterTask
         out.println();
         genClassId(aInIndent + 1, aInClass);
         genProps(aInIndent + 1, aInClass);
+        genResolvers(aInIndent + 1,aInClass);
         genConstructor(aInIndent + 1, aInClass);
     }
 
@@ -432,13 +443,254 @@ public class FClassDef extends ItemFormatterTask
         out.println(aInIdent + 2, "return opflex::modb::mointernal::MO::resolve<" + lFullyQualifiedClassName + ">(opflex::ofcore::OFFramework::defaultInstance(), CLASS_ID, uri);");
         out.println(aInIdent, "}");
         out.println();
+        Collection<List<Pair<String, MNameRule>>> lNamingPaths = new LinkedList<List<Pair<String, MNameRule>>>();
+        boolean lIsUniqueNaming = !aInClass.getNamingPaths(lNamingPaths, Language.CPP);
+        for (List<Pair<String, MNameRule>> lNamingPath : lNamingPaths)
+        {
+            genNamedSelfResolvers(aInIdent, aInClass, lNamingPath, lIsUniqueNaming);
+        }
 
         // TODO:
     }
 
+    private static String getResolverMethName(List<Pair<String, MNameRule>> aInNamingPath, boolean aInIsUniqueNaming)
+    {
+        if (aInIsUniqueNaming)
+        {
+            return "resolve";
+        }
+        else
+        {
+            StringBuilder lSb = new StringBuilder();
+            lSb.append("resolveUnder");
+            int lSize = aInNamingPath.size();
+            int lIdx = lSize;
+            for (Pair<String, MNameRule> lPathNode : aInNamingPath)
+            {
+                if (0 < --lIdx)
+                {
+                    MClass lClass = MClass.get(lPathNode.getFirst());
+                    Module lMod = lClass.getModule();
+                    MNameRule lNr = lPathNode.getSecond();
+
+                    lSb.append(Strings.upFirstLetter(lMod.getLID().getName()));
+                    lSb.append(Strings.upFirstLetter(lClass.getLID().getName()));
+                }
+            }
+            return lSb.toString();
+        }
+    }
+
+    public static int countNamingProps(List<Pair<String, MNameRule>> aInNamingPath)
+    {
+        int lRet = 0;
+        for (Pair<String, MNameRule> lNode : aInNamingPath)
+        {
+            Collection<MNameComponent> lNcs = lNode.getSecond().getComponents();
+            if (!(null == lNcs || lNcs.isEmpty()))
+            {
+                for (MNameComponent lNc : lNcs)
+                {
+                    if (lNc.hasPropName())
+                    {
+                        lRet++;
+                    }
+                }
+            }
+        }
+        return lRet;
+    }
+
+    public static void getPropParamName(MClass aInClass, String aInPropName, StringBuilder aOutSb)
+    {
+        aOutSb.append(aInClass.getModule().getLID().getName());
+        aOutSb.append(Strings.upFirstLetter(aInClass.getLID().getName()));
+        aOutSb.append(Strings.upFirstLetter(aInPropName));
+    }
+
+    public static String getPropParamName(MClass aInClass, String aInPropName)
+    {
+        StringBuilder lSb = new StringBuilder();
+        getPropParamName(aInClass,aInPropName,lSb);
+        return lSb.toString();
+    }
+
+    public static String getPropParamDef(MClass aInClass, String aInPropName)
+    {
+        MProp lProp = aInClass.findProp(aInPropName, false);
+        if (null == lProp)
+        {
+            Severity.DEATH.report(aInClass.toString(),
+                                  "preparing param defs for prop: " + aInPropName,
+                                  "no such property: " + aInPropName, "");
+        }
+        MProp lBaseProp = lProp.getBase();
+        MType lType = lBaseProp.getType(false);
+        MType lBaseType = lType.getBuiltInType();
+        MLanguageBinding lLang = lBaseType.getLanguageBinding(Language.CPP);
+        String lSyntax = lLang.getSyntax();
+        PassBy lPassBy = lLang.getPassBy();
+        boolean lPassAsConst = lLang.getPassConst();
+        StringBuilder lRet = new StringBuilder();
+        if (lPassAsConst)
+        {
+            lRet.append("const ");
+        }
+        lRet.append(lSyntax);
+
+        switch (lPassBy)
+        {
+            case REFERENCE:
+            case POINTER:
+
+                lRet.append('&');
+                break;
+
+            case VALUE:
+            default:
+
+                break;
+        }
+        lRet.append(" ");
+        getPropParamName(aInClass, aInPropName, lRet);
+        return lRet.toString();
+    }
+
+    public static String getUriBuilder(MClass aInClass, List<Pair<String, MNameRule>> aInNamingPath)
+    {
+        StringBuilder lSb = new StringBuilder();
+        getUriBuilder(aInClass,aInNamingPath, lSb);
+        return lSb.toString();
+    }
+
+    public static void getUriBuilder(MClass aInClass, List<Pair<String, MNameRule>> aInNamingPath, StringBuilder aOut)
+    {
+        aOut.append("opflex::modb::URIBuilder()");
+        for (Pair<String,MNameRule> lNamingNode : aInNamingPath)
+        {
+            MNameRule lNr = lNamingNode.getSecond();
+            MClass lThisContClass = MClass.get(lNamingNode.getFirst());
+            Collection<MNameComponent> lNcs = lNr.getComponents();
+            aOut.append(".addElement(\"");
+
+            aOut.append(lThisContClass.getFullConcatenatedName());
+            aOut.append("\")");
+            for (MNameComponent lNc : lNcs)
+            {
+                if (lNc.hasPropName())
+                {
+                    aOut.append(".addElement(");
+                    getPropParamName(lThisContClass, lNc.getPropName(), aOut);
+                    aOut.append(")");
+                }
+            }
+        }
+        aOut.append(".build()");
+    }
+
+    public static String getNamingPropList(MClass aInClass, List<Pair<String, MNameRule>> aInNamingPath)
+    {
+        StringBuilder lSb = new StringBuilder();
+        getNamingPropList(aInClass, aInNamingPath, lSb);
+        return lSb.toString();
+    }
+
+    public static void getNamingPropList(MClass aInClass, List<Pair<String, MNameRule>> aInNamingPath, StringBuilder aOut)
+    {
+        boolean lIsFirst = true;
+        for (Pair<String,MNameRule> lNamingNode : aInNamingPath)
+        {
+            MNameRule lNr = lNamingNode.getSecond();
+            MClass lThisContClass = MClass.get(lNamingNode.getFirst());
+            Collection<MNameComponent> lNcs = lNr.getComponents();
+
+            for (MNameComponent lNc : lNcs)
+            {
+                if (lNc.hasPropName())
+                {
+                    if (lIsFirst)
+                    {
+                        lIsFirst = false;
+                    }
+                    else
+                    {
+                        aOut.append(',');
+                    }
+                    getPropParamName(lThisContClass, lNc.getPropName(), aOut);
+                }
+            }
+        }
+    }
+
+
+    private void genNamedSelfResolvers(int aInIdent, MClass aInClass, List<Pair<String, MNameRule>> aInNamingPath, boolean aInIsUniqueNaming)
+    {
+        String lMethodName = getResolverMethName(aInNamingPath, aInIsUniqueNaming);
+        //int lPropCount = countNamingProps(aInNamingPath);
+
+        out.println(aInIdent,"static boost::::optional<boost::shared_ptr<" + getClassName(aInClass,true)+ "> > " + lMethodName + "(");
+            out.print(aInIdent + 1, "opflex::ofcore::OFFramework& framework");
+            for (Pair<String,MNameRule> lNamingNode : aInNamingPath)
+            {
+                MNameRule lNr = lNamingNode.getSecond();
+                MClass lThisContClass = MClass.get(lNamingNode.getFirst());
+
+                Collection<MNameComponent> lNcs = lNr.getComponents();
+                for (MNameComponent lNc : lNcs)
+                {
+                    if (lNc.hasPropName())
+                    {
+                        out.println(",");
+                        out.print(aInIdent + 1, getPropParamDef(lThisContClass, lNc.getPropName()));
+                    }
+                }
+            }
+            out.println(")");
+        out.println(aInIdent,"{");
+            out.println(aInIdent + 1, "resolve(framework," + getUriBuilder(aInClass, aInNamingPath) + ");");
+        out.println(aInIdent,"}");
+        out.println();
+        out.println(aInIdent,
+                    "static boost::::optional<boost::shared_ptr<" + getClassName(aInClass, true) + "> > " + lMethodName + "(");
+        boolean lIsFirst = true;
+        for (Pair<String,MNameRule> lNamingNode : aInNamingPath)
+        {
+            MNameRule lNr = lNamingNode.getSecond();
+            MClass lThisContClass = MClass.get(lNamingNode.getFirst());
+
+            Collection<MNameComponent> lNcs = lNr.getComponents();
+            for (MNameComponent lNc : lNcs)
+            {
+                if (lNc.hasPropName())
+                {
+                    if (lIsFirst)
+                    {
+                        lIsFirst = false;
+                    }
+                    else
+                    {
+                        out.println(",");
+                    }
+                    out.print(aInIdent + 1, getPropParamDef(lThisContClass, lNc.getPropName()));
+                }
+            }
+        }
+        out.println(")");
+        out.println(aInIdent,"{");
+        out.println(aInIdent + 1, lMethodName + "(opflex::ofcore::OFFramework::defaultInstance()," + getNamingPropList(aInClass, aInNamingPath) + ");");
+        out.println(aInIdent,"}");
+        out.println();
+
+    }
+
     private void genChildResolvers(int aInIdent, MClass aInParentClass, MClass aInChildClass)
     {
-        // TODO:
+        MNamer lChildNamer = MNamer.get(aInChildClass.getGID().getName(),false);
+        MNameRule lChildNr = lChildNamer.findNameRule(aInParentClass.getGID().getName());
+        if (null != lChildNamer)
+        {
+
+        }
     }
 
 

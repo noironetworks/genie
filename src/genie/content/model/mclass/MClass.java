@@ -879,19 +879,19 @@ public class MClass
         return lRet;
     }
 
-    public Collection<List<MNameRule>> getNamingPaths()
+    public Collection<List<Pair<String, MNameRule>>> getNamingPaths()
     {
         return getNamingPaths(Language.CPP);
     }
 
-    public Collection<List<MNameRule>> getNamingPaths(Language aInLangOrNull)
+    public Collection<List<Pair<String, MNameRule>>> getNamingPaths(Language aInLangOrNull)
     {
-        Collection<List<MNameRule>> lRet = new LinkedList<List<MNameRule>>();
+        Collection<List<Pair<String, MNameRule>>> lRet = new LinkedList<List<Pair<String, MNameRule>>>();
         getNamingPaths(lRet, aInLangOrNull);
         return lRet;
     }
 
-    public boolean getNamingPaths(Collection<List<MNameRule>> aOut, Language aInLangOrNull)
+    public boolean getNamingPaths(Collection<List<Pair<String,MNameRule>>> aOut, Language aInLangOrNull)
     {
         aInLangOrNull = null == aInLangOrNull ? Language.CPP : aInLangOrNull;
 
@@ -902,7 +902,7 @@ public class MClass
             Collection<List<MClass>> lContPaths = getContainmentPaths();
             for (List<MClass> lContPath : lContPaths)
             {
-                LinkedList<MNameRule> lNamePath = new LinkedList<MNameRule>();
+                LinkedList<Pair<String, MNameRule>> lNamePath = new LinkedList<Pair<String, MNameRule>>();
                 MClass lPrevClass = null;
                 for (MClass lThisClass : lContPath)
                 {
@@ -914,28 +914,39 @@ public class MClass
                         MNameRule lNr = lThisClass.findNameRule(null == lPrevClass ? null : lPrevClass.getGID().getName());
                         if (null != lNr)
                         {
-                            lNamePath.add(lNr);
+                            lNamePath.add(new Pair<String,MNameRule>(lThisClass.getGID().getName(),lNr));
 
                             Collection<MNameComponent> lNcs = lNr.getComponents();
-                            for (MNameComponent lNc : lNcs)
+                            if (0 < lNcs.size())
                             {
-                                if (lNc.hasPropName())
+                                for (MNameComponent lNc : lNcs)
                                 {
                                     lPathSignature.append(':');
-                                    MProp lProp = lThisClass.findProp(lNc.getPropName(), true);
-                                    if (null != lProp)
+                                    if (lNc.hasPropName())
                                     {
-                                        MType lType = lProp.getType(true);
-                                        lPathSignature.append(lType.getLanguageBinding(aInLangOrNull).getSyntax());
+                                        MProp lProp = lThisClass.findProp(lNc.getPropName(), true);
+                                        if (null != lProp)
+                                        {
+                                            MType lType = lProp.getType(true);
+                                            lPathSignature.append(lType.getLanguageBinding(aInLangOrNull).getSyntax());
+                                        }
+                                        else
+                                        {
+                                            Severity.DEATH.report(toString(), "naming path calculation", "",
+                                                                  "no prop" + lNc.getPropName() + " for: " + lThisClass
+                                                                          .getLID().getName() + " ::: CONT PATHS: " + lContPaths);
+                                        }
                                     }
                                     else
                                     {
-                                        Severity.DEATH.report(toString(), "naming path calculation", "",
-                                                              "no prop" + lNc.getPropName() + " for: " + lThisClass.getLID().getName() + " ::: CONT PATHS: " + lContPaths);
+                                        lPathSignature.append('-');
                                     }
                                 }
                             }
-
+                            else
+                            {
+                                lPathSignature.append(":-");
+                            }
                         }
                         else
                         {
