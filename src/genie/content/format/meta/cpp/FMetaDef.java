@@ -4,6 +4,7 @@ import genie.content.model.mclass.MClass;
 import genie.content.model.mnaming.MNameComponent;
 import genie.content.model.mnaming.MNameRule;
 import genie.content.model.mnaming.MNamer;
+import genie.content.model.module.Module;
 import genie.content.model.mownership.MOwner;
 import genie.content.model.mprop.MProp;
 import genie.content.model.mrelator.MRelationshipClass;
@@ -13,6 +14,7 @@ import genie.engine.file.WriteStats;
 import genie.engine.format.*;
 import genie.engine.model.Ident;
 import genie.engine.model.Item;
+import modlan.report.Severity;
 import modlan.utils.Strings;
 
 import java.util.Collection;
@@ -22,63 +24,105 @@ import java.util.TreeMap;
  * Created by midvorki on 9/24/14.
  */
 public class FMetaDef
-        extends GenericFormatterTask
+        extends ItemFormatterTask
 {
     public FMetaDef(
-            FormatterCtx aInFormatterCtx, FileNameRule aInFileNameRule, Indenter aInIndenter, BlockFormatDirective aInHeaderFormatDirective, BlockFormatDirective aInCommentFormatDirective, String aInName, boolean aInIsUserFile, WriteStats aInStats
-                   )
+            FormatterCtx aInFormatterCtx,
+            FileNameRule aInFileNameRule,
+            Indenter aInIndenter,
+            BlockFormatDirective aInHeaderFormatDirective,
+            BlockFormatDirective aInCommentFormatDirective,
+            boolean aInIsUserFile,
+            WriteStats aInStats,
+            Item aInItem)
     {
         super(aInFormatterCtx,
               aInFileNameRule,
               aInIndenter,
               aInHeaderFormatDirective,
               aInCommentFormatDirective,
-              aInName,
               aInIsUserFile,
-              aInStats);
+              aInStats,
+              aInItem);
+    }
+
+    /**
+     * Optional API required by framework to regulate triggering of tasks.
+     * This method identifies whether this task should be triggered for the item passed in.
+     * @param aIn item for which task is considered to be trriggered
+     * @return true if task shouold be triggered, false if task should be skipped for this item.
+     */
+    public static boolean shouldTriggerTask(Item aIn)
+    {
+        return MClass.hasConcreteClassDefs((Module)aIn);
+    }
+
+    /**
+     * Optional API required by the framework for transformation of file naming rule for the corresponding
+     * generated file. This method can customize the location for the generated file.
+     * @param aInFnr file name rule template
+     * @param aInItem item for which file is generated
+     * @return transformed file name rule
+     */
+    public static FileNameRule transformFileNameRule(FileNameRule aInFnr,Item aInItem)
+    {
+        String lTargetModue = ((Module)aInItem).getLID().getName().toLowerCase();
+        FileNameRule lFnr = new FileNameRule(
+                aInFnr.getRelativePath() +  lTargetModue + "/src",
+                null,
+                aInFnr.getFilePrefix(),
+                aInFnr.getFileSuffix(),
+                aInFnr.getFileExtension(),
+                "metadata");
+
+        return lFnr;
     }
 
     public void generate()
     {
+        Module lModule = (Module) getItem();
+        String lModuleName = lModule.getLID().getName().toLowerCase();
+        out.println(0, "#include \"" + lModuleName + "/metamodel.hpp\"");
         out.println(0, "namespace opflex");
         out.println(0, "{");
-        out.println(1, "namespace modb");
+        out.println(1, "namespace " + lModuleName);
         out.println(1, "{");
 
-        out.printHeaderComment(
-                2,
-                new String[]
-                        {
-                                "A base fixture that defines a simple object model"
-                        });
-        out.println(2, "class MDFixture");
-        out.println(2, "{");
-        out.println(3, "public:");
-        out.println();
-        out.println(4, "MDFixture() :");
-        out.println(5, "md(");
-        out.println(6, "list_of");
+        generateMetaAccessor(2, lModule);
 
-        for (Item lIt : MClass.MY_CAT.getNodes().getItemsList())
+        out.println();
+        out.println(1, "} // namespace " + lModuleName);
+
+        out.println(0, "} // namespace opflex");
+    }
+
+    private void generateMetaAccessor(int aInIndent, Module aInModule)
+    {
+        out.println(aInIndent, "static const opflex::modb::ModelMetadata& getClassesDefs()");
+        out.println(aInIndent, "{");
+            out.println(aInIndent + 1, "static std::vector<opflex::modb::ClassInfo> classes(");
+                generateClassDefs(aInIndent + 2, aInModule);
+                out.println(aInIndent + 2, ");");
+        out.println(aInIndent, "}");
+
+        out.println(aInIndent, "const opflex::modb::ModelMetadata& getMetadata()");
+        out.println(aInIndent, "{");
+            out.println(aInIndent + 1, "static const opflex::modb::ModelMetadata metadata(\"model\", getClassesDefs());");
+            out.println(aInIndent + 1, "return metadata;");
+        out.println(aInIndent, "}");
+    }
+
+    private void generateClassDefs(int aInIndent, Module aInModule)
+    {
+        out.println(aInIndent, "list_of");
+        for (Item lIt : MClass.getConcreteClasses(aInModule))
         {
             MClass lClass = (MClass) lIt;
             if (lClass.isConcrete())
             {
-                genMo(7, lClass);
+                genMo(aInIndent + 2, lClass);
             }
         }
-
-        out.println(5, "  ) // md");
-        out.println(4, "{");
-        out.println(4, "}");
-        out.println();
-        out.println(4, "ModelMetadata md;");
-        out.println(3, "private:");
-
-        out.println(2, "}; // MDFixture");
-        out.println(1, "} // namespace modb");
-
-        out.println(0, "} // namespace opflex");
     }
 
     public static String getClassType(MClass aIn)
@@ -222,7 +266,7 @@ public class FMetaDef
                                 "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPrimitiveType.getLID().getName().toUpperCase() + ", ");
 
                         out.print("list_of");
-                        for (MClass lTargetClass : ((MRelationshipClass) aInClass).getTargetClasses())
+                        for (MClass lTargetClass : ((MRelationshipClass) aInClass).getTargetClasses(true))
                         {
                             out.print("(" + lTargetClass.getGID().getId() + "/*" + lTargetClass.getGID().getName() + "*/)");
                         }

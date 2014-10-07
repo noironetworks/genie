@@ -17,7 +17,6 @@ public abstract class GenericFormatterTask extends FormatterTask
                                    Indenter aInIndenter,
                                    BlockFormatDirective aInHeaderFormatDirective,
                                    BlockFormatDirective aInCommentFormatDirective,
-                                   String aInName,
                                    boolean aInIsUserFile,
                                    WriteStats aInStats)
     {
@@ -26,7 +25,6 @@ public abstract class GenericFormatterTask extends FormatterTask
               aInIndenter,
               aInHeaderFormatDirective,
               aInCommentFormatDirective,
-              aInName,
               aInIsUserFile,
               aInStats);
     }

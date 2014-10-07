@@ -969,6 +969,68 @@ public class MClass
         return lUniqueSignatures;
     }
 
+    public static boolean hasConcreteClassDefs(Module aInMod)
+    {
+        Children lChildren =  aInMod.getChildren();
+        if (null != lChildren)
+        {
+            CatEntry lCatE = lChildren.getEntry(MClass.MY_CAT);
+            if (null != lCatE)
+            {
+                for (Node lNode : lCatE.getById().values())
+                {
+                    MClass lClass = (MClass) lNode.getItem();
+                    if (lClass.isConcrete())
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static Collection<MClass> getConcreteClasses(Module aInMod)
+    {
+        Collection<MClass> lRet = new LinkedList<MClass>();
+        Children lChildren =  aInMod.getChildren();
+        if (null != lChildren)
+        {
+            CatEntry lCatE = lChildren.getEntry(MClass.MY_CAT);
+            if (null != lCatE)
+            {
+                for (Node lNode : lCatE.getById().values())
+                {
+                    MClass lClass = (MClass) lNode.getItem();
+                    if (lClass.isConcrete())
+                    {
+                        lRet.add(lClass);
+                    }
+                }
+            }
+        }
+        return lRet;
+    }
+
+    public static Collection<Pair<Module, Collection<MClass>>> getModulesWithConcreteClasses()
+    {
+        Collection<Pair<Module, Collection<MClass>>> lRet = new LinkedList<Pair<Module, Collection<MClass>>>();
+        CatEntry lCatE = Module.MY_CAT.getNodes();
+        if (null != lCatE)
+        {
+            for (Node lNode : lCatE.getById().values())
+            {
+                Module lMod = (Module) lNode.getItem();
+                Collection<MClass> lConcrClasses = getConcreteClasses(lMod);
+                if (!lConcrClasses.isEmpty())
+                {
+                    lRet.add(new Pair<Module,Collection<MClass>>(lMod,lConcrClasses));
+                }
+            }
+        }
+        return lRet;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // IMPLICIT CALLBACK APIs
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

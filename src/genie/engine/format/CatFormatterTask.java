@@ -19,7 +19,6 @@ public abstract class CatFormatterTask extends FormatterTask
                                Indenter aInIndenter,
                                BlockFormatDirective aInHeaderFormatDirective,
                                BlockFormatDirective aInCommentFormatDirective,
-                               String aInName,
                                boolean aInIsUserFile,
                                WriteStats aInStats,
                                Cat aInCat)
@@ -29,7 +28,6 @@ public abstract class CatFormatterTask extends FormatterTask
               aInIndenter,
               aInHeaderFormatDirective,
               aInCommentFormatDirective,
-              aInName,
               aInIsUserFile,
               aInStats);
 

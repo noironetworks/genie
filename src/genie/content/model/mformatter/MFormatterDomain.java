@@ -56,7 +56,8 @@ public class MFormatterDomain
                                 null, // CANT HAVE aInModulePath AT META-TIME
                                 lTask.getFilePrefix(),
                                 lTask.getFileSuffix(),
-                                lTask.getFileType().getFileExt()),
+                                lTask.getFileType().getFileExt(),
+                                null),
                         lTask.getFormatterClass(),
                         lTask.getTargetCategory(),
                         lTask.isUser());

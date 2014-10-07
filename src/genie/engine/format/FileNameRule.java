@@ -19,15 +19,18 @@ public class FileNameRule
             final String aInModulePath,
             final String aInFilePrefix,
             final String aInFileSuffix,
-            final String aInFileExtension)
+            final String aInFileExtension,
+            final String aInName)
     {
         relativePath = aInRelativePath;
         modulePath = aInModulePath;
         filePrefix = aInFilePrefix;
         fileSuffix = aInFileSuffix;
         fileExtension = aInFileExtension;
+        name = aInName;
     }
 
+    public final String getName() { return name; }
     public final String getRelativePath()
     {
         return relativePath;
@@ -48,13 +51,18 @@ public class FileNameRule
     {
         return fileExtension;
     }
-    public final boolean isTemplate() { return Strings.isEmpty(modulePath); }
+    public final boolean isTemplate() { return Strings.isEmpty(modulePath) || Strings.isEmpty(name); }
 
-    public FileNameRule makeSpecific(String aInModulePath)
+    public FileNameRule makeSpecific(String aInModulePath, String aInName)
     {
-        return isTemplate() && !(Strings.isEmpty(aInModulePath)) ?
+        return !(Strings.isEmpty(aInModulePath) && Strings.isEmpty(aInName)) ?
                     new FileNameRule(
-                            relativePath, aInModulePath, filePrefix, fileSuffix,fileExtension) :
+                            relativePath,
+                            Strings.isEmpty(aInModulePath) ? modulePath : aInModulePath,
+                            filePrefix,
+                            fileSuffix,
+                            fileExtension,
+                            Strings.isEmpty(aInName) ? name : aInName) :
                     this;
     }
 
@@ -63,5 +71,5 @@ public class FileNameRule
     private final String filePrefix;
     private final String fileSuffix;
     private final String fileExtension;
-
+    private final String name;
 }

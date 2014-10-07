@@ -26,20 +26,6 @@ public class Module extends Item
             }
         }
         return lModule;
-        /**
-        Module lModule = (Module) MY_CAT.getItem(aInName);
-        if (null == lModule && aInCreateIfNotFound)
-        {
-            synchronized (MY_CAT)
-            {
-                if (null == MY_CAT.getItem(aInName))
-                {
-                    lModule = new Module(aInName);
-                }
-            }
-        }
-        return lModule;
-         */
     }
 
     private Module(String aInLName)

@@ -30,7 +30,79 @@ public class FormatterTaskMeta
         catOrNull = aInCatOrNull;
         taskConstr = initConstructor(aInType);
         acceptor = initAcceptor(aInType);
+        moduleExtractor = initModuleExtractor(aInType);
+        fileNameRuleTransformer = initFileNameRuleTransformer(aInType);
         isUser = aInIsUser;
+    }
+
+    private Method initFileNameRuleTransformer(FormatterTaskType aInType)
+    {
+        Method lMethod = null;
+        try
+        {
+            switch (aInType)
+            {
+                case ITEM:
+                {
+                    lMethod = taskClass.getMethod("transformFileNameRule", FileNameRule.class, Item.class);
+                    break;
+                }
+                case CATEGORY:
+                {
+                    lMethod = taskClass.getMethod("getTargetModule", FileNameRule.class, Cat.class);
+                    break;
+                }
+                default:
+                {
+                    lMethod = taskClass.getMethod("shouldTriggerTask", FileNameRule.class);
+                    break;
+                }
+            }
+        }
+        catch (Throwable lT)
+        {
+
+        }
+        if (null == lMethod)
+        {
+            Severity.INFO.report(toString(), "file name rule transformer method init", "no method defined", "");
+        }
+        return lMethod;
+    }
+
+    private Method initModuleExtractor(FormatterTaskType aInType)
+    {
+        Method lMethod = null;
+        try
+        {
+            switch (aInType)
+            {
+                case ITEM:
+                {
+                    lMethod = taskClass.getMethod("getTargetModule", Item.class);
+                    break;
+                }
+                case CATEGORY:
+                {
+                    lMethod = taskClass.getMethod("getTargetModule", Cat.class);
+                    break;
+                }
+                default:
+                {
+                    lMethod = taskClass.getMethod("shouldTriggerTask");
+                    break;
+                }
+            }
+        }
+        catch (Throwable lT)
+        {
+
+        }
+        if (null == lMethod)
+        {
+            Severity.INFO.report(toString(), "module extractor method init", "no extractor method defined", "");
+        }
+        return lMethod;
     }
 
     private Method initAcceptor(FormatterTaskType aInType)
@@ -43,10 +115,12 @@ public class FormatterTaskMeta
                 case ITEM:
                 {
                     lMethod = taskClass.getMethod("shouldTriggerTask", Item.class);
+                    break;
                 }
                 default:
                 {
                     lMethod = taskClass.getMethod("shouldTriggerTask");
+                    break;
                 }
             }
         }
@@ -76,10 +150,8 @@ public class FormatterTaskMeta
                             Indenter.class,
                             BlockFormatDirective.class,
                             BlockFormatDirective.class,
-                            String.class,
                             boolean.class,
                             WriteStats.class,
-                            // NO NEED FOR CATEGRY: Cat.class,
                             Item.class);
                     break;
                 }
@@ -91,7 +163,6 @@ public class FormatterTaskMeta
                             Indenter.class,
                             BlockFormatDirective.class,
                             BlockFormatDirective.class,
-                            String.class,
                             boolean.class,
                             WriteStats.class,
                             Cat.class);
@@ -106,7 +177,7 @@ public class FormatterTaskMeta
                             Indenter.class,
                             BlockFormatDirective.class,
                             BlockFormatDirective.class,
-                            String.class, boolean.class,
+                            boolean.class,
                             WriteStats.class);
                     break;
                 }
@@ -133,10 +204,48 @@ public class FormatterTaskMeta
         isEnabled = aIn;
     }
 
-    private static String getModuleContext(Item aInIt)
+    private String getModuleContext(Object aIn)
     {
-        Item lParentIt = aInIt.getParent();
-        return null == lParentIt ? null : lParentIt.getGID().getName();
+        String lModule = null;
+        if (null != moduleExtractor)
+        {
+            try
+            {
+                switch (type)
+                {
+                    case ITEM:
+
+                        lModule = (String) moduleExtractor.invoke(null, aIn);
+                        break;
+
+                    case CATEGORY:
+
+                        lModule = (String) moduleExtractor.invoke(null, aIn);
+                        break;
+
+                    default:
+
+                        lModule = (String) moduleExtractor.invoke(null);
+                        break;
+                }
+            }
+            catch (Throwable lT)
+            {
+                Severity.DEATH.report(toString(),"retrieving module context", "unexpected exception encountered; check the module context/getTargetModule method on your formatter task: " + taskClass, lT);
+            }
+
+        }
+
+        if (null == lModule)
+        {
+            if (null != aIn && aIn instanceof Item)
+            {
+                Item lItem = (Item) aIn;
+                for (; null != lItem.getParent(); lItem = lItem.getParent());
+                lModule = lItem.getLID().getName();
+            }
+        }
+        return lModule;
     }
 
     private boolean doAccept(Object aIn)
@@ -156,6 +265,39 @@ public class FormatterTaskMeta
         return lRet;
     }
 
+    private FileNameRule transformFileNameRule(FileNameRule aInRule, Object aInSubjectOrNull, String aInName)
+    {
+        FileNameRule lR = null;
+        if (null != fileNameRuleTransformer)
+        {
+            try
+            {
+                if (type == FormatterTaskType.GENERIC)
+                {
+                    lR = (FileNameRule) fileNameRuleTransformer.invoke(null, aInRule, aInSubjectOrNull);
+                }
+                else
+                {
+                    lR = (FileNameRule) fileNameRuleTransformer.invoke(null, aInRule, aInSubjectOrNull);
+                }
+            }
+            catch (Throwable lT)
+            {
+                Severity.DEATH.report(toString(),"file name rule transformer", "unexpected exception encountered; check the transformFileNameRule method on your formatter task: " + taskClass, lT);
+
+            }
+        }
+        if (null == lR)
+        {
+            lR = fileNameRule.makeSpecific(getModuleContext(aInSubjectOrNull), aInName);
+        }
+        if (null == lR)
+        {
+            lR = aInRule;
+        }
+        return lR;
+    }
+
     public void process(FormatterCtx aInCtx)
     {
         //System.out.println(this + ".process()");
@@ -171,11 +313,10 @@ public class FormatterTaskMeta
                         {
                             FormatterTask lTask = taskConstr.newInstance(
                                                     aInCtx,
-                                                    fileNameRule.makeSpecific(getModuleContext(lItem)),
+                                                    transformFileNameRule(fileNameRule, lItem, lItem.getLID().getName()),
                                                     file.getIndenter(),
                                                     file.getHeaderFormatDirective(),
                                                     file.getCommentFormatDirective(),
-                                                    lItem.getLID().getName(), //name,
                                                     isUser,
                                                     aInCtx.getStats(),
                                                     //NO NEED FOR CATEGORY: catOrNull,
@@ -196,11 +337,10 @@ public class FormatterTaskMeta
                     {
                         FormatterTask lTask = taskConstr.newInstance(
                                 aInCtx,
-                                fileNameRule,
+                                transformFileNameRule(fileNameRule, catOrNull, name),
                                 file.getIndenter(),
                                 file.getHeaderFormatDirective(),
                                 file.getCommentFormatDirective(),
-                                name,
                                 isUser,
                                 aInCtx.getStats(),
                                 catOrNull);
@@ -221,11 +361,10 @@ public class FormatterTaskMeta
                     {
                         FormatterTask lTask = taskConstr.newInstance(
                                 aInCtx,
-                                fileNameRule,
+                                transformFileNameRule(fileNameRule, null, name),
                                 file.getIndenter(),
                                 file.getHeaderFormatDirective(),
                                 file.getCommentFormatDirective(),
-                                name,
                                 isUser,
                                 aInCtx.getStats());
 
@@ -258,6 +397,8 @@ public class FormatterTaskMeta
     private final Class<FormatterTask> taskClass;
     private final Constructor<FormatterTask> taskConstr;
     private final Method acceptor;
+    private final Method moduleExtractor;
+    private final Method fileNameRuleTransformer;
     private final boolean isUser;
     private boolean isEnabled = true;
 }

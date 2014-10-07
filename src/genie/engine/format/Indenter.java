@@ -108,8 +108,6 @@ public class Indenter
                     aInCommon);
 
         prependIndex = aInPrependWithIndex;
-
-        Severity.WARN.report(toString(),"construct","singleIndentSize=" + singleIndentSize, "");
     }
 
     /**

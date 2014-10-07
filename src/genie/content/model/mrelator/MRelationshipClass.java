@@ -52,12 +52,31 @@ public class MRelationshipClass extends MClass
         return lClass;
     }
 
-    public Collection<MClass> getTargetClasses()
+    public Collection<MClass> getTargetClasses(boolean aInExpandToConcrete)
     {
         LinkedList<MClass> lRet = new LinkedList<MClass>();
         for (MRelationship lRel : reln)
         {
-            lRet.add(lRel.getTargetClass());
+            MClass lClass = lRel.getTargetClass();
+            if (lClass.isConcrete())
+            {
+                lRet.add(lClass);
+            }
+            else if (aInExpandToConcrete)
+            {
+
+                Collection<MClass> lSubclasses = new LinkedList<MClass>();
+                lClass.getSubclasses(
+                        lSubclasses,
+                        false, // boolean aInIsDirectOnly,
+                        true //boolean aInIsConcreteOnly
+                        );
+                lRet.addAll(lSubclasses);
+            }
+            else
+            {
+                lRet.add(lRel.getTargetClass());
+            }
         }
         return lRet;
     }

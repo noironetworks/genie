@@ -17,17 +17,6 @@ public abstract class FormatterTask implements Task
     protected Formatter out = null;
 
     /**
-     * file name formatter. formats the name excluding prefix and suffix.
-     * this methid is overridable by subclasses for customization
-     * @return formatted name excluding prefix and suffix
-     */
-    protected String formatFileName()
-    {
-        return name;
-    }
-
-
-    /**
      * module path formatter. formats module path (package, namespace, ..._.
      * this methid is overridable by subclasses for customization
      * @return formatted module path
@@ -36,7 +25,15 @@ public abstract class FormatterTask implements Task
     {
         return null;
     }
-
+    /**
+     * name formatter. formats name
+     * this methid is overridable by subclasses for customization
+     * @return formatted name
+     */
+    protected String formatFileName()
+    {
+        return null;
+    }
     /**
      * description formatter
      * @return description
@@ -63,7 +60,6 @@ public abstract class FormatterTask implements Task
           aInFormatter.getIndenter(),
           aInFormatter.getHeaderFormatDirective(),
           aInFormatter.getCommentFormatDirective(),
-          aInFormatter.getFormattedFile().getFileName(),
           !aInFormatter.getFormattedFile().isOverrideExisting(),
           aInFormatter.getFormattedFile().getCtx().getStats()
           );
@@ -77,7 +73,6 @@ public abstract class FormatterTask implements Task
             Indenter aInIndenter,
             BlockFormatDirective aInHeaderFormatDirective,
             BlockFormatDirective aInCommentFormatDirective,
-            String aInName,
             boolean aInIsUserFile,
             WriteStats aInStats)
     {
@@ -86,7 +81,6 @@ public abstract class FormatterTask implements Task
         indenter = aInIndenter;
         headerFormatDirective = aInHeaderFormatDirective;
         commentFormatDirective = aInCommentFormatDirective;
-        name = aInName;
         isUserFile = aInIsUserFile;
         stats = aInStats;
     }
@@ -96,7 +90,6 @@ public abstract class FormatterTask implements Task
     public Indenter getIndenter() { return indenter; }
     public BlockFormatDirective getHeaderFormatDirective() { return headerFormatDirective; }
     public BlockFormatDirective getCommentFormatDirective() { return commentFormatDirective; }
-    public String getName() { return name; }
     public boolean isUserFile() { return isUserFile; }
     public WriteStats getStats() { return stats; }
 
@@ -117,8 +110,7 @@ public abstract class FormatterTask implements Task
         {
             file = new FormattedFile(
                     formatterCtx,
-                    fileNameRule.makeSpecific(formatModulePath()),
-                    formatFileName(),
+                    fileNameRule.makeSpecific(formatModulePath(), formatFileName()),
                     !isUserFile);
         }
         if (null == out)
@@ -140,7 +132,7 @@ public abstract class FormatterTask implements Task
 
     public String toString()
     {
-        return "formatter::task(" + name + ')';
+        return "formatter::task(" + fileNameRule.getName() + ')';
     }
     private FormattedFile file = null;
 
@@ -149,7 +141,6 @@ public abstract class FormatterTask implements Task
     private final Indenter indenter;
     private final BlockFormatDirective headerFormatDirective;
     private final BlockFormatDirective commentFormatDirective;
-    private final String name;
     private final boolean isUserFile;
     private final WriteStats stats;
 }

@@ -20,7 +20,6 @@ public abstract class ItemFormatterTask extends FormatterTask
             Indenter aInIndenter,
             BlockFormatDirective aInHeaderFormatDirective,
             BlockFormatDirective aInCommentFormatDirective,
-            String aInName,
             boolean aInIsUserFile,
             WriteStats aInStats,
             Item aInItem)
@@ -30,7 +29,6 @@ public abstract class ItemFormatterTask extends FormatterTask
               aInIndenter,
               aInHeaderFormatDirective,
               aInCommentFormatDirective,
-              aInName,
               aInIsUserFile,
               aInStats);
 

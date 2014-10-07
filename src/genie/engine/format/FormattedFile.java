@@ -17,12 +17,10 @@ public class FormattedFile
     public FormattedFile(
             FormatterCtx aInFormatterCtx,
             FileNameRule aInFileNameRule,
-            String aInFileName,
             boolean aInOverrideExisting)
     {
         formatterCtx = aInFormatterCtx;
         fileNameRule = aInFileNameRule;
-        fileName = aInFileName;
         overrideExisting = aInOverrideExisting;
         init();
     }
@@ -39,8 +37,7 @@ public class FormattedFile
     {
         this(
           aInCtx,
-          new FileNameRule(aInRelativePath,aInModulePath,aInFilePrefix,aInFileSuffix,aInFileExtension),
-          aInFileName,
+          new FileNameRule(aInRelativePath,aInModulePath,aInFilePrefix,aInFileSuffix,aInFileExtension, aInFileName),
           aInOverrideExisting);
     }
 
@@ -218,7 +215,7 @@ public class FormattedFile
 
     public String getFileName()
     {
-        return fileName;
+        return fileNameRule.getName();
     }
 
     public String getFileSuffix()
@@ -280,9 +277,9 @@ public class FormattedFile
             lFnSb.append(getFilePrefix());
 
         }
-        if (!Strings.isEmpty(fileName))
+        if (!Strings.isEmpty(getFileName()))
         {
-            lFnSb.append(fileName);
+            lFnSb.append(getFileName());
         }
         if (!Strings.isEmpty(getFileSuffix()))
         {
@@ -389,7 +386,6 @@ public class FormattedFile
 
     private final FormatterCtx formatterCtx;
     private final FileNameRule fileNameRule;
-    private final String fileName;
     private final boolean overrideExisting;
     private File dir = null;
     private File file = null;

@@ -17,7 +17,7 @@ public class FMetaDef
         extends GenericFormatterTask
 {
     public FMetaDef(
-            FormatterCtx aInFormatterCtx, FileNameRule aInFileNameRule, Indenter aInIndenter, BlockFormatDirective aInHeaderFormatDirective, BlockFormatDirective aInCommentFormatDirective, String aInName, boolean aInIsUserFile, WriteStats aInStats
+            FormatterCtx aInFormatterCtx, FileNameRule aInFileNameRule, Indenter aInIndenter, BlockFormatDirective aInHeaderFormatDirective, BlockFormatDirective aInCommentFormatDirective, boolean aInIsUserFile, WriteStats aInStats
                    )
     {
         super(aInFormatterCtx,
@@ -25,7 +25,6 @@ public class FMetaDef
               aInIndenter,
               aInHeaderFormatDirective,
               aInCommentFormatDirective,
-              aInName,
               aInIsUserFile,
               aInStats);
     }

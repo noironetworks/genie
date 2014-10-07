@@ -34,7 +34,6 @@ public class FClassDef extends ItemFormatterTask
             Indenter aInIndenter,
             BlockFormatDirective aInHeaderFormatDirective,
             BlockFormatDirective aInCommentFormatDirective,
-            String aInName,
             boolean aInIsUserFile,
             WriteStats aInStats,
             Item aInItem)
@@ -45,15 +44,53 @@ public class FClassDef extends ItemFormatterTask
              aInIndenter,
              aInHeaderFormatDirective,
              aInCommentFormatDirective,
-             aInName,
              aInIsUserFile,
              aInStats,
              aInItem);
     }
 
+    /**
+     * Optional API required by framework to regulate triggering of tasks.
+     * This method identifies whether this task should be triggered for the item passed in.
+     * @param aIn item for which task is considered to be trriggered
+     * @return true if task shouold be triggered, false if task should be skipped for this item.
+     */
     public static boolean shouldTriggerTask(Item aIn)
     {
         return ((MClass)aIn).isConcrete();
+    }
+
+    /**
+     * Optional API required by framework to identify namespace/module-space for the corresponding generated file.
+     * @param aIn item for which task is being triggered
+     * @return name of the module/namespace that corresponds to the item
+     */
+    public static String getTargetModule(Item aIn)
+    {
+        return ((MClass) aIn).getModule().getLID().getName();
+    }
+
+    /**
+     * Optional API required by the framework for transformation of file naming rule for the corresponding
+     * generated file. This method can customize the location for the generated file.
+     * @param aInFnr file name rule template
+     * @param aInItem item for which file is generated
+     * @return transformed file name rule
+     */
+    public static FileNameRule transformFileNameRule(FileNameRule aInFnr,Item aInItem)
+    {
+        Severity.WARN.report("WTF", "","","");
+
+        String lTargetModue = getTargetModule(aInItem);
+        FileNameRule lFnr = new FileNameRule(
+                aInFnr.getRelativePath() +  lTargetModue + "/include/" + lTargetModue,
+                null,
+                aInFnr.getFilePrefix(),
+                aInFnr.getFileSuffix(),
+                aInFnr.getFileExtension(),
+                getClassName((MClass)aInItem, false));
+
+        return lFnr;
     }
 
     public void generate()

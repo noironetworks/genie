@@ -22,11 +22,16 @@ public class FContDef
             Indenter aInIndenter,
             BlockFormatDirective aInHeaderFormatDirective,
             BlockFormatDirective aInCommentFormatDirective,
-            String aInName,
             boolean aInIsUserFile,
             WriteStats aInStats)
     {
-        super(aInFormatterCtx, aInFileNameRule, aInIndenter, aInHeaderFormatDirective, aInCommentFormatDirective, aInName, aInIsUserFile, aInStats);
+        super(aInFormatterCtx,
+              aInFileNameRule,
+              aInIndenter,
+              aInHeaderFormatDirective,
+              aInCommentFormatDirective,
+              aInIsUserFile,
+              aInStats);
     }
 
     public void generate()
