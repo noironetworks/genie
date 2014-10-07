@@ -68,7 +68,7 @@ public class FMetaDef
     {
         String lTargetModue = ((Module)aInItem).getLID().getName().toLowerCase();
         FileNameRule lFnr = new FileNameRule(
-                aInFnr.getRelativePath() +  lTargetModue + "/src",
+                aInFnr.getRelativePath() +  lTargetModue + "model/src",
                 null,
                 aInFnr.getFilePrefix(),
                 aInFnr.getFileSuffix(),

@@ -55,7 +55,7 @@ public class FMetaAccessor
     {
         String lTargetModue = ((Module)aInItem).getLID().getName().toLowerCase();
         FileNameRule lFnr = new FileNameRule(
-                aInFnr.getRelativePath() +  lTargetModue + "/include/" + lTargetModue,
+                aInFnr.getRelativePath() +  lTargetModue + "model/include/" + lTargetModue,
                 null,
                 aInFnr.getFilePrefix(),
                 aInFnr.getFileSuffix(),

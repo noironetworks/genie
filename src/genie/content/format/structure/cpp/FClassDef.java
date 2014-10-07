@@ -81,7 +81,7 @@ public class FClassDef extends ItemFormatterTask
     {
         String lTargetModue = getTargetModule(aInItem);
         FileNameRule lFnr = new FileNameRule(
-                aInFnr.getRelativePath() +  lTargetModue + "/include/" + lTargetModue,
+                aInFnr.getRelativePath() +  lTargetModue + "model/include/" + lTargetModue,
                 null,
                 aInFnr.getFilePrefix(),
                 aInFnr.getFileSuffix(),
