@@ -79,8 +79,6 @@ public class FClassDef extends ItemFormatterTask
      */
     public static FileNameRule transformFileNameRule(FileNameRule aInFnr,Item aInItem)
     {
-        Severity.WARN.report("WTF", "","","");
-
         String lTargetModue = getTargetModule(aInItem);
         FileNameRule lFnr = new FileNameRule(
                 aInFnr.getRelativePath() +  lTargetModue + "/include/" + lTargetModue,

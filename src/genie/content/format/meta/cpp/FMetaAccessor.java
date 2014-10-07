@@ -53,8 +53,6 @@ public class FMetaAccessor
      */
     public static FileNameRule transformFileNameRule(FileNameRule aInFnr,Item aInItem)
     {
-        Severity.WARN.report("WTF3", "","","");
-
         String lTargetModue = ((Module)aInItem).getLID().getName().toLowerCase();
         FileNameRule lFnr = new FileNameRule(
                 aInFnr.getRelativePath() +  lTargetModue + "/include/" + lTargetModue,
