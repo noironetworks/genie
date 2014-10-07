@@ -63,10 +63,7 @@ public class FormatterTaskMeta
         {
 
         }
-        if (null == lMethod)
-        {
-            Severity.INFO.report(toString(), "file name rule transformer method init", "no method defined", "");
-        }
+
         return lMethod;
     }
 
@@ -98,10 +95,7 @@ public class FormatterTaskMeta
         {
 
         }
-        if (null == lMethod)
-        {
-            Severity.INFO.report(toString(), "module extractor method init", "no extractor method defined", "");
-        }
+
         return lMethod;
     }
 
@@ -128,10 +122,7 @@ public class FormatterTaskMeta
         {
 
         }
-        if (null == lMethod)
-        {
-            Severity.INFO.report(toString(), "acceptor method init", "no acceptor method defined", "");
-        }
+
         return lMethod;
     }
 
@@ -325,7 +316,7 @@ public class FormatterTaskMeta
                         }
                         else
                         {
-                            Severity.INFO.report(toString(),"process", "task not accepted for: " + lItem, "this is normal, check the acceptor/shouldTriggerTask method on your formatter task:" + taskClass);
+                            //Severity.INFO.report(toString(),"process", "task not accepted for: " + lItem, "this is normal, check the acceptor/shouldTriggerTask method on your formatter task:" + taskClass);
                         }
                     }
                     break;
@@ -349,7 +340,7 @@ public class FormatterTaskMeta
                     }
                     else
                     {
-                        Severity.INFO.report(toString(),"process", "task not accepted for: " + catOrNull, "this is normal, check the acceptor/shouldTriggerTask method on your formatter task:" + taskClass);
+                        //Severity.INFO.report(toString(),"process", "task not accepted for: " + catOrNull, "this is normal, check the acceptor/shouldTriggerTask method on your formatter task:" + taskClass);
                     }
 
                     break;
@@ -372,7 +363,7 @@ public class FormatterTaskMeta
                     }
                     else
                     {
-                        Severity.INFO.report(toString(),"process", "task not accepted", "this is normal, check the acceptor/shouldTriggerTask method on your formatter task:" + taskClass);
+                        //Severity.INFO.report(toString(),"process", "task not accepted", "this is normal, check the acceptor/shouldTriggerTask method on your formatter task:" + taskClass);
                     }
                     break;
                 }

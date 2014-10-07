@@ -38,7 +38,7 @@ public class PIncludeNode extends ParseNode
         LoadStage lStage = LoadStage.get(aInData.getNamedValue("stage", "load", true));
         LoaderIncludeMeta lIncl = new LoaderIncludeMeta(lName, lDir,lExt, lStage);
         lFeatureMeta.addInclude(lIncl);
-        System.out.println("==========> ADDED: " + lIncl);
+        //System.out.println("==========> ADDED: " + lIncl);
         return null;
     }
 }

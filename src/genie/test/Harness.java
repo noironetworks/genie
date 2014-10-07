@@ -49,7 +49,7 @@ public class Harness
                 };
 
         new Processor(
-            1,
+            4,
             lMetaPaths,
             lPrePaths,
             ParseRegistry.init(),
