@@ -99,6 +99,21 @@ public enum FileTypeMeta
                      null,
                      "# ",
                      0)),
+    AUTOCONFIG("autoconfig",
+             ".ac",
+             new Indenter("autoconfig", true, 10, 1, true),
+             new BlockFormatDirective(
+                     "# ",
+                     "# ",
+                     null,
+                     "# ",
+                     0),
+             new BlockFormatDirective(
+                     "# ",
+                     "# ",
+                     null,
+                     "# ",
+                     0)),
     ;
     private FileTypeMeta(String aInName,
                          String ainFileExt,
