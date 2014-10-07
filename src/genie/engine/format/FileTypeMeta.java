@@ -114,6 +114,37 @@ public enum FileTypeMeta
                      null,
                      "# ",
                      0)),
+
+    SHELL("shell",
+               ".sh",
+               new Indenter("shell", true, 10, 1, true),
+               new BlockFormatDirective(
+                       "# ",
+                       "# ",
+                       null,
+                       "# ",
+                       0),
+               new BlockFormatDirective(
+                       "# ",
+                       "# ",
+                       null,
+                       "# ",
+                       0)),
+    PKG_CONGIG_IN("pkgconfigin",
+          ".pc.in",
+          new Indenter("pkgconfigin", true, 10, 1, true),
+          new BlockFormatDirective(
+                  "# ",
+                  "# ",
+                  null,
+                  "# ",
+                  0),
+          new BlockFormatDirective(
+                  "# ",
+                  "# ",
+                  null,
+                  "# ",
+                  0)),
     ;
     private FileTypeMeta(String aInName,
                          String ainFileExt,

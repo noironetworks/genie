@@ -11,20 +11,12 @@ public class Formatter
             FormattedFile aInFormattedFile,
             Indenter aInIndenter,
             BlockFormatDirective aInHeaderFormatDirective,
-            BlockFormatDirective aInCommentFormatDirective,
-            String[] aInDescription)
+            BlockFormatDirective aInCommentFormatDirective)
     {
         formattedFile = aInFormattedFile;
         indenter = aInIndenter;
         headerFormatDirective = aInHeaderFormatDirective;
         commentFormatDirective = aInCommentFormatDirective;
-        if (null != aInHeaderFormatDirective)
-        {
-            printHeaderComment(
-                    -1,
-                    getHeaderComments(aInDescription,
-                                      aInFormattedFile.isOverrideExisting()));
-        }
     }
 
     protected String[] getHeaderComments(

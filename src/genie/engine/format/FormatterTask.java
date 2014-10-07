@@ -104,6 +104,18 @@ public abstract class FormatterTask implements Task
         //System.out.println(this + ".run(): finished");
     }
 
+    public void firstLineCb()
+    {
+        // DO NOTHING
+    }
+
+    public void printHeaderComment()
+    {
+        out.printHeaderComment(
+                -1,
+                out.getHeaderComments(formatDescription(),file.isOverrideExisting()));
+    }
+
     protected void init()
     {
         if (null == file)
@@ -115,12 +127,15 @@ public abstract class FormatterTask implements Task
         }
         if (null == out)
         {
+
             out = new Formatter(
                     file,
                     indenter,
                     headerFormatDirective,
-                    commentFormatDirective,
-                    formatDescription());
+                    commentFormatDirective);
+
+            firstLineCb();
+            printHeaderComment();
         }
     }
 
