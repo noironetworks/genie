@@ -70,6 +70,8 @@ public class Processor
     private void init(String[] aInArgs)
     {
 
+        handleHelp(aInArgs);
+
         Config.setHomePath(getArg(aInArgs,"home"));
         Config.setConfigFile(getArg(aInArgs,"config"));
         new LoadTarget(
@@ -192,7 +194,20 @@ public class Processor
         return null;
     }
 
-
+    private void handleHelp(String[] aInArgs)
+    {
+        if ("true".equalsIgnoreCase(getArg(aInArgs, "help")) ||
+            "true".equalsIgnoreCase(getArg(aInArgs, "helme")) ||
+            "true".equalsIgnoreCase(getArg(aInArgs, "--help")))
+        {
+            System.err.println("Genie, the code generation robot can show you a lot of love.");
+            System.err.println("To make it show you more love, you can help it look for useful things");
+            System.err.println("by specifying the following options:");
+            System.err.println("\thome=<directory-name> to help it know if you want to look for stuff in special places.");
+            System.err.println("\tconfig=<config-file-path-and-name> to help it find the config file that tells it what to load and generate.");
+            System.exit(666);
+        }
+    }
     public String toString()
     {
         return "genie:processor";
