@@ -82,7 +82,7 @@ public class FMetaDef
     {
         Module lModule = (Module) getItem();
         String lModuleName = lModule.getLID().getName().toLowerCase();
-        out.println(0, "#include \"" + lModuleName + "/metamodel.hpp\"");
+        out.println(0, "#include \"" + lModuleName + "/metadata.hpp\"");
         out.println(0, "namespace opflex");
         out.println(0, "{");
         out.println(1, "namespace " + lModuleName);

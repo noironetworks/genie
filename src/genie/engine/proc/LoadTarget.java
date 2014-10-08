@@ -5,6 +5,8 @@ import genie.engine.parse.model.ProcessorTree;
 import genie.engine.parse.modlan.Tree;
 import genie.engine.proc.Dsptchr;
 import genie.engine.proc.Task;
+import modlan.report.Severity;
+import modlan.utils.Strings;
 
 import java.io.File;
 
@@ -60,20 +62,34 @@ public class LoadTarget
         }
         else
         {
+            //Severity.WARN.report("","","","LOADING...");
             listers = new Lister[paths.length];
             for (int i = 0; i < paths.length; i++)
             {
                 final int lThisI = i;
-
-                listers[lThisI] = new Lister(paths[lThisI],suffix);
-                for (final File lFile : listers[lThisI].getFiles())
+                if (!Strings.isEmpty((paths[lThisI])))
                 {
+                    //Severity.WARN.report("", "", "", "CREATING LISTER: ..." + paths[lThisI]);
 
-                    genie.engine.file.Reader lReader =
-                            new genie.engine.file.Reader(lFile);
-                    modlan.parse.Engine lE =
-                            new modlan.parse.Engine(lReader, new Tree(pTree));
-                    lE.execute();
+                    listers[lThisI] = new Lister(paths[lThisI], suffix);
+                    //Severity.WARN.report("", "", "", "LOAD PATH: ..." + paths[lThisI]);
+
+                    for (final File lFile : listers[lThisI].getFiles())
+                    {
+
+                        genie.engine.file.Reader lReader = new genie.engine.file.Reader(lFile);
+
+                        //Severity.WARN.report("", "", "", "LOADING: " + lFile);
+
+                        modlan.parse.Engine lE = new modlan.parse.Engine(lReader, new Tree(pTree));
+
+                        //Severity.WARN.report("", "", "", "LOADED: " + lFile);
+
+                        lE.execute();
+
+                        //Severity.WARN.report("", "", "", "EXECUTED: " + lFile);
+
+                    }
                 }
             }
         }

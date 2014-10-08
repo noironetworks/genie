@@ -183,7 +183,7 @@ public class Node
                 this.toString(),
                 "PARSE",
                 "processor can't be found",
-                "\"" + name + "\" processor is not registered with parent processor: " + aInParentProcessor
+                "\"" + name + "\" processor is not registered with parent processor: " + aInParentProcessor + "(" + aInParentProcessor.getClass() + ")"
                  );
         }
         else

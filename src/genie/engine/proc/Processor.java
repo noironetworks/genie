@@ -16,19 +16,24 @@ public class Processor
 {
     public Processor(
             int aInParallelism,
-            String aInMetadataLoadPathsInOrder[][],
-            String aInModelPreLoadPathsInOrder[][],
-            ProcessorTree aInPTree,
-            FormatterCtx[] aInFormatterCtxs
-            )
+            ProcessorTree aInPTree)
     {
         INSTANCE = this;
         dsp = new Dsptchr(aInParallelism);
         pTree = aInPTree;
-        metadataLoadPaths = aInMetadataLoadPathsInOrder;
-        modelPreLoadPaths = aInModelPreLoadPathsInOrder;
-        formatterCtxs = aInFormatterCtxs;
+        init();
         process();
+    }
+
+    private void init()
+    {
+        new LoadTarget(
+                dsp,pTree,new String[]{ Config.getConfigPath(), null}, null, false);
+
+        Severity.INFO.report("","", "",Config.print());
+        metadataLoadPaths = new String[][] {{Config.getSyntaxPath(), Config.getSyntaxSuffix()}};
+        modelPreLoadPaths = new String[][] {{Config.getLoaderPath(), Config.getLoaderSuffix()}};
+        formatterCtxs = new FormatterCtx[]{new FormatterCtx("*", Config.getGenDestPath())};
     }
 
     public static Processor get()
@@ -51,7 +56,6 @@ public class Processor
         Severity.INFO.report(this.toString(), "processing", "model processing", "BEGIN");
         try
         {
-            preloadClasses();
             load();
             dsp.drain();
             postProcess();
@@ -75,24 +79,12 @@ public class Processor
         }
     }
 
-    private void preloadClasses()
-    {
-        try
-        {
-            //Class lClass = ClassLoader.getSystemClassLoader().loadClass("genie.engine.model.Item");
-        }
-        catch (Throwable lE)
-        {
-            Severity.DEATH.report(toString(),"class pre loader", "", lE);
-        }
-
-    }
-
     private void postProcess()
     {
         Cat.postLoad();
         Cat.validateAll();
     }
+
     private void load()
     {
         Severity.INFO.report(this.toString(), "load", "model loading", "BEGIN");
@@ -131,10 +123,10 @@ public class Processor
     {
         return "genie:processor";
     }
-    private final String metadataLoadPaths[][];
-    private final String modelPreLoadPaths[][];
+    private String metadataLoadPaths[][];
+    private String modelPreLoadPaths[][];
     private final ProcessorTree pTree;
-    private final FormatterCtx[] formatterCtxs;
+    private FormatterCtx[] formatterCtxs;
     private final Dsptchr dsp;
     private static Processor INSTANCE = null;
 }
