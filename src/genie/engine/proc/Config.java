@@ -14,6 +14,7 @@ public class Config
     public static String getLoaderPath() { return loaderPath; }
     public static String getLoaderSuffix() { return loaderSuffix; }
     public static String getGenDestPath() { return genDestPath; }
+    public static String getLogDirParent() { return logDirParent; }
 
     public static void setSyntaxRelPath(String aIn, String aInSuffix)
     {
@@ -25,6 +26,11 @@ public class Config
     {
         loaderPath = concatPath(workingPath,aIn);
         loaderSuffix = aInSuffix;
+    }
+
+    public static void setLogDirParent(String aIn)
+    {
+        logDirParent = aIn;
     }
 
     public static void setGenDestPath(String aIn)
@@ -59,4 +65,5 @@ public class Config
     public static String loaderSuffix = null;
     public static String genDestPath = null;
     public static String configPath = initConfigFile();
+    public static String logDirParent = null;
 }

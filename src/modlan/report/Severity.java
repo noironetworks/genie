@@ -187,7 +187,7 @@ public enum Severity
     public static final void init(String aInReportRoot)
     {
         System.out.println("====================================================");
-        System.out.println("==     STARTING GENNIE, THE CODE WRITING ROBOT    ==");
+        System.out.println("==      STARTING GENIE, THE CODE WRITING ROBOT    ==");
         System.out.println("====================================================");
 
         try
@@ -221,7 +221,7 @@ public enum Severity
     public static final void end(boolean aInNormal)
     {
         origOut.println("====================================================");
-        origOut.println("== GENNIE THE ROBOT FINISHED WRITING CODE FOR YOU ==");
+        origOut.println("== GENIE THE ROBOT FINISHED WRITING CODE FOR YOU  ==");
         origOut.println("====================================================");
         if (null != stream)
         {

@@ -28,7 +28,7 @@ public class PConfigNode
         Config.setSyntaxRelPath(aInData.getNamedValue("syntax", null, true),aInData.getNamedValue("syntaxfiletype", ".meta", true));
         Config.setLoaderRelPath(aInData.getNamedValue("loader", null, true), aInData.getNamedValue("loaderfiletype", ".cfg", true));
         Config.setGenDestPath(aInData.getNamedValue("gendest", ".", true));
-
+        Config.setLogDirParent(aInData.getNamedValue("logfile", ".", true));
         return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE,null); // TODO
     }
 

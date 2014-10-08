@@ -18,8 +18,8 @@ public class Processor
             int aInParallelism,
             ProcessorTree aInPTree)
     {
+        parallelism = aInParallelism;
         INSTANCE = this;
-        dsp = new Dsptchr(aInParallelism);
         pTree = aInPTree;
         init();
         process();
@@ -29,6 +29,10 @@ public class Processor
     {
         new LoadTarget(
                 dsp,pTree,new String[]{ Config.getConfigPath(), null}, null, false);
+        Severity.init(Config.getLogDirParent());
+
+        dsp = new Dsptchr(parallelism);
+
 
         Severity.INFO.report("","", "",Config.print());
         metadataLoadPaths = new String[][] {{Config.getSyntaxPath(), Config.getSyntaxSuffix()}};
@@ -127,6 +131,7 @@ public class Processor
     private String modelPreLoadPaths[][];
     private final ProcessorTree pTree;
     private FormatterCtx[] formatterCtxs;
-    private final Dsptchr dsp;
+    private Dsptchr dsp;
     private static Processor INSTANCE = null;
+    private int parallelism;
 }
