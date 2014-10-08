@@ -11,8 +11,13 @@ import modlan.report.Severity;
 public class Genie
 {
 
+    /**
+     * Genie main method.
+     * @param args a list of arguments from command line: arguments come in [[name]=[value]] or [name] format
+     */
     public static void main(String[] args)
     {
+        // trigger the processing
         new Processor(
                 4,
                 //lMetaPaths,

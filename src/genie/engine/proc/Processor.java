@@ -14,6 +14,15 @@ import modlan.report.Severity;
  */
 public class Processor
 {
+    /**
+     * Constructor
+     *
+     * Creates, initializes and executes processing functions.
+     *
+     * @param aInParallelism indicates how many threads are to be created for processing - more threads, the better parallelism (within reason)
+     * @param aInPTree processor tree, a tree of base parser processors sufficient to establish all grammar rules
+     * @param aInArgs arguments that govern the behavior of the processor, arguments come in [[name]=[value]] or [name] format. The current argument is home=[dir-location]
+     */
     public Processor(
             int aInParallelism,
             ProcessorTree aInPTree,
@@ -27,30 +36,37 @@ public class Processor
         Severity.end(true);
     }
 
-    private static String getArg(String[] aInArgs, String aInName)
+    /**
+     * accessor of processor instance.
+     * @return instance of the processor currently in scope.
+     */
+    public static Processor get()
     {
-        if (null != aInArgs)
-        {
-            for (String lArg : aInArgs)
-            {
-                if (lArg.equalsIgnoreCase(aInName))
-                {
-                    return "true";
-                }
-                else
-                {
-                    String lTag = aInName + "=";
-
-                    if (lArg.startsWith(lTag))
-                    {
-                        return lArg.substring(lTag.length(), lArg.length());
-                    }
-                }
-            }
-        }
-        return null;
+        return INSTANCE;
     }
 
+    /**
+     * dispatcher accessor
+     * @return dispatcher for processor tasks.
+     */
+    public Dsptchr getDsp()
+    {
+        return dsp;
+    }
+
+    /**
+     * processor tree accessor
+     * @return processor tree.
+     */
+    public ProcessorTree getPTree()
+    {
+        return pTree;
+    }
+
+    /**
+     * initialization routine.
+     * @param aInArgs arguments that govern processor behavior
+     */
     private void init(String[] aInArgs)
     {
 
@@ -69,21 +85,9 @@ public class Processor
         formatterCtxs = new FormatterCtx[]{new FormatterCtx("*", Config.getGenDestPath())};
     }
 
-    public static Processor get()
-    {
-        return INSTANCE;
-    }
-
-    public Dsptchr getDsp()
-    {
-        return dsp;
-    }
-
-    public ProcessorTree getPTree()
-    {
-        return pTree;
-    }
-
+    /**
+     * processing method. Loads, post-processes and formats the data.
+     */
     private void process()
     {
         Severity.INFO.report(this.toString(), "processing", "model processing", "BEGIN");
@@ -112,12 +116,18 @@ public class Processor
         }
     }
 
+    /**
+     * model post-processor
+     */
     private void postProcess()
     {
         Cat.postLoad();
         Cat.validateAll();
     }
 
+    /**
+     * model loader
+     */
     private void load()
     {
         Severity.INFO.report(this.toString(), "load", "model loading", "BEGIN");
@@ -151,6 +161,37 @@ public class Processor
         Cat.loadModelComplete();
         Severity.INFO.report(this.toString(),"load","model loaded", "END");
     }
+
+    /**
+     * argument finder
+     * @param aInArgs list of arguments in [[name]=[value]] or [name] format.
+     * @param aInName name of the argument searched
+     * @return value of the argument. if argument is a flag, "true" or "false" is returned depending if the flag appears in the args.
+     */
+    private static String getArg(String[] aInArgs, String aInName)
+    {
+        if (null != aInArgs)
+        {
+            for (String lArg : aInArgs)
+            {
+                if (lArg.equalsIgnoreCase(aInName))
+                {
+                    return "true";
+                }
+                else
+                {
+                    String lTag = aInName + "=";
+
+                    if (lArg.startsWith(lTag))
+                    {
+                        return lArg.substring(lTag.length(), lArg.length());
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
 
     public String toString()
     {
