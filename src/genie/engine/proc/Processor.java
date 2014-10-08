@@ -16,17 +16,46 @@ public class Processor
 {
     public Processor(
             int aInParallelism,
-            ProcessorTree aInPTree)
+            ProcessorTree aInPTree,
+            String[] aInArgs)
     {
         parallelism = aInParallelism;
         INSTANCE = this;
         pTree = aInPTree;
-        init();
+        init(aInArgs);
         process();
+        Severity.end(true);
     }
 
-    private void init()
+    private static String getArg(String[] aInArgs, String aInName)
     {
+        if (null != aInArgs)
+        {
+            for (String lArg : aInArgs)
+            {
+                if (lArg.equalsIgnoreCase(aInName))
+                {
+                    return "true";
+                }
+                else
+                {
+                    String lTag = aInName + "=";
+
+                    if (lArg.startsWith(lTag))
+                    {
+                        return lArg.substring(lTag.length(), lArg.length());
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private void init(String[] aInArgs)
+    {
+
+        Config.setHomePath(getArg(aInArgs,"home"));
+
         new LoadTarget(
                 dsp,pTree,new String[]{ Config.getConfigPath(), null}, null, false);
         Severity.init(Config.getLogDirParent());

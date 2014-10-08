@@ -1,5 +1,7 @@
 package genie.engine.proc;
 
+import modlan.utils.Strings;
+
 /**
  * Created by midvorki on 10/8/14.
  */
@@ -7,6 +9,7 @@ public class Config
 {
     public static String CONFIG_FILE_NAME = "genie.cfg";
 
+    public static String getHomePath() { return homePath; }
     public static String getWorkingPath() { return workingPath; }
     public static String getConfigPath() { return configPath; }
     public static String getSyntaxPath() { return syntaxPath; }
@@ -16,15 +19,20 @@ public class Config
     public static String getGenDestPath() { return genDestPath; }
     public static String getLogDirParent() { return logDirParent; }
 
+    public static void setHomePath(String aIn)
+    {
+        homePath = Strings.isAny(aIn) ? System.getProperty("user.dir") : aIn;
+    }
+
     public static void setSyntaxRelPath(String aIn, String aInSuffix)
     {
-        syntaxPath = concatPath(workingPath,aIn);
+        syntaxPath = concatPath(homePath,aIn);
         syntaxSuffix = aInSuffix;
     };
 
     public static void setLoaderRelPath(String aIn, String aInSuffix)
     {
-        loaderPath = concatPath(workingPath,aIn);
+        loaderPath = concatPath(homePath,aIn);
         loaderSuffix = aInSuffix;
     }
 
@@ -35,7 +43,7 @@ public class Config
 
     public static void setGenDestPath(String aIn)
     {
-        genDestPath = aIn;
+        genDestPath = concatPath(homePath,aIn);;
     }
 
     private static String initWorkingPath()
@@ -58,6 +66,7 @@ public class Config
         return "genie:config(config path: " + configPath + "; syntax path: " + syntaxPath + "; loader path: " + loaderPath + ")";
     }
 
+    public static String homePath = null;
     public static String workingPath = initWorkingPath();
     public static String syntaxPath = null;
     public static String syntaxSuffix = null;

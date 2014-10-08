@@ -11,16 +11,15 @@ import modlan.report.Severity;
 public class Genie
 {
 
-    public static void main(String [ ] args)
+    public static void main(String[] args)
     {
         new Processor(
                 4,
                 //lMetaPaths,
                 //lPrePaths,
-                ParseRegistry.init()
-        );
+                ParseRegistry.init(),
+                args);
 
-        Severity.end(true);
     }
 
 }

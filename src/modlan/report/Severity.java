@@ -192,12 +192,13 @@ public enum Severity
 
         try
         {
-            File lDir = new File(aInReportRoot + "/genlog");
+
+            File lDir = new File(aInReportRoot);
             if (!lDir.exists())
             {
                 lDir.mkdirs();
             }
-            File lLogFile = new File(aInReportRoot + "/genlog/GENLOG.txt");
+            File lLogFile = new File(aInReportRoot + "/GENLOG.txt");
             if (lLogFile.exists())
             {
                 lLogFile.delete();
