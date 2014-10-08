@@ -21,7 +21,7 @@ public class Processor
      *
      * @param aInParallelism indicates how many threads are to be created for processing - more threads, the better parallelism (within reason)
      * @param aInPTree processor tree, a tree of base parser processors sufficient to establish all grammar rules
-     * @param aInArgs arguments that govern the behavior of the processor, arguments come in [[name]=[value]] or [name] format. The current argument is home=[dir-location]
+     * @param aInArgs arguments that govern the behavior of the processor, arguments come in [[name]=[value]] or [name] format. The current arguments are home=[dir-location] config=[configfilename]
      */
     public Processor(
             int aInParallelism,
@@ -71,7 +71,7 @@ public class Processor
     {
 
         Config.setHomePath(getArg(aInArgs,"home"));
-
+        Config.setConfigFile(getArg(aInArgs,"config"));
         new LoadTarget(
                 dsp,pTree,new String[]{ Config.getConfigPath(), null}, null, false);
         Severity.init(Config.getLogDirParent());

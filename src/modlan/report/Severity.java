@@ -59,21 +59,45 @@ public enum Severity
             case ERROR:
             case DEATH:
 
-                stream.report(aInText);
-                origErr.println(aInText);
-                if (null != aInT)
+                if (null == stream)
                 {
-                    aInT.printStackTrace();
-                    aInT.printStackTrace(origErr);
+                    System.err.println(aInText);
+                    if (null != aInT)
+                    {
+                        aInT.printStackTrace();
+                    }
                 }
+                else
+                {
+                    stream.report(aInText);
+                    origErr.println(aInText);
+                    if (null != aInT)
+                    {
+                        aInT.printStackTrace();
+                        aInT.printStackTrace(origErr);
+                    }
+
+                }
+
                 break;
 
             default:
 
-                stream.report(aInText);
-                if (null != aInT)
+                if (null == stream)
                 {
-                    aInT.printStackTrace();
+                    System.err.println(aInText);
+                    if (null != aInT)
+                    {
+                        aInT.printStackTrace();
+                    }
+                }
+                else
+                {
+                    stream.report(aInText);
+                    if (null != aInT)
+                    {
+                        aInT.printStackTrace();
+                    }
                 }
                 break;
         }
@@ -129,7 +153,8 @@ public enum Severity
         {
             aInT = new Throwable();
         }
-        int lThisCnt = stream.getLinecnt();
+
+        int lThisCnt = (null == stream) ? 666 : stream.getLinecnt();
 
 ///        synchronized (this) { lThisCnt = count++; };
 
@@ -221,9 +246,9 @@ public enum Severity
 
     public static final void end(boolean aInNormal)
     {
-        origOut.println("====================================================");
-        origOut.println("== GENIE THE ROBOT FINISHED WRITING CODE FOR YOU  ==");
-        origOut.println("====================================================");
+        ((null == origOut) ? System.out : origOut).println("====================================================");
+        ((null == origOut) ? System.out : origOut).println("== GENIE THE ROBOT FINISHED WRITING CODE FOR YOU  ==");
+        ((null == origOut) ? System.out : origOut).println("====================================================");
         if (null != stream)
         {
             stream.flush();

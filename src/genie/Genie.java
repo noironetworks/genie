@@ -13,6 +13,9 @@ public class Genie
 
     /**
      * Genie main method.
+     * arguments supported:
+     * home=[home-directory] to indicate the target home directory to look for files etc.
+     * config=[config-file-name] name of the config file
      * @param args a list of arguments from command line: arguments come in [[name]=[value]] or [name] format
      */
     public static void main(String[] args)

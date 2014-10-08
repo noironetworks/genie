@@ -25,10 +25,12 @@ public class PConfigNode
 
     public Pair<ParseDirective,Item> beginCB(Node aInData, Item aInParentItem)
     {
+        Config.setLibName(aInData.getNamedValue("syntax", "libgenierated", true));
         Config.setSyntaxRelPath(aInData.getNamedValue("syntax", null, true),aInData.getNamedValue("syntaxfiletype", ".meta", true));
         Config.setLoaderRelPath(aInData.getNamedValue("loader", null, true), aInData.getNamedValue("loaderfiletype", ".cfg", true));
         Config.setGenDestPath(aInData.getNamedValue("gendest", ".", true));
         Config.setLogDirParent(aInData.getNamedValue("logfile", ".", true));
+
         return new Pair<ParseDirective, Item>(ParseDirective.CONTINUE,null); // TODO
     }
 
