@@ -213,7 +213,7 @@ public class FClassDef extends ItemFormatterTask
         out.println();
         String lNs = getNamespace(aInClass, false);
 
-        out.println(aInIndent, "namespace " + Config.getLibName());
+        out.println(aInIndent, "namespace " + Config.getProjName());
         out.println(aInIndent, "{");
             out.println(aInIndent + 1, "namespace " + lNs);
             out.println(aInIndent + 1, "{");

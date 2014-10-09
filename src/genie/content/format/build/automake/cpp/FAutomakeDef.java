@@ -77,7 +77,7 @@ public class FAutomakeDef
             Module lModule = lModuleNode.getFirst();
 
             String lModName = lModule.getLID().getName().toLowerCase();
-            out.println(ainIndent, lModName + "_includedir = $(includedir)/" + lModName);
+            out.println(ainIndent, lModName + "_includedir = $(includedir)/" + Config.getProjName() + "/" + lModName);
 
             Collection<MClass> lClasses = lModuleNode.getSecond();
 
