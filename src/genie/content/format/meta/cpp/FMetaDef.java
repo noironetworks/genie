@@ -14,6 +14,8 @@ import genie.engine.file.WriteStats;
 import genie.engine.format.*;
 import genie.engine.model.Ident;
 import genie.engine.model.Item;
+import genie.engine.model.Pair;
+import genie.engine.proc.Config;
 import modlan.report.Severity;
 import modlan.utils.Strings;
 
@@ -24,7 +26,7 @@ import java.util.TreeMap;
  * Created by midvorki on 9/24/14.
  */
 public class FMetaDef
-        extends ItemFormatterTask
+        extends GenericFormatterTask
 {
     public FMetaDef(
             FormatterCtx aInFormatterCtx,
@@ -33,8 +35,7 @@ public class FMetaDef
             BlockFormatDirective aInHeaderFormatDirective,
             BlockFormatDirective aInCommentFormatDirective,
             boolean aInIsUserFile,
-            WriteStats aInStats,
-            Item aInItem)
+            WriteStats aInStats)
     {
         super(aInFormatterCtx,
               aInFileNameRule,
@@ -42,33 +43,22 @@ public class FMetaDef
               aInHeaderFormatDirective,
               aInCommentFormatDirective,
               aInIsUserFile,
-              aInStats,
-              aInItem);
-    }
-
-    /**
-     * Optional API required by framework to regulate triggering of tasks.
-     * This method identifies whether this task should be triggered for the item passed in.
-     * @param aIn item for which task is considered to be trriggered
-     * @return true if task shouold be triggered, false if task should be skipped for this item.
-     */
-    public static boolean shouldTriggerTask(Item aIn)
-    {
-        return MClass.hasConcreteClassDefs((Module)aIn);
+              aInStats);
     }
 
     /**
      * Optional API required by the framework for transformation of file naming rule for the corresponding
      * generated file. This method can customize the location for the generated file.
      * @param aInFnr file name rule template
-     * @param aInItem item for which file is generated
      * @return transformed file name rule
      */
-    public static FileNameRule transformFileNameRule(FileNameRule aInFnr,Item aInItem)
+    public static FileNameRule transformFileNameRule(FileNameRule aInFnr)
     {
-        String lTargetModue = ((Module)aInItem).getLID().getName().toLowerCase();
+        String lOldRelativePath = aInFnr.getRelativePath();
+        String lNewRelativePath = lOldRelativePath + "/src/";
+
         FileNameRule lFnr = new FileNameRule(
-                aInFnr.getRelativePath() +  lTargetModue + "model/src",
+                lNewRelativePath,
                 null,
                 aInFnr.getFilePrefix(),
                 aInFnr.getFileSuffix(),
@@ -80,28 +70,21 @@ public class FMetaDef
 
     public void generate()
     {
-        Module lModule = (Module) getItem();
-        String lModuleName = lModule.getLID().getName().toLowerCase();
-        out.println(0, "#include \"" + lModuleName + "/metadata.hpp\"");
-        out.println(0, "namespace opflex");
+        out.println(0, "#include \"" + Config.getProjName() + "/metadata.hpp\"");
+        out.println(0, "namespace " + Config.getProjName());
         out.println(0, "{");
-        out.println(1, "namespace " + lModuleName);
-        out.println(1, "{");
 
-        generateMetaAccessor(2, lModule);
+        generateMetaAccessor(2);
 
-        out.println();
-        out.println(1, "} // namespace " + lModuleName);
-
-        out.println(0, "} // namespace opflex");
+        out.println(0, "} // namespace " + Config.getProjName());
     }
 
-    private void generateMetaAccessor(int aInIndent, Module aInModule)
+    private void generateMetaAccessor(int aInIndent)
     {
         out.println(aInIndent, "static const opflex::modb::ModelMetadata& getClassesDefs()");
         out.println(aInIndent, "{");
             out.println(aInIndent + 1, "static std::vector<opflex::modb::ClassInfo> classes(");
-                generateClassDefs(aInIndent + 2, aInModule);
+                generateClassDefs(aInIndent + 2);
                 out.println(aInIndent + 2, ");");
         out.println(aInIndent, "}");
 
@@ -112,10 +95,10 @@ public class FMetaDef
         out.println(aInIndent, "}");
     }
 
-    private void generateClassDefs(int aInIndent, Module aInModule)
+    private void generateClassDefs(int aInIndent)
     {
         out.println(aInIndent, "list_of");
-        for (Item lIt : MClass.getConcreteClasses(aInModule))
+        for (Item lIt : MClass.getConcreteClasses())
         {
             MClass lClass = (MClass) lIt;
             if (lClass.isConcrete())

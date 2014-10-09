@@ -1012,6 +1012,25 @@ public class MClass
         return lRet;
     }
 
+    public static Collection<MClass> getConcreteClasses()
+    {
+        Collection<MClass> lRet = new LinkedList<MClass>();
+
+        CatEntry lCatE = MY_CAT.getNodes();
+        if (null != lCatE)
+        {
+            for (Node lNode : lCatE.getById().values())
+            {
+                MClass lClass = (MClass) lNode.getItem();
+                if (lClass.isConcrete())
+                {
+                    lRet.add(lClass);
+                }
+            }
+        }
+        return lRet;
+    }
+
     public static Collection<Pair<Module, Collection<MClass>>> getModulesWithConcreteClasses()
     {
         Collection<Pair<Module, Collection<MClass>>> lRet = new LinkedList<Pair<Module, Collection<MClass>>>();

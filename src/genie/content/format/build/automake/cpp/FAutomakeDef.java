@@ -7,6 +7,7 @@ import genie.engine.file.WriteStats;
 import genie.engine.format.*;
 import genie.engine.model.Item;
 import genie.engine.model.Pair;
+import genie.engine.proc.Config;
 import modlan.utils.Strings;
 
 import java.util.Collection;
@@ -15,7 +16,7 @@ import java.util.Collection;
  * Created by midvorki on 10/6/14.
  */
 public class FAutomakeDef
-        extends ItemFormatterTask
+        extends GenericFormatterTask
 {
     public FAutomakeDef(
             FormatterCtx aInFormatterCtx,
@@ -24,8 +25,7 @@ public class FAutomakeDef
             BlockFormatDirective aInHeaderFormatDirective,
             BlockFormatDirective aInCommentFormatDirective,
             boolean aInIsUserFile,
-            WriteStats aInStats,
-            Item aInItem)
+            WriteStats aInStats)
     {
         super(aInFormatterCtx,
               aInFileNameRule,
@@ -33,33 +33,19 @@ public class FAutomakeDef
               aInHeaderFormatDirective,
               aInCommentFormatDirective,
               aInIsUserFile,
-              aInStats,
-              aInItem);
-    }
-
-    /**
-     * Optional API required by framework to regulate triggering of tasks.
-     * This method identifies whether this task should be triggered for the item passed in.
-     * @param aIn item for which task is considered to be triggered
-     * @return true if task shouold be triggered, false if task should be skipped for this item.
-     */
-    public static boolean shouldTriggerTask(Item aIn)
-    {
-        return MClass.hasConcreteClassDefs((Module) aIn);
+              aInStats);
     }
 
     /**
      * Optional API required by the framework for transformation of file naming rule for the corresponding
      * generated file. This method can customize the location for the generated file.
      * @param aInFnr file name rule template
-     * @param aInItem item for which file is generated
      * @return transformed file name rule
      */
-    public static FileNameRule transformFileNameRule(FileNameRule aInFnr,Item aInItem)
+    public static FileNameRule transformFileNameRule(FileNameRule aInFnr)
     {
-        String lTargetModue = ((Module)aInItem).getLID().getName().toLowerCase();
         FileNameRule lFnr = new FileNameRule(
-                aInFnr.getRelativePath() +  lTargetModue + "model",
+                aInFnr.getRelativePath(),
                 null,
                 aInFnr.getFilePrefix(),
                 aInFnr.getFileSuffix(),
@@ -71,31 +57,41 @@ public class FAutomakeDef
 
     public void generate()
     {
-        Module lModule = (Module) getItem();
-        String lLibName = "lib" + lModule.getLID().getName().toLowerCase() + "model";
-        generate(0, lModule, lLibName);
+        String lLibName = Config.getLibName();
+        generate(0, MClass.getModulesWithConcreteClasses(), lLibName);
     }
 
-    public void generate(int ainIndent, Module aInModule, String aInLibName)
+    public void generate(int ainIndent, Collection<Pair<Module, Collection<MClass>>> aInModules, String aInLibName)
     {
         out.println(ainIndent, "ACLOCAL_AMFLAGS = -I m4");
         out.println();
 
-        String lModName = aInModule.getLID().getName().toLowerCase();
-        out.println(ainIndent, lModName + "_includedir = $(includedir)/" + lModName);
-
-        Collection<MClass> lClasses = MClass.getConcreteClasses(aInModule);
-
-        out.println(ainIndent, lModName + "_include_HEADERS = \\");
-            out.print(ainIndent + 1,"include/" + lModName + "/matadata.hpp");
-        for (MClass lClass : lClasses)
+        /*
+        policy_includedir = $(includedir)/gbpmodel/policy
+        policy_include_HEADERS = \
+    	    include/gbpmodel/policy/Universe.hpp \
+	        include/gbpmodel/policy/Space.hpp
+         */
+        for (Pair<Module,Collection<MClass>> lModuleNode : aInModules)
         {
-            out.println(" \\");
-            out.print(ainIndent + 1, "include/" + lModName + "/" + Strings.upFirstLetter(lClass.getLID().getName()) + ".hpp");
-        }
+            Module lModule = lModuleNode.getFirst();
 
-        out.println();
-        out.println();
+            String lModName = lModule.getLID().getName().toLowerCase();
+            out.println(ainIndent, lModName + "_includedir = $(includedir)/" + lModName);
+
+            Collection<MClass> lClasses = lModuleNode.getSecond();
+
+            out.println(ainIndent, lModName + "_include_HEADERS = \\");
+            out.print(ainIndent + 1, "include/" + Config.getProjName() + "/" + lModName + "/matadata.hpp");
+            for (MClass lClass : lClasses)
+            {
+                out.println(" \\");
+                out.print(ainIndent + 1, "include/" + Config.getProjName() + "/" + Strings.upFirstLetter(lClass.getLID().getName()) + ".hpp");
+            }
+
+            out.println();
+            out.println();
+        }
 
         out.println(ainIndent, "AM_CPPFLAGS = -I$(top_srcdir)/include");
         out.println();

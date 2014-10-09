@@ -49,12 +49,12 @@ public class FormatterTaskMeta
                 }
                 case CATEGORY:
                 {
-                    lMethod = taskClass.getMethod("getTargetModule", FileNameRule.class, Cat.class);
+                    lMethod = taskClass.getMethod("transformFileNameRule", FileNameRule.class, Cat.class);
                     break;
                 }
                 default:
                 {
-                    lMethod = taskClass.getMethod("shouldTriggerTask", FileNameRule.class);
+                    lMethod = taskClass.getMethod("transformFileNameRule", FileNameRule.class);
                     break;
                 }
             }
@@ -86,7 +86,7 @@ public class FormatterTaskMeta
                 }
                 default:
                 {
-                    lMethod = taskClass.getMethod("shouldTriggerTask");
+                    lMethod = taskClass.getMethod("getTargetModule");
                     break;
                 }
             }
@@ -265,7 +265,7 @@ public class FormatterTaskMeta
             {
                 if (type == FormatterTaskType.GENERIC)
                 {
-                    lR = (FileNameRule) fileNameRuleTransformer.invoke(null, aInRule, aInSubjectOrNull);
+                    lR = (FileNameRule) fileNameRuleTransformer.invoke(null, aInRule);
                 }
                 else
                 {

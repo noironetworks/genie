@@ -10,8 +10,57 @@ import genie.engine.model.Item;
  * Created by midvorki on 10/7/14.
  */
 public class FAutogenSH
-        extends ItemFormatterTask
+        extends GenericFormatterTask
 {
+    public FAutogenSH(
+            FormatterCtx aInFormatterCtx,
+            FileNameRule aInFileNameRule,
+            Indenter aInIndenter,
+            BlockFormatDirective aInHeaderFormatDirective,
+            BlockFormatDirective aInCommentFormatDirective,
+            boolean aInIsUserFile,
+            WriteStats aInStats)
+    {
+        super(aInFormatterCtx,
+              aInFileNameRule,
+              aInIndenter,
+              aInHeaderFormatDirective,
+              aInCommentFormatDirective,
+              aInIsUserFile,
+              aInStats);
+    }
+
+    /**
+     * Optional API required by the framework for transformation of file naming rule for the corresponding
+     * generated file. This method can customize the location for the generated file.
+     * @param aInFnr file name rule template
+     * @return transformed file name rule
+     */
+    public static FileNameRule transformFileNameRule(FileNameRule aInFnr)
+    {
+        FileNameRule lFnr = new FileNameRule(
+                aInFnr.getRelativePath(),
+                null,
+                aInFnr.getFilePrefix(),
+                aInFnr.getFileSuffix(),
+                aInFnr.getFileExtension(),
+                "autogen");
+
+        return lFnr;
+    }
+
+
+    public void firstLineCb()
+    {
+        out.println("#!/bin/sh");
+    }
+
+
+    public void generate()
+    {
+        out.println(FORMAT);
+    }
+
     public static final String FORMAT = "# libopflex: a framework for developing opflex-based policy agents\n"
                                         + "# Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.\n"
                                         + "#\n"
@@ -41,63 +90,5 @@ public class FAutogenSH
                                         + "echo \"Run ./configure --help to get information on the options \" && \\\n"
                                         + "echo \"that are available.\"";
 
-    public FAutogenSH(
-            FormatterCtx aInFormatterCtx, FileNameRule aInFileNameRule, Indenter aInIndenter, BlockFormatDirective aInHeaderFormatDirective, BlockFormatDirective aInCommentFormatDirective, boolean aInIsUserFile, WriteStats aInStats, Item aInItem
-                     )
-    {
-        super(aInFormatterCtx,
-              aInFileNameRule,
-              aInIndenter,
-              aInHeaderFormatDirective,
-              aInCommentFormatDirective,
-              aInIsUserFile,
-              aInStats,
-              aInItem);
-    }
 
-    /**
-     * Optional API required by framework to regulate triggering of tasks.
-     * This method identifies whether this task should be triggered for the item passed in.
-     * @param aIn item for which task is considered to be triggered
-     * @return true if task shouold be triggered, false if task should be skipped for this item.
-     */
-    public static boolean shouldTriggerTask(Item aIn)
-    {
-        return MClass.hasConcreteClassDefs((Module) aIn);
-    }
-
-    /**
-     * Optional API required by the framework for transformation of file naming rule for the corresponding
-     * generated file. This method can customize the location for the generated file.
-     * @param aInFnr file name rule template
-     * @param aInItem item for which file is generated
-     * @return transformed file name rule
-     */
-    public static FileNameRule transformFileNameRule(FileNameRule aInFnr,Item aInItem)
-    {
-        String lTargetModue = ((Module)aInItem).getLID().getName().toLowerCase();
-        FileNameRule lFnr = new FileNameRule(
-                aInFnr.getRelativePath() +  lTargetModue + "model",
-                null,
-                aInFnr.getFilePrefix(),
-                aInFnr.getFileSuffix(),
-                aInFnr.getFileExtension(),
-                "autogen");
-
-        return lFnr;
-    }
-
-    public void firstLineCb()
-    {
-        out.println("#!/bin/sh");
-    }
-
-
-    public void generate()
-    {
-        //Module lModule = (Module) getItem();
-        //String lModuleName = lModule.getLID().getName().toLowerCase();
-        //String lLibName = "lib" + lModuleName + "model";
-        out.println(FORMAT);//.replaceAll("_MODULE_NAME_", lModuleName).replaceAll("_LIB_NAME_", lLibName));
-    }
 }

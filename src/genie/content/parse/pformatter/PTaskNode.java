@@ -8,6 +8,7 @@ import genie.engine.model.Pair;
 import genie.engine.parse.model.ParseNode;
 import genie.engine.parse.modlan.Node;
 import genie.engine.parse.modlan.ParseDirective;
+import genie.engine.proc.Config;
 import modlan.utils.Strings;
 
 /**
@@ -30,7 +31,8 @@ public class PTaskNode extends ParseNode
         lTask.setTarget(aInData.getNamedValue(Strings.TARGET, null, true));
         lTask.setTargetCategory(
                 aInData.getNamedValue(Strings.CATEGORY, null, FormatterTaskType.GENERIC != lTask.getTarget()));
-        lTask.setRelativePath(aInData.getNamedValue("relative-path", null, true));
+        String lRelPath = aInData.getNamedValue("relative-path", null, false);
+        lTask.setRelativePath(Config.getLibName() + (Strings.isAny(lRelPath) ? "" : "/" + lRelPath));
         lTask.setFileType(aInData.getNamedValue("file-type", null, true));
         lTask.setFilePrefix(aInData.getNamedValue("file-prefix", null, false));
         lTask.setFileSuffix(aInData.getNamedValue("file-suffix", null, false));

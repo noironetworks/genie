@@ -15,6 +15,7 @@ import genie.engine.format.*;
 import genie.engine.model.Ident;
 import genie.engine.model.Item;
 import genie.engine.model.Pair;
+import genie.engine.proc.Config;
 import modlan.report.Severity;
 import modlan.utils.Strings;
 
@@ -80,8 +81,11 @@ public class FClassDef extends ItemFormatterTask
     public static FileNameRule transformFileNameRule(FileNameRule aInFnr,Item aInItem)
     {
         String lTargetModue = getTargetModule(aInItem);
+        String lOldRelativePath = aInFnr.getRelativePath();
+        String lNewRelativePath = lOldRelativePath + "/include/" + Config.getProjName() + "/" + lTargetModue;
+
         FileNameRule lFnr = new FileNameRule(
-                aInFnr.getRelativePath() +  lTargetModue + "model/include/" + lTargetModue,
+                lNewRelativePath,
                 null,
                 aInFnr.getFilePrefix(),
                 aInFnr.getFileSuffix(),
@@ -109,7 +113,7 @@ public class FClassDef extends ItemFormatterTask
 
     public static String getNamespace(String aInModuleName, boolean aInFullyQualified)
     {
-        return aInFullyQualified ? ("opflex::" + aInModuleName) : (aInModuleName);
+        return aInFullyQualified ? (Config.getProjName() + "::" + aInModuleName) : (aInModuleName);
     }
 
     public static String getNamespace(MClass aInClass, boolean aInFullyQualified)
@@ -124,7 +128,7 @@ public class FClassDef extends ItemFormatterTask
 
     public static String getIncludePath(MClass aIn)
     {
-        return getNamespace(aIn,false) + "/" + aIn.getLID().getName();
+        return Config.getProjName() + "/" + getNamespace(aIn,false) + "/" + aIn.getLID().getName();
     }
 
     public static String getInclude(MClass aIn)
@@ -146,7 +150,7 @@ public class FClassDef extends ItemFormatterTask
     private void genForwardDecls(int aInIndent, MClass aInClass)
     {
         out.println();
-        out.println(aInIndent, "namespace opflex");
+        out.println(aInIndent, "namespace " + Config.getProjName());
         out.println(aInIndent, "{");
             out.printIncodeComment(aInIndent + 1, "FORWARD DECLARATIONS FOR INHERITANCE ");
             for (MClass lThis = aInClass; null != lThis; lThis = lThis.getSuperclass())
@@ -209,13 +213,13 @@ public class FClassDef extends ItemFormatterTask
         out.println();
         String lNs = getNamespace(aInClass, false);
 
-        out.println(aInIndent, "namespace opflex");
+        out.println(aInIndent, "namespace " + Config.getLibName());
         out.println(aInIndent, "{");
             out.println(aInIndent + 1, "namespace " + lNs);
             out.println(aInIndent + 1, "{");
                 genClass(aInIndent + 2, aInClass);
             out.println(aInIndent + 1, "} // namespace " + lNs);
-        out.println(aInIndent, "} // namespace opflex");
+        out.println(aInIndent, "} // namespace " + Config.getProjName());
     }
 
 

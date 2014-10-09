@@ -9,6 +9,7 @@ public class Config
 {
     public static String CONFIG_FILE_NAME = "genie.cfg";
 
+    public static String getProjName() { return projName; }
     public static String getLibName() { return libName; }
     public static String getHomePath() { return homePath; }
     public static String getWorkingPath() { return workingPath; }
@@ -20,7 +21,11 @@ public class Config
     public static String getGenDestPath() { return genDestPath; }
     public static String getLogDirParent() { return logDirParent; }
 
-    public static void setLibName(String aIn) { libName = aIn.startsWith("lib") ? aIn : ("lib" + aIn); }
+    public static void setLibName(String aIn)
+    {
+        projName = aIn;
+        libName = aIn.startsWith("lib") ? aIn : ("lib" + aIn);
+    }
 
     public static void setHomePath(String aIn)
     {
@@ -69,6 +74,7 @@ public class Config
         return "genie:config(config path: " + configPath + "; syntax path: " + syntaxPath + "; loader path: " + loaderPath + ")";
     }
 
+    public static String projName = null;
     public static String libName = null;
     public static String homePath = null;
     public static String workingPath = initWorkingPath();

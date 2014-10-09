@@ -1,7 +1,7 @@
 package genie.content.parse.modlan;
 
 import genie.content.model.mmeta.NodeType;
-import genie.content.parse.config.PConfigNode;
+import genie.content.parse.pconfig.PConfigNode;
 import genie.content.parse.pmeta.PNode;
 import genie.content.parse.pmeta.PProp;
 import genie.engine.parse.model.ParseNode;
