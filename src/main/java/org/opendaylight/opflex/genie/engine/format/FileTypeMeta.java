@@ -145,6 +145,37 @@ public enum FileTypeMeta
                   null,
                   "# ",
                   0)),
+
+    DOXYFILE_IN("doxyfile.in",
+                  ".in",
+                  new Indenter("doxyfile.in", true, 10, 1, true),
+                  new BlockFormatDirective(
+                          "# ",
+                          "# ",
+                          null,
+                          "# ",
+                          0),
+                  new BlockFormatDirective(
+                          "# ",
+                          "# ",
+                          null,
+                          "# ",
+                          0)),
+    M4("m4",
+        ".m4",
+        new Indenter("m4", true, 10, 1, true),
+        new BlockFormatDirective(
+                "# ",
+                "# ",
+                null,
+                "# ",
+                0),
+        new BlockFormatDirective(
+                "# ",
+                "# ",
+                null,
+                "# ",
+                0)),
     ;
     private FileTypeMeta(String aInName,
                          String ainFileExt,
