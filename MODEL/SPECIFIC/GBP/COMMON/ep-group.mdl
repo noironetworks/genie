@@ -1,31 +1,23 @@
 module[gbp]
 {
     class[EpGroup;
-          super=gbp/BehaviouralGroup;
+          super=gbp/BehavioralGroup;
           concrete;
           ]
     {
-        dependency[networkDomain;
+        dependency[network;
                    cardinality=single;
                    ]
         {
-            to[class=gbp/BridgeDomain;
-               cardinality=many;
-               ]
-
-            to[class=gbp/FloodDomain;
-               cardinality=many;
-               ]
-
-            to[class=gbp/RoutingDomain;
-               cardinality=many;
-               ]
-
-            to[class=gbp/Subnets;
+            to[class=gbp/ForwardingBehavioralGroup;
                 cardinality=many;
                 ]
         }
 
+        contained
+        {
+            parent[class=policy/Space]
+        }
         named
         {
             parent[class=*;]

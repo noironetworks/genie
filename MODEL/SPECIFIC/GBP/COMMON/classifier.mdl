@@ -4,6 +4,10 @@ module[gbp]
           super=gbp/AccessBehavioralGroup;
           concrete]
     {
+        contained
+        {
+            parent[class=policy/Space]
+        }
         named
         {
             parent[class=*;]

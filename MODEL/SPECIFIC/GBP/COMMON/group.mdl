@@ -1,18 +1,18 @@
 module[gbp]
 {
 
-    class[BehaviouralGroup;
+    class[BehavioralGroup;
           super=policy/NameResolvedDefinition;
           abstract;
           ]
 
     class[ForwardingBehavioralGroup;
-          super=gbp/BehaviouralGroup;
+          super=gbp/BehavioralGroup;
           abstract;
           ]
 
     class[AccessBehavioralGroup;
-          super=gbp/BehaviouralGroup;
+          super=gbp/BehavioralGroup;
           abstract;
           ]
 }

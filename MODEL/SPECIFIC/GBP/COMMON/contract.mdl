@@ -2,8 +2,12 @@ module[gbp]
 {
     class[Contract;
           super=gbp/AccessBehavioralGroup;
-          abstract]
+          concrete]
     {
+        contained
+        {
+            parent[class=policy/Space]
+        }
         named
         {
             parent[class=*;]

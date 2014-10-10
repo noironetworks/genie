@@ -1,20 +1,24 @@
 module[gbp]
 {
-    class[L2BehaviouralGroup;
+    class[L2BehavioralGroup;
           super=gbp/ForwardingBehavioralGroup;
           abstract]
 
     class[BridgeDomain;
-          super=gbp/L2BehaviouralGroup;
+          super=gbp/L2BehavioralGroup;
           concrete]
     {
-        dependency[networkDomain;
+        dependency[network;
                    cardinality=single;
                    ]
         {
             to[class=gbp/RoutingDomain;
                cardinality=many;
                ]
+        }
+        contained
+        {
+            parent[class=policy/Space]
         }
         named
         {
@@ -27,7 +31,7 @@ module[gbp]
     }
 
     class[FloodDomain;
-          super=gbp/L2BehaviouralGroup;
+          super=gbp/L2BehavioralGroup;
           concrete]
     {
         dependency[networkDomain;
@@ -36,6 +40,10 @@ module[gbp]
             to[class=gbp/BridgeDomain;
                cardinality=many;
                ]
+        }
+        contained
+        {
+            parent[class=policy/Space]
         }
         named
         {
