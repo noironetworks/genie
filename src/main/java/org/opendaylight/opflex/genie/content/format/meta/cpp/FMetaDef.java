@@ -64,7 +64,8 @@ public class FMetaDef
 
     public void generate()
     {
-        out.println(0, "#include \"" + Config.getProjName() + "/metadata.hpp\"");
+        out.println(0, "#include <boost/assign/list_of.hpp>");
+        out.println(0, "#include \"" + Config.getProjName() + "/metadata/metadata.hpp\"");
         out.println(0, "namespace " + Config.getProjName());
         out.println(0, "{");
 
@@ -75,16 +76,19 @@ public class FMetaDef
 
     private void generateMetaAccessor(int aInIndent)
     {
-        out.println(aInIndent, "static const opflex::modb::ModelMetadata& getClassesDefs()");
+        out.println(aInIndent, "static const std::vector<opflex::modb::ClassInfo>& getClassesDefs()");
         out.println(aInIndent, "{");
-            out.println(aInIndent + 1, "static std::vector<opflex::modb::ClassInfo> classes(");
+        out.println(aInIndent + 1, "using namespace opflex::modb;");
+        out.println(aInIndent + 1, "using namespace boost::assign;");
+            out.println(aInIndent + 1, "static std::vector<opflex::modb::ClassInfo> classes =");
                 generateClassDefs(aInIndent + 2);
-                out.println(aInIndent + 2, ");");
+                out.println(aInIndent + 2, ";");
         out.println(aInIndent, "}");
 
         out.println(aInIndent, "const opflex::modb::ModelMetadata& getMetadata()");
         out.println(aInIndent, "{");
-            out.println(aInIndent + 1, "static const opflex::modb::ModelMetadata metadata(\"model\", getClassesDefs());");
+            out.println(aInIndent + 1, "static const opflex::modb::ModelMetadata metadata(\"" + 
+                    Config.getProjName() + "\", getClassesDefs());");
             out.println(aInIndent + 1, "return metadata;");
         out.println(aInIndent, "}");
     }
@@ -173,6 +177,10 @@ public class FMetaDef
 
     private void genMo(int aInIndent, MClass aInClass)
     {
+        if (isRelationshipTarget(aInClass) || 
+            isRelationshipResolver(aInClass) ||
+            isRelationshipSource(aInClass))
+            return;
         out.println(aInIndent, '(');
             /**
             out.println(aInIndent, "// NAME: " + aInClass.getGID().getName());
@@ -219,7 +227,7 @@ public class FMetaDef
 
         if (lProps.size() + lConts.size() == 0)
         {
-            out.println(aInIndent, "std::vector<PropertyInfo>(),");
+            out.println(aInIndent, "std::vector<prop_id_t>(),");
         }
         else
         {
@@ -276,7 +284,7 @@ public class FMetaDef
             // HANDLE CONTAINED CLASSES
                 for (MClass lContained : lConts.values())
                 {
-                    out.println(aInIndent + 1, "(PropertyInfo(" + (1000 + lContained.getGID().getId()) + ", \"" + lContained.getFullConcatenatedName() + "\", PropertyInfo::COMPOSITE, " + lContained.getGID().getId() + ")) // " + lContained.toString());
+                    out.println(aInIndent + 1, "(PropertyInfo(" + (1000 + lContained.getGID().getId()) + ", \"" + lContained.getFullConcatenatedName() + "\", PropertyInfo::COMPOSITE, " + lContained.getGID().getId() + ", PropertyInfo::VECTOR)) // " + lContained.toString());
                 }
 
                 out.println(aInIndent + 1, ",");
@@ -289,7 +297,7 @@ public class FMetaDef
 
         if (null == lNr)
         {
-            out.println(aInIndent, "std::vector<PropertyInfo>() // no naming rule; assume cardinality of 1 in any containment rule");
+            out.println(aInIndent, "std::vector<prop_id_t>() // no naming rule; assume cardinality of 1 in any containment rule");
         }
         else
         {
@@ -304,7 +312,7 @@ public class FMetaDef
             }
             if (0 == lNamePropsCount)
             {
-                out.println(aInIndent, "std::vector<PropertyInfo>() // no naming props in rule " + lNr + "; assume cardinality of 1");
+                out.println(aInIndent, "std::vector<prop_id_t>() // no naming props in rule " + lNr + "; assume cardinality of 1");
             }
             else
             {

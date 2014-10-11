@@ -1,5 +1,7 @@
 package org.opendaylight.opflex.genie.content.format.structure.cpp;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -150,39 +152,43 @@ public class FClassDef extends ItemFormatterTask
     private void genForwardDecls(int aInIndent, MClass aInClass)
     {
         out.println();
-        out.println(aInIndent, "namespace " + Config.getProjName());
-        out.println(aInIndent, "{");
-            out.printIncodeComment(aInIndent + 1, "FORWARD DECLARATIONS FOR INHERITANCE ");
-            for (MClass lThis = aInClass; null != lThis; lThis = lThis.getSuperclass())
-            {
-                genForwardDecl(aInIndent + 1,lThis);
-            }
-            TreeMap<Ident, MClass> lConts = new TreeMap<Ident, MClass>();
-            aInClass.getContainsClasses(lConts, true, true);
-            out.printIncodeComment(aInIndent + 1, "FORWARD DECLARATIONS FOR CONTAINED ");
-            for (MClass lThis : lConts.values())
-            {
-                genForwardDecl(aInIndent + 1,lThis);
-            }
-            TreeMap<Ident, MClass> lContr = new TreeMap<Ident, MClass>();
-            aInClass.getContainedByClasses(lContr, true, true);
-            out.printIncodeComment(aInIndent + 1, "FORWARD DECLARATIONS FOR CONTAINERS ");
-            for (MClass lThis : lContr.values())
-            {
-                genForwardDecl(aInIndent + 1,lThis);
-            }
-        out.println(aInIndent, "}");
+        out.println(aInIndent, "namespace " + Config.getProjName() + " {");
+        out.println();
+        out.printIncodeComment(aInIndent, "FORWARD DECLARATIONS FOR INHERITANCE ");
+        for (MClass lThis = aInClass; null != lThis; lThis = lThis.getSuperclass())
+        {
+            genForwardDecl(aInIndent, lThis);
+        }
+        TreeMap<Ident, MClass> lConts = new TreeMap<Ident, MClass>();
+        aInClass.getContainsClasses(lConts, true, true);
+        out.printIncodeComment(aInIndent, "FORWARD DECLARATIONS FOR CONTAINED ");
+        for (MClass lThis : lConts.values())
+        {
+            genForwardDecl(aInIndent, lThis);
+        }
+        TreeMap<Ident, MClass> lContr = new TreeMap<Ident, MClass>();
+        aInClass.getContainedByClasses(lContr, true, true);
+        out.printIncodeComment(aInIndent, "FORWARD DECLARATIONS FOR CONTAINERS ");
+        for (MClass lThis : lContr.values())
+        {
+            genForwardDecl(aInIndent,lThis);
+        }
+        out.println();
+        out.println(aInIndent, "} // namespace " + Config.getProjName());
+        out.println();
     }
 
     private void genForwardDecl(int aInIndent, MClass aInClass)
     {
         String lNs = getNamespace(aInClass, false);
 
-            out.println(aInIndent, "namespace " + lNs);
-            out.println(aInIndent , "{");
-                out.printHeaderComment(aInIndent + 1, "forward declaration for " + aInClass);
-                out.println(aInIndent + 1, "class " + aInClass.getLID().getName() + ";");
-            out.println(aInIndent, "} // namespace " + lNs);
+        out.println(aInIndent, "namespace " + lNs + " {");
+        out.println();
+        out.printHeaderComment(aInIndent, "forward declaration for " + aInClass);
+        out.println(aInIndent, "class " + aInClass.getLID().getName() + ";");
+        out.println();
+        out.println(aInIndent, "} // namespace " + lNs);
+        out.println();
     }
 
     private void genIncludes(int aInIndent, MClass aInClass)
@@ -213,12 +219,12 @@ public class FClassDef extends ItemFormatterTask
         out.println();
         String lNs = getNamespace(aInClass, false);
 
-        out.println(aInIndent, "namespace " + Config.getProjName());
-        out.println(aInIndent, "{");
-            out.println(aInIndent + 1, "namespace " + lNs);
-            out.println(aInIndent + 1, "{");
-                genClass(aInIndent + 2, aInClass);
-            out.println(aInIndent + 1, "} // namespace " + lNs);
+        out.println(aInIndent, "namespace " + Config.getProjName() + " {");
+        out.println(aInIndent, "namespace " + lNs + " {");
+        out.println();
+        genClass(aInIndent, aInClass);
+        out.println();
+        out.println(aInIndent, "} // namespace " + lNs);
         out.println(aInIndent, "} // namespace " + Config.getProjName());
     }
 
@@ -243,17 +249,20 @@ public class FClassDef extends ItemFormatterTask
 
     private void genPublic(int aInIndent, MClass aInClass)
     {
-        out.println(aInIndent, "public:");
+        out.println(aInIndent - 1, "public:");
         out.println();
-        genClassId(aInIndent + 1, aInClass);
-        genProps(aInIndent + 1, aInClass);
-        genResolvers(aInIndent + 1, aInClass);
-        genListenerReg(aInIndent + 1, aInClass);
-        genConstructor(aInIndent + 1, aInClass);
+        genClassId(aInIndent, aInClass);
+        genProps(aInIndent, aInClass);
+        genResolvers(aInIndent, aInClass);
+        genRemove(aInIndent, aInClass);
+        genListenerReg(aInIndent, aInClass);
+        genConstructor(aInIndent, aInClass);
     }
 
     private void genClassId(int aInIndent, MClass aInClass)
     {
+        String lClassName = getClassName(aInClass, false);
+        out.printHeaderComment(aInIndent, Arrays.asList("The unique class ID for " + lClassName));
         out.println(aInIndent, "static const opflex::modb::class_id_t CLASS_ID = " + aInClass.getGID().getId() + ";");
         out.println();
     }
@@ -389,7 +398,7 @@ public class FClassDef extends ItemFormatterTask
         int lCommentSize = 5 + aInComments.size();
         String lComment[] = new String[lCommentSize];
         int lCommentIdx = 0;
-        lComment[lCommentIdx++] = "set " + aInProp.getLID().getName() + " to the specified value in the currently-active mutator.";
+        lComment[lCommentIdx++] = "Set " + aInProp.getLID().getName() + " to the specified value in the currently-active mutator.";
 
         for (String lCommLine : aInComments)
         {
@@ -425,7 +434,7 @@ public class FClassDef extends ItemFormatterTask
         int lCommentSize = 4 + aInComments.size();
         String lComment[] = new String[lCommentSize];
         int lCommentIdx = 0;
-        lComment[lCommentIdx++] = "unset " + aInProp.getLID().getName() + " in the currently-active mutator.";
+        lComment[lCommentIdx++] = "Unset " + aInProp.getLID().getName() + " in the currently-active mutator.";
 
         for (String lCommLine : aInComments)
         {
@@ -435,10 +444,7 @@ public class FClassDef extends ItemFormatterTask
         lComment[lCommentIdx++] = "@return a reference to the current object";
         lComment[lCommentIdx++] = "@see opflex::modb::Mutator";
         out.printHeaderComment(aInIndent,lComment);
-        //
-        // DEF
-        //
-        String lSyntax = aInBaseType.getLanguageBinding(Language.CPP).getSyntax();
+        aInBaseType.getLanguageBinding(Language.CPP).getSyntax();
 
         out.println(aInIndent,  getClassName(aInClass, true) + "& unset" + Strings.upFirstLetter(aInProp.getLID().getName()) + "()");
         //
@@ -495,17 +501,43 @@ public class FClassDef extends ItemFormatterTask
     private void genSelfResolvers(int aInIdent, MClass aInClass)
     {
         String lFullyQualifiedClassName = getClassName(aInClass, true);
+
+        String lclassName = getClassName(aInClass, false);
+        String[] lComment = 
+            {"Retrieve an instance of " + lclassName + " from the managed",
+             "object store.  If the object does not exist in the local store,",
+             "returns boost::none.  Note that even though it may not exist",
+             "locally, it may still exist remotely.",
+             "",
+             "@param framework the framework instance to use",
+             "@param uri the URI of the object to retrieve",
+             "@return a shared pointer to the object or boost::none if it",
+             "does not exist."};
+        out.printHeaderComment(aInIdent,lComment);
+
         out.println(aInIdent, "static boost::optional<boost::shared_ptr<" + lFullyQualifiedClassName + "> > resolve(");
         out.println(aInIdent + 1, "opflex::ofcore::OFFramework& framework,");
         out.println(aInIdent + 1, "const opflex::modb::URI& uri)");
         out.println(aInIdent, "{");
-            out.println(aInIdent + 2, "return opflex::modb::mointernal::MO::resolve<" + lFullyQualifiedClassName + ">(framework, CLASS_ID, uri);");
+            out.println(aInIdent + 1, "return opflex::modb::mointernal::MO::resolve<" + lFullyQualifiedClassName + ">(framework, CLASS_ID, uri);");
         out.println(aInIdent, "}");
         out.println();
+
+        String[] lComment2 = 
+            {"Retrieve an instance of class2 from the managed",
+             "object store using the default framework instance.  If the ",
+             "object does not exist in the local store, returns boost::none. ",
+             "Note that even though it may not exist locally, it may still ",
+             "exist remotely.",
+             "",
+             "@param uri the URI of the object to retrieve",
+             "@return a shared pointer to the object or boost::none if it",
+             "does not exist."};
+        out.printHeaderComment(aInIdent,lComment2);
         out.println(aInIdent, "static boost::optional<boost::shared_ptr<" + lFullyQualifiedClassName + "> > resolve(");
         out.println(aInIdent + 1, "const opflex::modb::URI& uri)");
         out.println(aInIdent, "{");
-        out.println(aInIdent + 2, "return opflex::modb::mointernal::MO::resolve<" + lFullyQualifiedClassName + ">(opflex::ofcore::OFFramework::defaultInstance(), CLASS_ID, uri);");
+        out.println(aInIdent + 1, "return opflex::modb::mointernal::MO::resolve<" + lFullyQualifiedClassName + ">(opflex::ofcore::OFFramework::defaultInstance(), CLASS_ID, uri);");
         out.println(aInIdent, "}");
         out.println();
         Collection<List<Pair<String, MNameRule>>> lNamingPaths = new LinkedList<List<Pair<String, MNameRule>>>();
@@ -514,20 +546,199 @@ public class FClassDef extends ItemFormatterTask
         {
             genNamedSelfResolvers(aInIdent, aInClass, lNamingPath, lIsUniqueNaming);
         }
-
-        // TODO:
     }
 
-    private static String getResolverMethName(List<Pair<String, MNameRule>> aInNamingPath, boolean aInIsUniqueNaming)
+    private void genRemove(int aInIdent, MClass aInClass)
+    {
+        String lclassName = getClassName(aInClass, false);
+        String[] lComment = 
+            {"Remove this instance using the currently-active mutator.  If",
+             "the object does not exist, then this will be a no-op.  If this",
+             "object has any children, they will be garbage-collected at some",
+             "future time.",
+             "",
+             "@throws std::logic_error if no mutator is active"};
+        out.printHeaderComment(aInIdent,lComment);
+        out.println(aInIdent, "void remove()");
+        out.println(aInIdent, "{");
+        out.println(aInIdent + 1, "getTLMutator().remove(CLASS_ID, getURI());");
+        out.println(aInIdent, "}");
+        out.println();
+
+        String[] lComment2 = 
+            {"Remove the " + lclassName + " object with the specified URI",
+             "using the currently-active mutator.  If the object does not exist,",
+             "then this will be a no-op.  If this object has any children, they",
+             "will be garbage-collected at some future time.",
+             "",
+             "@param framework the framework instance to use",
+             "@param uri the URI of the object to remove",
+             "@throws std::logic_error if no mutator is active"};
+        out.printHeaderComment(aInIdent,lComment2);
+        out.println(aInIdent, "static void remove(opflex::ofcore::OFFramework& framework,");
+        out.println(aInIdent, "                   const opflex::modb::URI& uri)");
+        out.println(aInIdent, "{");
+        out.println(aInIdent + 1, "MO::remove(framework, CLASS_ID, uri);");
+        out.println(aInIdent, "}");
+        out.println();
+
+        String[] lComment3 = 
+            {"Remove the " + lclassName + " object with the specified URI ",
+             "using the currently-active mutator and the default framework ",
+             "instance.  If the object does not exist, then this will be a",
+             "no-op.  If this object has any children, they will be ",
+             "garbage-collected at some future time.",
+             "",
+             "@param uri the URI of the object to remove",
+             "@throws std::logic_error if no mutator is active"};
+        out.printHeaderComment(aInIdent,lComment3);
+        out.println(aInIdent, "static void remove(const opflex::modb::URI& uri)");
+        out.println(aInIdent, "{");
+        out.println(aInIdent + 1, "remove(opflex::ofcore::OFFramework::defaultInstance(), uri);");
+        out.println(aInIdent, "}");
+        out.println();
+
+        Collection<List<Pair<String, MNameRule>>> lNamingPaths = new LinkedList<List<Pair<String, MNameRule>>>();
+        boolean lIsUniqueNaming = !aInClass.getNamingPaths(lNamingPaths, Language.CPP);
+        for (List<Pair<String, MNameRule>> lNamingPath : lNamingPaths)
+        {
+            genNamedSelfRemovers(aInIdent, aInClass, lNamingPath, lIsUniqueNaming);
+        }
+    }
+
+    private void addPathComment(MClass aInClass,
+                                List<Pair<String, MNameRule>> aInNamingPath,
+                                List<String> result) {
+        String lclassName = getClassName(aInClass, false);
+        for (Pair<String,MNameRule> lNamingNode : aInNamingPath)
+        {
+            MNameRule lNr = lNamingNode.getSecond();
+            MClass lThisContClass = MClass.get(lNamingNode.getFirst());
+
+            Collection<MNameComponent> lNcs = lNr.getComponents();
+            for (MNameComponent lNc : lNcs)
+            {
+                if (lNc.hasPropName())
+                {
+                    result.add("@param " + 
+                               getPropParamName(lThisContClass, lNc.getPropName()) +
+                               " the value of " +
+                               getPropParamName(lThisContClass, lNc.getPropName()) + ",");
+                    result.add("a naming property for " + lclassName);
+                }
+            }
+        }
+    }
+    
+    private void genNamedSelfRemovers(int aInIdent, MClass aInClass, 
+                                      List<Pair<String, MNameRule>> aInNamingPath, 
+                                      boolean aInIsUniqueNaming)
+    {
+        String lclassName = getClassName(aInClass, false);
+        String lMethodName = getRemoverMethName(aInNamingPath, aInIsUniqueNaming);
+        //int lPropCount = countNamingProps(aInNamingPath);
+
+        ArrayList<String> comment = new ArrayList<>(Arrays.asList(
+            "Remove the " + lclassName + " object with the specified path",
+            "elements from the managed object store.  If the object does",
+            "not exist, then this will be a no-op.  If this object has any",
+            "children, they will be garbage-collected at some future time.",
+            "",
+            "The object URI generated by this function will take the form:",
+            getUriDoc(aInClass, aInNamingPath),
+            "",
+            "@param framework the framework instance to use"));
+        addPathComment(aInClass, aInNamingPath, comment);
+        comment.add("@throws std::logic_error if no mutator is active");
+        out.printHeaderComment(aInIdent,comment);
+
+        out.println(aInIdent,"static " + lMethodName + "(");
+            out.print(aInIdent + 1, "opflex::ofcore::OFFramework& framework");
+            for (Pair<String,MNameRule> lNamingNode : aInNamingPath)
+            {
+                MNameRule lNr = lNamingNode.getSecond();
+                MClass lThisContClass = MClass.get(lNamingNode.getFirst());
+
+                Collection<MNameComponent> lNcs = lNr.getComponents();
+                for (MNameComponent lNc : lNcs)
+                {
+                    if (lNc.hasPropName())
+                    {
+                        out.println(",");
+                        out.print(aInIdent + 1, getPropParamDef(lThisContClass, lNc.getPropName()));
+                    }
+                }
+            }
+            out.println(")");
+        out.println(aInIdent,"{");
+            out.println(aInIdent + 1, "MO::remove(framework, CLASS_ID, " + getUriBuilder(aInClass, aInNamingPath) + ");");
+        out.println(aInIdent,"}");
+        out.println();
+        comment = new ArrayList<>(Arrays.asList(
+            "Remove the " + lclassName + " object with the specified path",
+            "elements from the managed object store using the default",
+            "framework instance.  If the object does not exist, then",
+            "this will be a no-op.  If this object has any children, they",
+            "will be garbage-collected at some future time.",
+            "",
+            "The object URI generated by this function will take the form:",
+            getUriDoc(aInClass, aInNamingPath),
+            ""));
+        addPathComment(aInClass, aInNamingPath, comment);
+        comment.add("@throws std::logic_error if no mutator is active");
+        out.printHeaderComment(aInIdent,comment);
+        out.println(aInIdent,
+                    "static void " + lMethodName + "(");
+        boolean lIsFirst = true;
+        for (Pair<String,MNameRule> lNamingNode : aInNamingPath)
+        {
+            MNameRule lNr = lNamingNode.getSecond();
+            MClass lThisContClass = MClass.get(lNamingNode.getFirst());
+
+            Collection<MNameComponent> lNcs = lNr.getComponents();
+            for (MNameComponent lNc : lNcs)
+            {
+                if (lNc.hasPropName())
+                {
+                    if (lIsFirst)
+                    {
+                        lIsFirst = false;
+                    }
+                    else
+                    {
+                        out.println(",");
+                    }
+                    out.print(aInIdent + 1, getPropParamDef(lThisContClass, lNc.getPropName()));
+                }
+            }
+        }
+        if (lIsFirst)
+        {
+            out.println(aInIdent + 1, ")");
+        }
+        else
+        {
+            out.println(")");
+        }
+        out.println(aInIdent,"{");
+        out.println(aInIdent + 1, lMethodName + "(opflex::ofcore::OFFramework::defaultInstance(), " + getNamingPropList(aInClass, aInNamingPath) + ");");
+        out.println(aInIdent,"}");
+        out.println();
+
+    }
+
+    private static String getMethName(List<Pair<String, MNameRule>> aInNamingPath,
+                                      boolean aInIsUniqueNaming,
+                                      String prefix)
     {
         if (aInIsUniqueNaming)
         {
-            return "resolve";
+            return prefix;
         }
         else
         {
             StringBuilder lSb = new StringBuilder();
-            lSb.append("resolveUnder");
+            lSb.append(prefix + "Under");
             int lSize = aInNamingPath.size();
             int lIdx = lSize;
             for (Pair<String, MNameRule> lPathNode : aInNamingPath)
@@ -536,7 +747,7 @@ public class FClassDef extends ItemFormatterTask
                 {
                     MClass lClass = MClass.get(lPathNode.getFirst());
                     Module lMod = lClass.getModule();
-                    MNameRule lNr = lPathNode.getSecond();
+                    lPathNode.getSecond();
 
                     lSb.append(Strings.upFirstLetter(lMod.getLID().getName()));
                     lSb.append(Strings.upFirstLetter(lClass.getLID().getName()));
@@ -544,6 +755,18 @@ public class FClassDef extends ItemFormatterTask
             }
             return lSb.toString();
         }
+    }
+    
+    private static String getResolverMethName(List<Pair<String, MNameRule>> aInNamingPath,
+                                              boolean aInIsUniqueNaming)
+    {
+        return getMethName(aInNamingPath, aInIsUniqueNaming, "resolve");
+    }
+
+    private static String getRemoverMethName(List<Pair<String, MNameRule>> aInNamingPath,
+                                             boolean aInIsUniqueNaming)
+    {
+        return getMethName(aInNamingPath, aInIsUniqueNaming, "remove");
     }
 
     public static int countNamingProps(List<Pair<String, MNameRule>> aInNamingPath)
@@ -653,6 +876,32 @@ public class FClassDef extends ItemFormatterTask
         aOut.append(".build()");
     }
 
+    public static String getUriDoc(MClass aInClass, List<Pair<String, MNameRule>> aInNamingPath)
+    {
+        StringBuilder lSb = new StringBuilder();
+        getUriDoc(aInClass,aInNamingPath, lSb);
+        return lSb.toString();
+    }
+    public static void getUriDoc(MClass aInClass, List<Pair<String, MNameRule>> aInNamingPath, StringBuilder aOut)
+    {
+        for (Pair<String,MNameRule> lNamingNode : aInNamingPath)
+        {
+            MNameRule lNr = lNamingNode.getSecond();
+            MClass lThisContClass = MClass.get(lNamingNode.getFirst());
+            Collection<MNameComponent> lNcs = lNr.getComponents();
+            aOut.append("/" + lThisContClass.getFullConcatenatedName());
+            for (MNameComponent lNc : lNcs)
+            {
+                if (lNc.hasPropName())
+                {
+                    aOut.append("/[");
+                    getPropParamName(lThisContClass, lNc.getPropName(), aOut);
+                    aOut.append("]");
+                }
+            }
+        }
+    }
+
     public static String getUriBuilder(MClass aInParentClass,MClass aInChildClass, MNameRule aInNamingRule)
     {
         StringBuilder lSb = new StringBuilder();
@@ -716,8 +965,26 @@ public class FClassDef extends ItemFormatterTask
 
     private void genNamedSelfResolvers(int aInIdent, MClass aInClass, List<Pair<String, MNameRule>> aInNamingPath, boolean aInIsUniqueNaming)
     {
+        String lClassName = getClassName(aInClass, false);
         String lMethodName = getResolverMethName(aInNamingPath, aInIsUniqueNaming);
         //int lPropCount = countNamingProps(aInNamingPath);
+
+        ArrayList<String> comment = new ArrayList<>(Arrays.asList(
+            "Retrieve an instance of " + lClassName + " from the managed",
+            "object store by constructing its URI from the path elements",
+            "that lead to it.  If the object does not exist in the local",
+            "store, returns boost::none.  Note that even though it may not",
+            "exist locally, it may still exist remotely.",
+            "",
+            "The object URI generated by this function will take the form:",
+            getUriDoc(aInClass, aInNamingPath),
+            "",
+            "@param framework the framework instance to use "));
+        addPathComment(aInClass, aInNamingPath, comment);
+        comment.add("@throws std::logic_error if no mutator is active");
+        comment.add("@return a shared pointer to the object or boost::none if it");
+        comment.add("does not exist.");
+        out.printHeaderComment(aInIdent,comment);
 
         out.println(aInIdent,"static boost::::optional<boost::shared_ptr<" + getClassName(aInClass,true)+ "> > " + lMethodName + "(");
             out.print(aInIdent + 1, "opflex::ofcore::OFFramework& framework");
@@ -741,6 +1008,22 @@ public class FClassDef extends ItemFormatterTask
             out.println(aInIdent + 1, "resolve(framework," + getUriBuilder(aInClass, aInNamingPath) + ");");
         out.println(aInIdent,"}");
         out.println();
+        
+        comment = new ArrayList<>(Arrays.asList(
+            "Retrieve an instance of " + lClassName + " from the ",
+            "default managed object store by constructing its URI from the",
+            "path elements that lead to it.  If the object does not exist in",
+            "the local store, returns boost::none.  Note that even though it",
+            "may not exist locally, it may still exist remotely.",
+            "",
+            "The object URI generated by this function will take the form:",
+            getUriDoc(aInClass, aInNamingPath),
+            ""));
+        addPathComment(aInClass, aInNamingPath, comment);
+        comment.add("@throws std::logic_error if no mutator is active");
+        comment.add("@return a shared pointer to the object or boost::none if it");
+        comment.add("does not exist.");
+        out.printHeaderComment(aInIdent,comment);
         out.println(aInIdent,
                     "static boost::::optional<boost::shared_ptr<" + getClassName(aInClass, true) + "> > " + lMethodName + "(");
         boolean lIsFirst = true;
@@ -873,6 +1156,16 @@ public class FClassDef extends ItemFormatterTask
     {
         if (aInClass.isConcrete())
         {
+            out.printHeaderComment(aInIndent, Arrays.asList(
+                "Register a listener that will get called for changes related to",
+                "this class.  This listener will be called for any modifications",
+                "of this class or any transitive children of this class.",
+                "",
+                "@param framework the framework instance ",
+                "@param listener the listener functional object that should be",
+                "called when changes occur related to the class.  This memory is",
+                "owned by the caller and should be freed only after it has been",
+                "unregistered."));
             out.println(aInIndent, "static void registerListener(");
             out.println(aInIndent + 1, "opflex::ofcore::OFFramework& framework,");
             out.println(aInIndent + 1, "opflex::modb::ObjectListener* listener)");
@@ -880,12 +1173,27 @@ public class FClassDef extends ItemFormatterTask
             out.println(aInIndent + 1, "opflex::modb::mointernal::MO::registerListener(framework, listener, CLASS_ID);");
             out.println(aInIndent, "}");
             out.println();
+            out.printHeaderComment(aInIndent, Arrays.asList(
+                "Register a listener that will get called for changes related to",
+                "this class with the default framework instance.  This listener",
+                "will be called for any modifications of this class or any",
+                "transitive children of this class.",
+                "",
+                "@param listener the listener functional object that should be",
+                "called when changes occur related to the class.  This memory is",
+                "owned by the caller and should be freed only after it has been",
+                "unregistered."));
             out.println(aInIndent, "static void registerListener(");
             out.println(aInIndent + 1, "opflex::modb::ObjectListener* listener)");
             out.println(aInIndent, "{");
             out.println(aInIndent + 1, "opflex::modb::mointernal::MO::registerListener(opflex::ofcore::OFFramework::defaultInstance(), listener);");
             out.println(aInIndent, "}");
             out.println();
+            out.printHeaderComment(aInIndent, Arrays.asList(
+                "Unregister a listener from updates to this class.",
+                "",
+                "@param framework the framework instance ",
+                "@param listener The listener to unregister."));
             out.println(aInIndent, "static void unregisterListener(");
             out.println(aInIndent + 1, "opflex::ofcore::OFFramework& framework,");
             out.println(aInIndent + 1, "opflex::modb::ObjectListener* listener)");
@@ -893,6 +1201,11 @@ public class FClassDef extends ItemFormatterTask
             out.println(aInIndent + 1, "opflex::modb::mointernal::MO::unregisterListener(framework, listener, CLASS_ID);");
             out.println(aInIndent, "}");
             out.println();
+            out.printHeaderComment(aInIndent, Arrays.asList(
+                "Unregister a listener from updates to this class from the.",
+                "default framework instance",
+                "",
+                "@param listener The listener to unregister."));
             out.println(aInIndent, "static void unregisterListener(");
             out.println(aInIndent + 1, "opflex::modb::ObjectListener* listener)");
             out.println(aInIndent, "{");
@@ -904,6 +1217,11 @@ public class FClassDef extends ItemFormatterTask
 
     private void genConstructor(int aInIdent, MClass aInClass)
     {
+        String lclassName = getClassName(aInClass, false);
+        String[] lComment = 
+            {"Construct an instance of " + lclassName + ".",
+             "This should not typically be called from user code."};
+        out.printHeaderComment(aInIdent,lComment);
 
         if (aInClass.isConcrete())
         {
@@ -914,11 +1232,11 @@ public class FClassDef extends ItemFormatterTask
             /**if (aInClass.hasSuperclass())
             {
                 MClass lSuperclass = aInClass.getSuperclass();
-                out.println(aInIdent + 2, ": " + getClassName(lSuperclass,true) + "(framework, getClassId(), uri, oi) {}");
+                out.println(aInIdent + 1, ": " + getClassName(lSuperclass,true) + "(framework, getClassId(), uri, oi) {}");
             }
             else**/
             {
-                out.println(aInIdent + 2, ": MO(framework, CLASS_ID, uri, oi) { }");
+                out.println(aInIdent + 1, ": MO(framework, CLASS_ID, uri, oi) { }");
             }
         }
         else
@@ -933,11 +1251,11 @@ public class FClassDef extends ItemFormatterTask
                 if (aInClass.hasSuperclass())
                 {
                     MClass lSuperclass = aInClass.getSuperclass();
-                    out.println(aInIdent + 2, ": " + getClassName(lSuperclass,true) + "(framework, classId, uri, oi) {}");
+                    out.println(aInIdent + 1, ": " + getClassName(lSuperclass,true) + "(framework, classId, uri, oi) {}");
                 }
                 else
                 {
-                    out.println(aInIdent + 2, ": MO(framework, classId, uri, oi) { }");
+                    out.println(aInIdent + 1, ": MO(framework, classId, uri, oi) { }");
                 }
             }
         }

@@ -70,26 +70,32 @@ public class FAutomakeDef
     	    include/gbpmodel/policy/Universe.hpp \
 	        include/gbpmodel/policy/Space.hpp
          */
+        StringBuilder moddirs = new StringBuilder(" ");
         for (Pair<Module,Collection<MClass>> lModuleNode : aInModules)
         {
             Module lModule = lModuleNode.getFirst();
 
             String lModName = lModule.getLID().getName().toLowerCase();
+            moddirs.append("$(" + lModName + "_include_HEADERS) ");
             out.println(ainIndent, lModName + "_includedir = $(includedir)/" + Config.getProjName() + "/" + lModName);
 
             Collection<MClass> lClasses = lModuleNode.getSecond();
 
             out.println(ainIndent, lModName + "_include_HEADERS = \\");
-            out.print(ainIndent + 1, "include/" + Config.getProjName() + "/" + lModName + "/matadata.hpp");
             for (MClass lClass : lClasses)
             {
                 out.println(" \\");
-                out.print(ainIndent + 1, "include/" + Config.getProjName() + "/" + Strings.upFirstLetter(lClass.getLID().getName()) + ".hpp");
+                out.print(ainIndent + 1, "include/" + Config.getProjName() + "/" + lModName + "/" + Strings.upFirstLetter(lClass.getLID().getName()) + ".hpp");
             }
 
             out.println();
             out.println();
         }
+
+        out.println(ainIndent, "metadata_includedir = $(includedir)/" + Config.getProjName() + "/metadata");
+        out.println(ainIndent, "metadata_include_HEADERS = \\");
+        out.print(ainIndent + 1, "include/" + Config.getProjName() + "/metadata/metadata.hpp");
+        out.println();
 
         out.println(ainIndent, "AM_CPPFLAGS = -I$(top_srcdir)/include");
         out.println();
@@ -104,7 +110,8 @@ public class FAutomakeDef
                         out.println(ainIndent + 2, "doc/html");
         out.println(ainIndent ,"endif");
         out.println();
-        out.println(ainIndent,"doc/html: $(model_include_HEADERS) doc/Doxyfile");
+        out.println(ainIndent,"doc/html: $(metadata_include_HEADERS) " + 
+                    moddirs.toString() + "doc/Doxyfile");
             out.println(ainIndent + 1,"cd doc && ${DOXYGEN} Doxyfile");
         out.println(ainIndent,"doc: doc/html");
         out.println(ainIndent,"install-data-local: doc");

@@ -1,6 +1,8 @@
 package org.opendaylight.opflex.genie.engine.format;
 
-import org.opendaylight.opflex.modlan.utils.Strings;
+import java.util.Arrays;
+import java.util.List;
+
 
 /**
  * Created by midvorki on 7/23/14.
@@ -71,6 +73,12 @@ public class Formatter
     {
         printComment(aInIndent, aInComment, headerFormatDirective);
     }
+    
+    public void printHeaderComment(int aInIndent,
+                                   List<String> aInComment)
+    {
+        printComment(aInIndent, aInComment, headerFormatDirective);
+    }
 
     public void printIncodeComment(
             int aInIndent,
@@ -88,14 +96,20 @@ public class Formatter
                 aInComment,
                 commentFormatDirective);
     }
+    public void printComment(int aInIndent,
+                             String[] aInComment,
+                             BlockFormatDirective aInFormatDirs)
+    {
+        printComment(aInIndent, Arrays.asList(aInComment), aInFormatDirs);
+    }
 
     public void printComment(
             int aInIndent,
-            String[] aInComment,
+            List<String> aInComment,
             BlockFormatDirective aInFormatDirs)
     {
         if (null != aInComment &&
-            0 < aInComment.length)
+            0 < aInComment.size())
         {
 
             if (aInFormatDirs.hasOpenerString())
@@ -104,23 +118,20 @@ public class Formatter
             }
             for (String lThisComment : aInComment)
             {
-                if (!Strings.isEmpty(lThisComment))
+                if (aInFormatDirs.hasLineStartString())
                 {
-                    if (aInFormatDirs.hasLineStartString())
-                    {
-                        print(aInIndent + aInFormatDirs.getLineIndentOffset(), aInFormatDirs.getLineStartString());
-                    }
+                    print(aInIndent + aInFormatDirs.getLineIndentOffset(), aInFormatDirs.getLineStartString());
+                }
 
-                    print(lThisComment);
+                print(lThisComment);
 
-                    if (aInFormatDirs.hasLineEndString())
-                    {
-                        println(aInFormatDirs.getLineEndString());
-                    }
-                    else
-                    {
-                        println();
-                    }
+                if (aInFormatDirs.hasLineEndString())
+                {
+                    println(aInFormatDirs.getLineEndString());
+                }
+                else
+                {
+                    println();
                 }
             }
             if (aInFormatDirs.hasTerminatorString())
