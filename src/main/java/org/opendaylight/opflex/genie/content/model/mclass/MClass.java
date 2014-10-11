@@ -895,7 +895,7 @@ public class MClass
     {
         aInLangOrNull = null == aInLangOrNull ? Language.CPP : aInLangOrNull;
 
-        TreeSet<String> lSignatues = new TreeSet<String>();
+        TreeSet<String> lSignatures = new TreeSet<String>();
         boolean lUniqueSignatures = true;
         if (isConcrete() && !isRoot())
         {
@@ -903,11 +903,10 @@ public class MClass
             for (List<MClass> lContPath : lContPaths)
             {
                 LinkedList<Pair<String, MNameRule>> lNamePath = new LinkedList<Pair<String, MNameRule>>();
+                StringBuilder lPathSignature = new StringBuilder();
                 MClass lPrevClass = null;
                 for (MClass lThisClass : lContPath)
                 {
-                    StringBuilder lPathSignature = new StringBuilder();
-
                     MNamer lNamer = lThisClass.findNamer();
                     if (null != lNamer)
                     {
@@ -959,10 +958,13 @@ public class MClass
                         Severity.DEATH.report(toString(), "naming path calculation", "",
                                               "no namer for: " + lThisClass.getGID().getName() + " ::: CONT PATHS: " + lContPaths);
                     }
-                    lUniqueSignatures = lSignatues.add(lPathSignature.toString()) && lUniqueSignatures;
 
                     lPrevClass = lThisClass;
                 }
+                if (lSignatures.contains(lPathSignature.toString()))
+                    lUniqueSignatures = false;
+                else
+                    lSignatures.add(lPathSignature.toString());
                 aOut.add(lNamePath);
             }
         }

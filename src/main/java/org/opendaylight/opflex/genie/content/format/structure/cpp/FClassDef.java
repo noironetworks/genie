@@ -540,7 +540,7 @@ public class FClassDef extends ItemFormatterTask
         out.println(aInIdent, "}");
         out.println();
         Collection<List<Pair<String, MNameRule>>> lNamingPaths = new LinkedList<List<Pair<String, MNameRule>>>();
-        boolean lIsUniqueNaming = !aInClass.getNamingPaths(lNamingPaths, Language.CPP);
+        boolean lIsUniqueNaming = aInClass.getNamingPaths(lNamingPaths, Language.CPP);
         for (List<Pair<String, MNameRule>> lNamingPath : lNamingPaths)
         {
             if (!hasValidPath(lNamingPath)) continue;
@@ -599,7 +599,7 @@ public class FClassDef extends ItemFormatterTask
         out.println();
 
         Collection<List<Pair<String, MNameRule>>> lNamingPaths = new LinkedList<List<Pair<String, MNameRule>>>();
-        boolean lIsUniqueNaming = !aInClass.getNamingPaths(lNamingPaths, Language.CPP);
+        boolean lIsUniqueNaming = aInClass.getNamingPaths(lNamingPaths, Language.CPP);
         for (List<Pair<String, MNameRule>> lNamingPath : lNamingPaths)
         {
             if (!hasValidPath(lNamingPath)) continue;
