@@ -69,26 +69,21 @@ public class FMetaDef
         out.println(0, "namespace " + Config.getProjName());
         out.println(0, "{");
 
-        generateMetaAccessor(2);
+        generateMetaAccessor(0);
 
         out.println(0, "} // namespace " + Config.getProjName());
     }
 
     private void generateMetaAccessor(int aInIndent)
     {
-        out.println(aInIndent, "static const std::vector<opflex::modb::ClassInfo>& getClassesDefs()");
+        out.println(aInIndent, "const opflex::modb::ModelMetadata& getMetadata()");
         out.println(aInIndent, "{");
         out.println(aInIndent + 1, "using namespace opflex::modb;");
         out.println(aInIndent + 1, "using namespace boost::assign;");
-            out.println(aInIndent + 1, "static std::vector<opflex::modb::ClassInfo> classes =");
-                generateClassDefs(aInIndent + 2);
-                out.println(aInIndent + 2, ";");
-        out.println(aInIndent, "}");
-
-        out.println(aInIndent, "const opflex::modb::ModelMetadata& getMetadata()");
-        out.println(aInIndent, "{");
             out.println(aInIndent + 1, "static const opflex::modb::ModelMetadata metadata(\"" + 
-                    Config.getProjName() + "\", getClassesDefs());");
+                    Config.getProjName() + "\", ");
+            generateClassDefs(aInIndent + 2);
+            out.println(aInIndent + 2, ");");
             out.println(aInIndent + 1, "return metadata;");
         out.println(aInIndent, "}");
     }
