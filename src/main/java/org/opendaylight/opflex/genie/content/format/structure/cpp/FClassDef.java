@@ -317,7 +317,7 @@ public class FClassDef extends ItemFormatterTask
         //
         // METHOD DEFINITION
         //
-        out.println(aInIndent,"boolean is" + Strings.upFirstLetter(aInProp.getLID().getName()) + "Set()");
+        out.println(aInIndent,"bool is" + Strings.upFirstLetter(aInProp.getLID().getName()) + "Set()");
 
         //
         // METHOD BODY
@@ -349,9 +349,9 @@ public class FClassDef extends ItemFormatterTask
         out.printHeaderComment(aInIndent,lComment);
         out.println(aInIndent,"boost::optional<" + aInBaseType.getLanguageBinding(Language.CPP).getSyntax() + "> get" + Strings.upFirstLetter(aInProp.getLID().getName()) + "()");
         out.println(aInIndent,"{");
-            out.println(aInIndent + 1,"return is" + Strings.upFirstLetter(aInProp.getLID().getName()) + "Set() ?");
-                out.println(aInIndent + 2,"getObjectInstance().get" + Strings.upFirstLetter(aInBaseType.getLID().getName()) + "(" + aInPropIdx + ") :");
-                out.println(aInIndent + 2,"boost::none;");
+            out.println(aInIndent + 1,"if (is" + Strings.upFirstLetter(aInProp.getLID().getName()) + "Set())");
+                out.println(aInIndent + 2,"return getObjectInstance().get" + Strings.upFirstLetter(aInBaseType.getLID().getName()) + "(" + aInPropIdx + ");");
+                out.println(aInIndent + 1,"return boost::none;");
         out.println(aInIndent,"}");
         out.println();
     }
@@ -453,8 +453,7 @@ public class FClassDef extends ItemFormatterTask
         out.println(aInIndent,"{");
         out.println(aInIndent + 1, "getTLMutator().modify(getClassId(), getURI())->unset(" + aInPropIdx + ", " +
                                    "opflex::modb::PropertyInfo::" + aInBaseType.getLID().getName().toUpperCase() + ", " +
-                                   "opflex::modb::PropertyInfo::" +  aInBaseType.getTypeHint().getInfo().toString().toUpperCase() +
-                                   ");");
+                                   "opflex::modb::PropertyInfo::SCALAR);");
         out.println(aInIndent + 1, "return *this;");
         out.println(aInIndent,"}");
         out.println();
@@ -524,7 +523,7 @@ public class FClassDef extends ItemFormatterTask
         out.println();
 
         String[] lComment2 = 
-            {"Retrieve an instance of class2 from the managed",
+            {"Retrieve an instance of " + lclassName + " from the managed",
              "object store using the default framework instance.  If the ",
              "object does not exist in the local store, returns boost::none. ",
              "Note that even though it may not exist locally, it may still ",
@@ -544,6 +543,7 @@ public class FClassDef extends ItemFormatterTask
         boolean lIsUniqueNaming = !aInClass.getNamingPaths(lNamingPaths, Language.CPP);
         for (List<Pair<String, MNameRule>> lNamingPath : lNamingPaths)
         {
+            if (!hasValidPath(lNamingPath)) continue;
             genNamedSelfResolvers(aInIdent, aInClass, lNamingPath, lIsUniqueNaming);
         }
     }
@@ -602,18 +602,36 @@ public class FClassDef extends ItemFormatterTask
         boolean lIsUniqueNaming = !aInClass.getNamingPaths(lNamingPaths, Language.CPP);
         for (List<Pair<String, MNameRule>> lNamingPath : lNamingPaths)
         {
+            if (!hasValidPath(lNamingPath)) continue;
             genNamedSelfRemovers(aInIdent, aInClass, lNamingPath, lIsUniqueNaming);
         }
+    }
+
+    private boolean hasValidPath(List<Pair<String, MNameRule>> aInNamingPath) {
+        for (Pair<String,MNameRule> lNamingNode : aInNamingPath)
+        {
+            MNameRule lNr = lNamingNode.getSecond();
+
+            Collection<MNameComponent> lNcs = lNr.getComponents();
+            for (MNameComponent lNc : lNcs)
+            {
+                if (lNc.hasPropName())
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void addPathComment(MClass aInClass,
                                 List<Pair<String, MNameRule>> aInNamingPath,
                                 List<String> result) {
-        String lclassName = getClassName(aInClass, false);
         for (Pair<String,MNameRule> lNamingNode : aInNamingPath)
         {
             MNameRule lNr = lNamingNode.getSecond();
             MClass lThisContClass = MClass.get(lNamingNode.getFirst());
+            String lclassName = getClassName(lThisContClass, false);
 
             Collection<MNameComponent> lNcs = lNr.getComponents();
             for (MNameComponent lNc : lNcs)
@@ -986,7 +1004,7 @@ public class FClassDef extends ItemFormatterTask
         comment.add("does not exist.");
         out.printHeaderComment(aInIdent,comment);
 
-        out.println(aInIdent,"static boost::::optional<boost::shared_ptr<" + getClassName(aInClass,true)+ "> > " + lMethodName + "(");
+        out.println(aInIdent,"static boost::optional<boost::shared_ptr<" + getClassName(aInClass,true)+ "> > " + lMethodName + "(");
             out.print(aInIdent + 1, "opflex::ofcore::OFFramework& framework");
             for (Pair<String,MNameRule> lNamingNode : aInNamingPath)
             {
@@ -1025,7 +1043,7 @@ public class FClassDef extends ItemFormatterTask
         comment.add("does not exist.");
         out.printHeaderComment(aInIdent,comment);
         out.println(aInIdent,
-                    "static boost::::optional<boost::shared_ptr<" + getClassName(aInClass, true) + "> > " + lMethodName + "(");
+                    "static boost::optional<boost::shared_ptr<" + getClassName(aInClass, true) + "> > " + lMethodName + "(");
         boolean lIsFirst = true;
         for (Pair<String,MNameRule> lNamingNode : aInNamingPath)
         {
@@ -1075,42 +1093,47 @@ public class FClassDef extends ItemFormatterTask
             String lUriBuilder = getUriBuilder(aInParentClass,aInChildClass, lChildNr);
             out.println(aInIdent, "boost::optional<boost::shared_ptr<" +  lFormattefChildClassName + "> > resolve" + lConcatenatedChildClassName + "(");
 
-                boolean lIsFirst = true;
-                Collection<MNameComponent> lNcs = lChildNr.getComponents();
-                for (MNameComponent lNc : lNcs)
+            boolean lIsFirst = true;
+            boolean multipleChildren = false;
+            Collection<MNameComponent> lNcs = lChildNr.getComponents();
+            for (MNameComponent lNc : lNcs)
+            {
+                if (lNc.hasPropName())
                 {
-                    if (lNc.hasPropName())
+                    if (lIsFirst)
                     {
-                        if (lIsFirst)
-                        {
-                            lIsFirst = false;
-                        }
-                        else
-                        {
-                            out.println(",");
-                        }
-                        out.print(aInIdent + 1, getPropParamDef(aInChildClass, lNc.getPropName()));
+                        lIsFirst = false;
+                        multipleChildren = true;
                     }
+                    else
+                    {
+                        out.println(",");
+                    }
+                    out.print(aInIdent + 1, getPropParamDef(aInChildClass, lNc.getPropName()));
                 }
-                if (lIsFirst)
-                {
-                    out.println(aInIdent + 1, ")");
-                }
-                else
-                {
-                    out.println(")");
-                }
+            }
+            if (lIsFirst)
+            {
+                out.println(aInIdent + 1, ")");
+            }
+            else
+            {
+                out.println(")");
+            }
             out.println(aInIdent,"{");
                 out.println(aInIdent + 1, "return " + lFormattefChildClassName + "::resolve(getFramework(), " + lUriBuilder + ");");
             out.println(aInIdent,"}");
             out.println();
-            out.println(aInIdent,"void resolve" + lConcatenatedChildClassName + "( /* out */ std::vector<boost::shared_ptr<" + lFormattefChildClassName+ "> >& out)");
-            out.println(aInIdent,"{");
-                out.println(aInIdent + 1, "return opflex::modb::mointernal::MO::resolveChildren<" + lFormattefChildClassName + ">(");
-                    out.println(aInIdent + 2, "CLASS_ID, getURI()," + (aInChildClass.getGID().getId() + 1000) + "," + aInChildClass.getGID().getId() + ", out);");
-            out.println(aInIdent,"}");
-            out.println();
 
+            if (multipleChildren) {
+                out.println(aInIdent,"void resolve" + lConcatenatedChildClassName + "(/* out */ std::vector<boost::shared_ptr<" + lFormattefChildClassName+ "> >& out)");
+                out.println(aInIdent,"{");
+                out.println(aInIdent + 1, "opflex::modb::mointernal::MO::resolveChildren<" + lFormattefChildClassName + ">(");
+                out.println(aInIdent + 2, "getFramework(), CLASS_ID, getURI(), " + (aInChildClass.getGID().getId() + 1000) + ", " + aInChildClass.getGID().getId() + ", out);");
+                out.println(aInIdent,"}");
+                out.println();
+            }
+            
             out.println(aInIdent, "boost::optional<boost::shared_ptr<" +  lFormattefChildClassName + "> > add" + lConcatenatedChildClassName + "(");
 
             lIsFirst = true;
@@ -1170,7 +1193,8 @@ public class FClassDef extends ItemFormatterTask
             out.println(aInIndent + 1, "opflex::ofcore::OFFramework& framework,");
             out.println(aInIndent + 1, "opflex::modb::ObjectListener* listener)");
             out.println(aInIndent, "{");
-            out.println(aInIndent + 1, "opflex::modb::mointernal::MO::registerListener(framework, listener, CLASS_ID);");
+            out.println(aInIndent + 1, "opflex::modb::mointernal");
+            out.println(aInIndent + 2, "::MO::registerListener(framework, listener, CLASS_ID);");
             out.println(aInIndent, "}");
             out.println();
             out.printHeaderComment(aInIndent, Arrays.asList(
@@ -1186,7 +1210,7 @@ public class FClassDef extends ItemFormatterTask
             out.println(aInIndent, "static void registerListener(");
             out.println(aInIndent + 1, "opflex::modb::ObjectListener* listener)");
             out.println(aInIndent, "{");
-            out.println(aInIndent + 1, "opflex::modb::mointernal::MO::registerListener(opflex::ofcore::OFFramework::defaultInstance(), listener);");
+            out.println(aInIndent + 1, "registerListener(opflex::ofcore::OFFramework::defaultInstance(), listener);");
             out.println(aInIndent, "}");
             out.println();
             out.printHeaderComment(aInIndent, Arrays.asList(
@@ -1198,18 +1222,19 @@ public class FClassDef extends ItemFormatterTask
             out.println(aInIndent + 1, "opflex::ofcore::OFFramework& framework,");
             out.println(aInIndent + 1, "opflex::modb::ObjectListener* listener)");
             out.println(aInIndent, "{");
-            out.println(aInIndent + 1, "opflex::modb::mointernal::MO::unregisterListener(framework, listener, CLASS_ID);");
+            out.println(aInIndent + 1, "opflex::modb::mointernal");
+            out.println(aInIndent + 2, "::MO::unregisterListener(framework, listener, CLASS_ID);");
             out.println(aInIndent, "}");
             out.println();
             out.printHeaderComment(aInIndent, Arrays.asList(
-                "Unregister a listener from updates to this class from the.",
+                "Unregister a listener from updates to this class from the",
                 "default framework instance",
                 "",
                 "@param listener The listener to unregister."));
             out.println(aInIndent, "static void unregisterListener(");
             out.println(aInIndent + 1, "opflex::modb::ObjectListener* listener)");
             out.println(aInIndent, "{");
-            out.println(aInIndent + 1, "opflex::modb::mointernal::MO::unregisterListener(opflex::ofcore::OFFramework::defaultInstance(), listener);");
+            out.println(aInIndent + 1, "unregisterListener(opflex::ofcore::OFFramework::defaultInstance(), listener);");
             out.println(aInIndent, "}");
             out.println();
         }
