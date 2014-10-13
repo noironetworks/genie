@@ -837,6 +837,10 @@ public class MClass
     // NAMING APIs
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * finds the closest namer that corresponds to this class or any of its superclasses.
+     * @return closest corresponding namer that contains naming rules for this class.
+     */
     public MNamer findNamer()
     {
         MNamer lNamer = null;
@@ -847,6 +851,10 @@ public class MClass
         return lNamer;
     }
 
+    /**
+     * finds all naming rules for this class and its superclasses
+     * @param aOut a map of all naming rules.
+     */
     public void findNamingRules(Map<String, MNameRule> aOut)
     {
         for (MClass lThis = this; null != lThis; lThis = lThis.getSuperclass())
@@ -859,6 +867,10 @@ public class MClass
         }
     }
 
+    /**
+     * finds all naming rules for this class and its superclasses.
+     * @return a collection of of all naming rules.
+     */
     public Collection<MNameRule> findNamingRules()
     {
         TreeMap<String,MNameRule> lR = new TreeMap<String, MNameRule>();
@@ -866,7 +878,11 @@ public class MClass
         return lR.values();
     }
 
-
+    /**
+     * finds speccific naming rule for the containment parent class name passed in
+     * @param aInParentClassGName global name of the containment parent class for which naming rule is looked up
+     * @return naming rule that corresponds to the containment parent class specified
+     */
     public MNameRule findNameRule(String aInParentClassGName)
     {
         MNameRule lRet = null;
@@ -879,11 +895,20 @@ public class MClass
         return lRet;
     }
 
+    /**
+     * finds all naming paths for this class
+     * @return a collection of naming paths
+     */
     public Collection<List<Pair<String, MNameRule>>> getNamingPaths()
     {
         return getNamingPaths(Language.CPP);
     }
 
+    /**
+     * finds all naming paths for the class.
+     * @param aInLangOrNull language of signature resolution for calculating uniqueness.
+     * @return List of naming paths
+     */
     public Collection<List<Pair<String, MNameRule>>> getNamingPaths(Language aInLangOrNull)
     {
         Collection<List<Pair<String, MNameRule>>> lRet = new LinkedList<List<Pair<String, MNameRule>>>();
@@ -891,6 +916,12 @@ public class MClass
         return lRet;
     }
 
+    /**
+     * finds all naming paths for this class and checks if the name resolution signatures are unique
+     * @param aOut collection of all name rule paths.
+     * @param aInLangOrNull language for which name resolution signatures are considered.
+     * @return true if signatures are unique.
+     */
     public boolean getNamingPaths(Collection<List<Pair<String,MNameRule>>> aOut, Language aInLangOrNull)
     {
         aInLangOrNull = null == aInLangOrNull ? Language.CPP : aInLangOrNull;
@@ -971,6 +1002,11 @@ public class MClass
         return lUniqueSignatures;
     }
 
+    /**
+     *
+     * @param aInMod
+     * @return
+     */
     public static boolean hasConcreteClassDefs(Module aInMod)
     {
         Children lChildren =  aInMod.getChildren();
@@ -992,6 +1028,15 @@ public class MClass
         return false;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // MODULE APIs
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * given a module, finds all of the concrete classses.
+     * @param aInMod module for which classes are resolved
+     * @return collection of con concrete classses corresponding to the module passed in
+     */
     public static Collection<MClass> getConcreteClasses(Module aInMod)
     {
         Collection<MClass> lRet = new LinkedList<MClass>();
@@ -1014,6 +1059,10 @@ public class MClass
         return lRet;
     }
 
+    /**
+     * retrieves ALL concrete classes in the model
+     * @return collection of ALL concrete classes in the model
+     */
     public static Collection<MClass> getConcreteClasses()
     {
         Collection<MClass> lRet = new LinkedList<MClass>();
@@ -1033,6 +1082,10 @@ public class MClass
         return lRet;
     }
 
+    /**
+     * Retyrieves modules that have concrete classes with the list of the corresponding concreted classes
+     * @return modules with concrete classes included.
+     */
     public static Collection<Pair<Module, Collection<MClass>>> getModulesWithConcreteClasses()
     {
         Collection<Pair<Module, Collection<MClass>>> lRet = new LinkedList<Pair<Module, Collection<MClass>>>();
@@ -1057,6 +1110,9 @@ public class MClass
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+    /**
+     * implicit callback
+     */
     public void loadModelCompleteCb()
     {
         super.loadModelCompleteCb();
