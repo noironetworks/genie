@@ -294,8 +294,10 @@ public class FClassDef extends ItemFormatterTask
         aInProp.getComments(lComments);
 
         if (aInClass.isConcreteSuperclassOf("relator/Source") &&
-            aInProp.getLID().getName().toLowerCase().startsWith("target")) {
-            if (aInProp.getLID().getName().equalsIgnoreCase("targetName")) {
+            aInProp.getLID().getName().toLowerCase().startsWith("target"))
+        {
+            if (aInProp.getLID().getName().equalsIgnoreCase("targetName"))
+            {
                 genRef(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments, true);
             }
         //}
@@ -304,7 +306,8 @@ public class FClassDef extends ItemFormatterTask
         //    if (aInProp.getLID().getName().equalsIgnoreCase("source")) {
         //        genRef(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments, false);
         //    }
-        } else {
+        } else
+        {
             genPropCheck(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments);
             genPropAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
             genPropDefaultedAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
