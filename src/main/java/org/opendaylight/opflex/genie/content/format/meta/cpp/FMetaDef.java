@@ -117,7 +117,7 @@ public class FMetaDef
         }
         else if (isRelationshipTarget(aIn))
         {
-            return "ClassInfo::INVERSE_RELATIONSHIP";
+            return "ClassInfo::RELATIONSHIP";
         }
         else  if (isRelationshipResolver(aIn))
         {
@@ -172,8 +172,6 @@ public class FMetaDef
 
     private void genMo(int aInIndent, MClass aInClass)
     {
-        if (isRelationshipTarget(aInClass))
-            return;
         out.println(aInIndent, '(');
             /**
             out.println(aInIndent, "// NAME: " + aInClass.getGID().getName());
@@ -245,10 +243,13 @@ public class FMetaDef
                     }
                     else if (lProp.getLID().getName().equalsIgnoreCase("source") && isRelationshipTarget(aInClass))
                     {
-                        MClass lTargetClass = ((MRelationshipClass) aInClass).getSourceClass();
+                        //MClass lTargetClass = ((MRelationshipClass) aInClass).getSourceClass();
+                        String lPropTypeStr = lPrimitiveType.getLID().getName().toUpperCase();
+                        if (lPropTypeStr.equals("URI"))
+                            lPropTypeStr = "STRING";
                         out.println(
                                 aInIndent + 1,
-                                "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPrimitiveType.getLID().getName().toUpperCase() + ", " + lTargetClass.getGID().getId() + "/* " + lTargetClass.getGID().getName() + "*/, PropertyInfo::SCALAR)) // "
+                                "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPropTypeStr + ", PropertyInfo::SCALAR)) // "
                                 + lProp.toString());
                     }
                     // TODO

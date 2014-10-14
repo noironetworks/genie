@@ -141,6 +141,7 @@ public class FClassDef extends ItemFormatterTask
     private void generate(int aInIndent, MClass aInClass)
     {
         String lInclTag = getInclTag(aInClass);
+        out.println(aInIndent,"#pragma once");
         out.println(aInIndent,"#ifndef " + lInclTag);
         out.println(aInIndent,"#define " + lInclTag);
         // doesn't seem to be needed for now.  Revisit?
@@ -297,11 +298,12 @@ public class FClassDef extends ItemFormatterTask
             if (aInProp.getLID().getName().equalsIgnoreCase("targetName")) {
                 genRef(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments, true);
             }
-        } else if (aInClass.isConcreteSuperclassOf("relator/Target") &&
-                   aInProp.getLID().getName().toLowerCase().startsWith("source")) {
-            if (aInProp.getLID().getName().equalsIgnoreCase("sourceName")) {
-                genRef(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments, false);
-            }
+        //}
+        //else if (aInClass.isConcreteSuperclassOf("relator/Target") &&
+        //           aInProp.getLID().getName().toLowerCase().startsWith("source")) {
+        //    if (aInProp.getLID().getName().equalsIgnoreCase("source")) {
+        //        genRef(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments, false);
+        //    }
         } else {
             genPropCheck(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments);
             genPropAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
@@ -357,9 +359,13 @@ public class FClassDef extends ItemFormatterTask
             int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
             Collection<String> aInComments)
     {
+        String lPType = aInBaseType.getLID().getName().toUpperCase();
+        if (lPType.equals("URI")) {
+            lPType = "STRING";
+        }
         genPropCheck(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType,
                      aInComments, aInProp.getLID().getName(), 
-                     aInBaseType.getLID().getName().toUpperCase());
+                     lPType);
     }
 
     private void genRefCheck(
@@ -409,6 +415,8 @@ public class FClassDef extends ItemFormatterTask
         if (lPType.startsWith("Enum")) {
             lCast = "(" + lSyntax + ")";
             lPType = "UInt64";
+        } else if (lPType.equals("URI")) {
+            lPType = "String";
         }
         genPropAccessor(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType, aInComments, 
                         lName, lName, lSyntax, lPType, lCast, "");
@@ -584,6 +592,8 @@ public class FClassDef extends ItemFormatterTask
         String lPType = Strings.upFirstLetter(aInBaseType.getLID().getName());
         if (lPType.startsWith("Enum")) {
             lPType = "UInt64";
+        } else if (lPType.equals("URI")) {
+            lPType = "String";
         }
         List<String> lComments = Arrays.asList(
             "Set " + lName + " to the specified value in the currently-active mutator.");
@@ -656,8 +666,12 @@ public class FClassDef extends ItemFormatterTask
     private void genPropUnset(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
             Collection<String> aInComments)
     {
+        String lPType = aInBaseType.getLID().getName().toUpperCase();
+        if (lPType.equals("URI")) {
+            lPType = "STRING";
+        }
         genPropUnset(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType, aInComments, 
-                     aInProp.getLID().getName(), aInBaseType.getLID().getName().toUpperCase());
+                     aInProp.getLID().getName(), lPType);
     }
 
     private void genRefUnset(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
@@ -1439,16 +1453,16 @@ public class FClassDef extends ItemFormatterTask
                     out.println(aInIdent + 2, lUriBuilder);
                     out.println(aInIdent + 2, ");");
 
-                //lNcs = lChildNr.getComponents();
-                //for (MNameComponent lNc : lNcs)
-                //{
-                //    if (lNc.hasPropName())
-                //    {
-                //        out.println(aInIdent + 1, 
-                //                    "result->set" + Strings.upFirstLetter(lNc.getPropName()) + 
-                //                    "(" + getPropParamName(aInChildClass, lNc.getPropName()) + ");");
-                //    }
-                //}
+                lNcs = lChildNr.getComponents();
+                for (MNameComponent lNc : lNcs)
+                {
+                    if (lNc.hasPropName())
+                    {
+                        out.println(aInIdent + 1, 
+                                    "result->set" + Strings.upFirstLetter(lNc.getPropName()) + 
+                                    "(" + getPropParamName(aInChildClass, lNc.getPropName()) + ");");
+                    }
+                }
 
                 out.println(aInIdent + 1, "return result;");
             out.println(aInIdent,"}");
