@@ -13,6 +13,7 @@ import org.opendaylight.opflex.genie.content.model.mnaming.MNameRule;
 import org.opendaylight.opflex.genie.content.model.mnaming.MNamer;
 import org.opendaylight.opflex.genie.content.model.module.Module;
 import org.opendaylight.opflex.genie.content.model.mprop.MProp;
+import org.opendaylight.opflex.genie.content.model.mrelator.MRelationshipClass;
 import org.opendaylight.opflex.genie.content.model.mtype.Language;
 import org.opendaylight.opflex.genie.content.model.mtype.MLanguageBinding;
 import org.opendaylight.opflex.genie.content.model.mtype.MType;
@@ -142,7 +143,8 @@ public class FClassDef extends ItemFormatterTask
         String lInclTag = getInclTag(aInClass);
         out.println(aInIndent,"#ifndef " + lInclTag);
         out.println(aInIndent,"#define " + lInclTag);
-        genForwardDecls(aInIndent, aInClass);
+        // doesn't seem to be needed for now.  Revisit?
+        //genForwardDecls(aInIndent, aInClass);
         genIncludes(aInIndent, aInClass);
         genBody(aInIndent, aInClass);
         out.println(aInIndent,"#endif // " + lInclTag);
@@ -290,16 +292,38 @@ public class FClassDef extends ItemFormatterTask
         LinkedList<String> lComments = new LinkedList<String>();
         aInProp.getComments(lComments);
 
-        genPropCheck(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments);
-        genPropAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
-        genPropDefaultedAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
-        genPropMutator(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
-        genPropUnset(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
+        if (aInClass.isConcreteSuperclassOf("relator/Source") &&
+            aInProp.getLID().getName().toLowerCase().startsWith("target")) {
+            if (aInProp.getLID().getName().equalsIgnoreCase("targetName")) {
+                genRef(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments, true);
+            }
+        } else if (aInClass.isConcreteSuperclassOf("relator/Target") &&
+                   aInProp.getLID().getName().toLowerCase().startsWith("source")) {
+            if (aInProp.getLID().getName().equalsIgnoreCase("sourceName")) {
+                genRef(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments, false);
+            }
+        } else {
+            genPropCheck(aInIndent,aInClass,aInProp,aInPropIdx,lType,lBaseType,lComments);
+            genPropAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
+            genPropDefaultedAccessor(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
+            genPropMutator(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
+            genPropUnset(aInIndent, aInClass, aInProp, aInPropIdx, lType, lBaseType, lComments);
+        }
     }
 
+    private void genRef(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments, boolean target)
+    {
+        genRefCheck(aInIndent,aInClass,aInProp,aInPropIdx,aInType,aInType,aInComments, target);
+        genRefAccessors(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInType, aInComments, target);
+        genRefDefaultedAccessors(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInType, aInComments, target);
+        genRefMutators(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInType, aInComments, target);
+        genRefUnset(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInType, aInComments, target);
+    }
+    
     private void genPropCheck(
             int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
-            Collection<String> aInComments)
+            Collection<String> aInComments, String aInCheckName, String aInPType)
     {
         //
         // COMMENT
@@ -307,24 +331,69 @@ public class FClassDef extends ItemFormatterTask
         int lCommentSize = 2 + aInComments.size();
         String lComment[] = new String[lCommentSize];
         int lCommentIdx = 0;
-        lComment[lCommentIdx++] = "Check whether " + aInProp.getLID().getName() + " has been set";
+        lComment[lCommentIdx++] = "Check whether " + aInCheckName + " has been set";
         for (String lCommLine : aInComments)
         {
             lComment[lCommentIdx++] = lCommLine;
         }
-        lComment[lCommentIdx++] = "@return true if " + aInProp.getLID().getName() + " has been set";
+        lComment[lCommentIdx++] = "@return true if " + aInCheckName + " has been set";
         out.printHeaderComment(aInIndent,lComment);
         //
         // METHOD DEFINITION
         //
-        out.println(aInIndent,"bool is" + Strings.upFirstLetter(aInProp.getLID().getName()) + "Set()");
+        out.println(aInIndent,"bool is" + Strings.upFirstLetter(aInCheckName) + "Set()");
 
         //
         // METHOD BODY
         //
         out.println(aInIndent,"{");
             out.println(aInIndent + 1, "return getObjectInstance().isSet(" + aInPropIdx +
-                                       ", opflex::modb::PropertyInfo::" + aInBaseType.getLID().getName().toUpperCase() + ");");
+                                       ", opflex::modb::PropertyInfo::" + aInPType + ");");
+        out.println(aInIndent,"}");
+        out.println();
+    }
+
+    private void genPropCheck(
+            int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments)
+    {
+        genPropCheck(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType,
+                     aInComments, aInProp.getLID().getName(), 
+                     aInBaseType.getLID().getName().toUpperCase());
+    }
+
+    private void genRefCheck(
+            int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments, boolean target)
+    {
+        genPropCheck(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType,
+                     aInComments, target ? "target" : "source", "REFERENCE");
+    }
+
+    private void genPropAccessor(
+            int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments, String aInCheckName, String aInName, String aInSyntax, String aInPType,
+            String aInCast, String aInAccessor)
+    {
+        //
+        // COMMENT
+        //
+        int lCommentSize = 2 + aInComments.size();
+        String lComment[] = new String[lCommentSize];
+        int lCommentIdx = 0;
+        lComment[lCommentIdx++] = "Get the value of " + aInName + " if it has been set.";
+
+        for (String lCommLine : aInComments)
+        {
+            lComment[lCommentIdx++] = lCommLine;
+        }
+        lComment[lCommentIdx++] = "@return the value of " + aInName + " or boost::none if not set";
+        out.printHeaderComment(aInIndent,lComment);
+        out.println(aInIndent,"boost::optional<" + aInSyntax + "> get" + Strings.upFirstLetter(aInName) + "()");
+        out.println(aInIndent,"{");
+            out.println(aInIndent + 1,"if (is" + Strings.upFirstLetter(aInCheckName) + "Set())");
+                out.println(aInIndent + 2,"return " + aInCast + "getObjectInstance().get" + aInPType + "(" + aInPropIdx + ")" + aInAccessor + ";");
+                out.println(aInIndent + 1,"return boost::none;");
         out.println(aInIndent,"}");
         out.println();
     }
@@ -333,32 +402,32 @@ public class FClassDef extends ItemFormatterTask
             int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
             Collection<String> aInComments)
     {
-        //
-        // COMMENT
-        //
-        int lCommentSize = 2 + aInComments.size();
-        String lComment[] = new String[lCommentSize];
-        int lCommentIdx = 0;
-        lComment[lCommentIdx++] = "Get the value of " + aInProp.getLID().getName() + " if it has been set.";
-
-        for (String lCommLine : aInComments)
-        {
-            lComment[lCommentIdx++] = lCommLine;
+        String lName = aInProp.getLID().getName();
+        String lPType = Strings.upFirstLetter(aInBaseType.getLID().getName());
+        String lCast = "";
+        String lSyntax = aInBaseType.getLanguageBinding(Language.CPP).getSyntax();
+        if (lPType.startsWith("Enum")) {
+            lCast = "(" + lSyntax + ")";
+            lPType = "UInt64";
         }
-        lComment[lCommentIdx++] = "@return the value of " + aInProp.getLID().getName() + " or boost::none if not set";
-        out.printHeaderComment(aInIndent,lComment);
-        out.println(aInIndent,"boost::optional<" + aInBaseType.getLanguageBinding(Language.CPP).getSyntax() + "> get" + Strings.upFirstLetter(aInProp.getLID().getName()) + "()");
-        out.println(aInIndent,"{");
-            out.println(aInIndent + 1,"if (is" + Strings.upFirstLetter(aInProp.getLID().getName()) + "Set())");
-                out.println(aInIndent + 2,"return getObjectInstance().get" + Strings.upFirstLetter(aInBaseType.getLID().getName()) + "(" + aInPropIdx + ");");
-                out.println(aInIndent + 1,"return boost::none;");
-        out.println(aInIndent,"}");
-        out.println();
+        genPropAccessor(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType, aInComments, 
+                        lName, lName, lSyntax, lPType, lCast, "");
+    }
+
+    private void genRefAccessors(
+            int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments, boolean target)
+    {
+        String lName = (target ? "target" : "source");
+        genPropAccessor(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType, aInComments, 
+                        lName, lName + "Class", "opflex::modb::class_id_t", "Reference", "", ".first");
+        genPropAccessor(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType, aInComments, 
+                        lName, lName + "URI", "opflex::modb::URI", "Reference", "", ".second");
     }
 
     private void genPropDefaultedAccessor(
             int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
-            Collection<String> aInComments)
+            Collection<String> aInComments, String aInName, String aInSyntax)
     {
         //
         // COMMENT
@@ -366,7 +435,7 @@ public class FClassDef extends ItemFormatterTask
         int lCommentSize = 3 + aInComments.size();
         String lComment[] = new String[lCommentSize];
         int lCommentIdx = 0;
-        lComment[lCommentIdx++] = "Get the value of " + aInProp.getLID().getName() + " if set, otherwise the value of default passed in.";
+        lComment[lCommentIdx++] = "Get the value of " + aInName + " if set, otherwise the value of default passed in.";
 
         for (String lCommLine : aInComments)
         {
@@ -376,57 +445,183 @@ public class FClassDef extends ItemFormatterTask
         // DEF
         //
         lComment[lCommentIdx++] = "@param defaultValue default value returned if the property is not set";
-        lComment[lCommentIdx++] = "@return the value of " + aInProp.getLID().getName() + " if set, otherwise the value of default passed in";
+        lComment[lCommentIdx++] = "@return the value of " + aInName + " if set, otherwise the value of default passed in";
         out.printHeaderComment(aInIndent,lComment);
-        String lSyntax = aInBaseType.getLanguageBinding(Language.CPP).getSyntax();
-        out.println(aInIndent, lSyntax + " get" + Strings.upFirstLetter(aInProp.getLID().getName()) + "(" + lSyntax + " defaultValue)");
+        out.println(aInIndent, aInSyntax + " get" + Strings.upFirstLetter(aInName) + "(" + aInSyntax + " defaultValue)");
         //
         // BODY
         //
         out.println(aInIndent,"{");
-            out.println(aInIndent + 1, "return get" + Strings.upFirstLetter(aInProp.getLID().getName()) + "().get_value_or(defaultValue);");
+            out.println(aInIndent + 1, "return get" + Strings.upFirstLetter(aInName) + "().get_value_or(defaultValue);");
         out.println(aInIndent,"}");
         out.println();
     }
 
-    private void genPropMutator(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+    private void genPropDefaultedAccessor(
+            int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
             Collection<String> aInComments)
+    {
+        genPropDefaultedAccessor(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType, aInComments, 
+                                 aInProp.getLID().getName(), 
+                                 aInBaseType.getLanguageBinding(Language.CPP).getSyntax());
+
+    }
+
+    private void genRefDefaultedAccessors(
+            int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments, boolean target)
+    {
+        String lName = (target ? "target" : "source");
+        genPropDefaultedAccessor(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType, aInComments, 
+                                 lName + "Class", "opflex::modb::class_id_t");
+        genPropDefaultedAccessor(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType, aInComments, 
+                                 lName + "URI", "opflex::modb::URI");
+    }
+
+    private void genPropMutator(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInBaseComments, Collection<String> aInComments, String aInName, String aInPType, String aInSyntax, String aInParamName, String aInParamHelp,
+            String aInSetterPrefix)
     {
         //
         // COMMENT
         //
-        int lCommentSize = 5 + aInComments.size();
-        String lComment[] = new String[lCommentSize];
-        int lCommentIdx = 0;
-        lComment[lCommentIdx++] = "Set " + aInProp.getLID().getName() + " to the specified value in the currently-active mutator.";
-
-        for (String lCommLine : aInComments)
-        {
-            lComment[lCommentIdx++] = lCommLine;
-        }
-        lComment[lCommentIdx++] = "@param newValue the new value to set.";
-        lComment[lCommentIdx++] = "@return a reference to the current object";
-        lComment[lCommentIdx++] = "@throws std::logic_error if no mutator is active";
-        lComment[lCommentIdx++] = "@see opflex::modb::Mutator";
+        ArrayList<String> lComment = new ArrayList<>(aInBaseComments);
+        if (aInComments.size() > 0) lComment.add("");
+        lComment.addAll(aInComments);
+//        Arrays.asList(
+ //           
+        lComment.add("");
+        lComment.add("@param " + aInParamName + " " + aInParamHelp);
+        lComment.add("@return a reference to the current object");
+        lComment.add("@throws std::logic_error if no mutator is active");
+        lComment.add("@see opflex::modb::Mutator");
         out.printHeaderComment(aInIndent,lComment);
         //
         // DEF
         //
-        String lSyntax = aInBaseType.getLanguageBinding(Language.CPP).getSyntax();
-
-        out.println(aInIndent,  getClassName(aInClass, true) + "& set" + Strings.upFirstLetter(aInProp.getLID().getName()) + "(" + lSyntax + " newValue)");
+        out.println(aInIndent,  getClassName(aInClass, true) + "& set" + Strings.upFirstLetter(aInName) + "(" + aInSyntax + " " + aInParamName + ")");
         //
         // BODY
         //
         out.println(aInIndent,"{");
-        out.println(aInIndent + 1, "getTLMutator().modify(getClassId(), getURI())->set" + Strings.upFirstLetter(aInBaseType.getLID().getName()) + "(" + aInPropIdx + ", newValue);");
+        out.println(aInIndent + 1, "getTLMutator().modify(getClassId(), getURI())->set" + aInPType + "(" + aInPropIdx + aInSetterPrefix + ", " + aInParamName + ");");
         out.println(aInIndent + 1, "return *this;");
         out.println(aInIndent,"}");
         out.println();
     }
 
-    private void genPropUnset(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+    private void genNamedPropMutators(int aInIndent, MClass aInClass, MClass aInRefClass, int aInPropIdx,
+                                      List<Pair<String, MNameRule>> aInNamingPath, boolean aInIsUniqueNaming,
+                                      String aInMethName, String aInPType, String aInSetterPrefix)
+    {
+        String lRefClassName = getClassName(aInRefClass, false);
+        ArrayList<String> comment = new ArrayList<>(Arrays.asList(
+            "Set the reference to point to an instance of " + lRefClassName,
+            "in the currently-active mutator by constructing its URI from the",
+            "path elements that lead to it.",
+            "",
+            "The reference URI generated by this function will take the form:",
+            getUriDoc(aInRefClass, aInNamingPath),
+            "",
+            "@param framework the framework instance to use "));
+        addPathComment(aInClass, aInNamingPath, comment);
+        comment.add("");
+        comment.add("@throws std::logic_error if no mutator is active");
+        comment.add("@return a reference to the current object");
+        comment.add("@see opflex::modb::Mutator");
+        out.printHeaderComment(aInIndent,comment);
+
+        //
+        // DEF
+        //
+        String lMethName = getMethName(aInNamingPath, aInIsUniqueNaming, aInMethName);
+        out.println(aInIndent,  getClassName(aInClass, true) + "& set" + Strings.upFirstLetter(lMethName) + "(");
+        boolean lIsFirst = true;
+        for (Pair<String,MNameRule> lNamingNode : aInNamingPath)
+        {
+            MNameRule lNr = lNamingNode.getSecond();
+            MClass lThisContClass = MClass.get(lNamingNode.getFirst());
+
+            Collection<MNameComponent> lNcs = lNr.getComponents();
+            for (MNameComponent lNc : lNcs)
+            {
+                if (lNc.hasPropName())
+                {
+                    if (lIsFirst)
+                    {
+                        lIsFirst = false;
+                    }
+                    else
+                    {
+                        out.println(",");
+                    }
+                    out.print(aInIndent + 1, getPropParamDef(lThisContClass, lNc.getPropName()));
+                }
+            }
+        }
+        if (lIsFirst)
+        {
+            out.println(aInIndent + 1, ")");
+        }
+        else
+        {
+            out.println(")");
+        }
+        //
+        // BODY
+        //
+        String lUriBuilder = getUriBuilder(aInClass, aInNamingPath);
+        out.println(aInIndent,"{");
+        out.println(aInIndent + 1, "getTLMutator().modify(getClassId(), getURI())->set" + aInPType + "(" + aInPropIdx + aInSetterPrefix + ", " + lUriBuilder + ");");
+        out.println(aInIndent + 1, "return *this;");
+        out.println(aInIndent,"}");
+        out.println();
+    }
+    
+    private void genPropMutator(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
             Collection<String> aInComments)
+    {
+        String lName = aInProp.getLID().getName();
+        String lPType = Strings.upFirstLetter(aInBaseType.getLID().getName());
+        if (lPType.startsWith("Enum")) {
+            lPType = "UInt64";
+        }
+        List<String> lComments = Arrays.asList(
+            "Set " + lName + " to the specified value in the currently-active mutator.");
+        genPropMutator(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType,
+                       lComments, aInComments, lName, lPType,
+                       aInBaseType.getLanguageBinding(Language.CPP).getSyntax(), "newValue", "the new value to set.",
+                       "");
+    }
+
+    private void genRefMutators(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments, boolean target)
+    {
+        for (MClass lTargetClass : ((MRelationshipClass) aInClass).getTargetClasses(true))
+        {
+            String lName = (target ? "target" : "source") + 
+                    Strings.upFirstLetter(lTargetClass.getLID().getName());
+            List<String> lComments = Arrays.asList(
+                "Set the reference to point to an instance of " + getClassName(lTargetClass, false),
+                "with the specified URI");
+            genPropMutator(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType,
+                           lComments, aInComments, lName, "Reference",
+                           "const opflex::modb::URI&", "uri", "The URI of the reference to add",
+                           ", " + lTargetClass.getGID().getId());
+
+            Collection<List<Pair<String, MNameRule>>> lNamingPaths = new LinkedList<List<Pair<String, MNameRule>>>();
+            boolean lIsUniqueNaming = lTargetClass.getNamingPaths(lNamingPaths, Language.CPP);
+            for (List<Pair<String, MNameRule>> lNamingPath : lNamingPaths)
+            {
+                if (!hasValidPath(lNamingPath)) continue;
+                genNamedPropMutators(aInIndent, aInClass, lTargetClass, aInPropIdx, lNamingPath, lIsUniqueNaming,
+                                    lName, "Reference", ", " + lTargetClass.getGID().getId());
+            }
+        }
+    }
+
+    private void genPropUnset(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments, String aInName, String aInPType)
     {
         //
         // COMMENT
@@ -434,7 +629,7 @@ public class FClassDef extends ItemFormatterTask
         int lCommentSize = 4 + aInComments.size();
         String lComment[] = new String[lCommentSize];
         int lCommentIdx = 0;
-        lComment[lCommentIdx++] = "Unset " + aInProp.getLID().getName() + " in the currently-active mutator.";
+        lComment[lCommentIdx++] = "Unset " + aInName + " in the currently-active mutator.";
 
         for (String lCommLine : aInComments)
         {
@@ -446,17 +641,31 @@ public class FClassDef extends ItemFormatterTask
         out.printHeaderComment(aInIndent,lComment);
         aInBaseType.getLanguageBinding(Language.CPP).getSyntax();
 
-        out.println(aInIndent,  getClassName(aInClass, true) + "& unset" + Strings.upFirstLetter(aInProp.getLID().getName()) + "()");
+        out.println(aInIndent,  getClassName(aInClass, true) + "& unset" + Strings.upFirstLetter(aInName) + "()");
         //
         // BODY
         //
         out.println(aInIndent,"{");
         out.println(aInIndent + 1, "getTLMutator().modify(getClassId(), getURI())->unset(" + aInPropIdx + ", " +
-                                   "opflex::modb::PropertyInfo::" + aInBaseType.getLID().getName().toUpperCase() + ", " +
+                                   "opflex::modb::PropertyInfo::" + aInPType + ", " +
                                    "opflex::modb::PropertyInfo::SCALAR);");
         out.println(aInIndent + 1, "return *this;");
         out.println(aInIndent,"}");
         out.println();
+    }
+
+    private void genPropUnset(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments)
+    {
+        genPropUnset(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType, aInComments, 
+                     aInProp.getLID().getName(), aInBaseType.getLID().getName().toUpperCase());
+    }
+
+    private void genRefUnset(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
+            Collection<String> aInComments, boolean target)
+    {
+        genPropUnset(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType, aInComments, 
+                     target ? "target" : "source", "REFERENCE");        
     }
 
     private void genResolvers(int aInIdent, MClass aInClass)
@@ -999,7 +1208,6 @@ public class FClassDef extends ItemFormatterTask
             "",
             "@param framework the framework instance to use "));
         addPathComment(aInClass, aInNamingPath, comment);
-        comment.add("@throws std::logic_error if no mutator is active");
         comment.add("@return a shared pointer to the object or boost::none if it");
         comment.add("does not exist.");
         out.printHeaderComment(aInIdent,comment);
@@ -1023,7 +1231,7 @@ public class FClassDef extends ItemFormatterTask
             }
             out.println(")");
         out.println(aInIdent,"{");
-            out.println(aInIdent + 1, "resolve(framework," + getUriBuilder(aInClass, aInNamingPath) + ");");
+            out.println(aInIdent + 1, "return resolve(framework," + getUriBuilder(aInClass, aInNamingPath) + ");");
         out.println(aInIdent,"}");
         out.println();
         
@@ -1038,7 +1246,6 @@ public class FClassDef extends ItemFormatterTask
             getUriDoc(aInClass, aInNamingPath),
             ""));
         addPathComment(aInClass, aInNamingPath, comment);
-        comment.add("@throws std::logic_error if no mutator is active");
         comment.add("@return a shared pointer to the object or boost::none if it");
         comment.add("does not exist.");
         out.printHeaderComment(aInIdent,comment);
@@ -1076,7 +1283,7 @@ public class FClassDef extends ItemFormatterTask
             out.println(")");
         }
         out.println(aInIdent,"{");
-        out.println(aInIdent + 1, lMethodName + "(opflex::ofcore::OFFramework::defaultInstance()," + getNamingPropList(aInClass, aInNamingPath) + ");");
+        out.println(aInIdent + 1, "return " + lMethodName + "(opflex::ofcore::OFFramework::defaultInstance()," + getNamingPropList(aInClass, aInNamingPath) + ");");
         out.println(aInIdent,"}");
         out.println();
 
@@ -1134,7 +1341,7 @@ public class FClassDef extends ItemFormatterTask
                 out.println();
             }
             
-            out.println(aInIdent, "boost::optional<boost::shared_ptr<" +  lFormattefChildClassName + "> > add" + lConcatenatedChildClassName + "(");
+            out.println(aInIdent, "boost::shared_ptr<" +  lFormattefChildClassName + "> add" + lConcatenatedChildClassName + "(");
 
             lIsFirst = true;
             for (MNameComponent lNc : lNcs)
@@ -1165,6 +1372,18 @@ public class FClassDef extends ItemFormatterTask
                     out.println(aInIdent + 2, "CLASS_ID, getURI(), " + (aInChildClass.getGID().getId() + 1000) + ", " + aInChildClass.getGID().getId() + ",");
                     out.println(aInIdent + 2, lUriBuilder);
                     out.println(aInIdent + 2, ");");
+
+                //lNcs = lChildNr.getComponents();
+                //for (MNameComponent lNc : lNcs)
+                //{
+                //    if (lNc.hasPropName())
+                //    {
+                //        out.println(aInIdent + 1, 
+                //                    "result->set" + Strings.upFirstLetter(lNc.getPropName()) + 
+                //                    "(" + getPropParamName(aInChildClass, lNc.getPropName()) + ");");
+                //    }
+                //}
+
                 out.println(aInIdent + 1, "return result;");
             out.println(aInIdent,"}");
             out.println();

@@ -123,6 +123,7 @@ public class FAutomakeDef
         out.println(ainIndent,"uninstall-local:");
             out.println(ainIndent + 1,"@$(NORMAL_UNINSTALL)");
             out.println(ainIndent + 1,"rm -rf \"${DESTDIR}/${docdir}/html\"");
+            out.println(ainIndent + 1,"rm -rf \"${DESTDIR}/${includedir}/" + Config.getProjName() + "\"");
         out.println(ainIndent,"clean-doc:");
         out.println(ainIndent + 1,"rm -rf doc/html doc/latex");
         out.println(ainIndent,"clean-local: clean-doc");

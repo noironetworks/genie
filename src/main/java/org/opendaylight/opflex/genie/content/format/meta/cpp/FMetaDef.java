@@ -172,9 +172,7 @@ public class FMetaDef
 
     private void genMo(int aInIndent, MClass aInClass)
     {
-        if (isRelationshipTarget(aInClass) || 
-            isRelationshipResolver(aInClass) ||
-            isRelationshipSource(aInClass))
+        if (isRelationshipTarget(aInClass))
             return;
         out.println(aInIndent, '(');
             /**
@@ -237,20 +235,13 @@ public class FMetaDef
 
                     int lLocalId = lProp.getPropId();
 
-                    if ((lProp.getLID().getName().equalsIgnoreCase("targetName") ||
-                         lProp.getLID().getName().equalsIgnoreCase("targetClass")) &&
-                        isRelationshipSource(aInClass))
-                    {
-                        out.print(
-                                aInIndent + 1,
-                                "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPrimitiveType.getLID().getName().toUpperCase() + ", ");
-
-                        out.print("list_of");
-                        for (MClass lTargetClass : ((MRelationshipClass) aInClass).getTargetClasses(true))
-                        {
-                            out.print("(" + lTargetClass.getGID().getId() + "/*" + lTargetClass.getGID().getName() + "*/)");
+                    if (isRelationshipSource(aInClass)) {
+                        if (lProp.getLID().getName().equalsIgnoreCase("targetClass"))
+                            continue;
+                        else if (lProp.getLID().getName().equalsIgnoreCase("targetName")) {
+                            out.println(aInIndent + 1,
+                                        "(PropertyInfo(" + lLocalId + ", \"target\", PropertyInfo::REFERENCE, PropertyInfo::SCALAR)) // " + lProp.toString());
                         }
-                        out.println(", PropertyInfo::SCALAR)) // " + lProp.toString());
                     }
                     else if (lProp.getLID().getName().equalsIgnoreCase("source") && isRelationshipTarget(aInClass))
                     {
