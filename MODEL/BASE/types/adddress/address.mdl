@@ -35,7 +35,7 @@ module[address]
     {
         hint[address:ip]
         language[cpp;
-                 syntax=ip::address;
+                 syntax=std::string;
                  pass-by=reference;
                  pass-const=yes]
         {
@@ -44,7 +44,7 @@ module[address]
         }
 
         language[c;
-                 syntax=ipaddr;
+                 syntax=char*;
                  pass-by=value;
                  pass-const=yes]
         {

@@ -132,6 +132,24 @@ public class FMetaDef
             return "ClassInfo::LOCAL_ONLY";
         }
     }
+    
+    public static String getTypeName(MType aIn)
+    {
+        String lType = aIn.getLID().getName().toUpperCase();
+        switch (lType) {
+        case "URI":
+        case "IP":
+            return "STRING";
+        case "UINT64":
+        case "UINT32":
+        case "UINT16":
+        case "UINT8":
+        case "MAC":
+            return "U64";
+        default:
+            return lType;
+        }
+    }
 
     public static boolean isPolicy(MClass aIn)
     {
@@ -244,12 +262,9 @@ public class FMetaDef
                     else if (lProp.getLID().getName().equalsIgnoreCase("source") && isRelationshipTarget(aInClass))
                     {
                         //MClass lTargetClass = ((MRelationshipClass) aInClass).getSourceClass();
-                        String lPropTypeStr = lPrimitiveType.getLID().getName().toUpperCase();
-                        if (lPropTypeStr.equals("URI"))
-                            lPropTypeStr = "STRING";
                         out.println(
                                 aInIndent + 1,
-                                "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPropTypeStr + ", PropertyInfo::SCALAR)) // "
+                                "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + getTypeName(lPrimitiveType) + ", PropertyInfo::SCALAR)) // "
                                 + lProp.toString());
                     }
                     // TODO
@@ -262,7 +277,7 @@ public class FMetaDef
                     {
                         out.println(
                                 aInIndent + 1,
-                                "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + lPrimitiveType.getLID().getName().toUpperCase() + ", PropertyInfo::SCALAR)) // "
+                                "(PropertyInfo(" + lLocalId + ", \"" + lProp.getLID().getName() + "\", PropertyInfo::" + getTypeName(lPrimitiveType) + ", PropertyInfo::SCALAR)) // "
                                 + lProp.toString());
                     }
                 }

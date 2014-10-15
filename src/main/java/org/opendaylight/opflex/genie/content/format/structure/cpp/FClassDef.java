@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
+import org.opendaylight.opflex.genie.content.format.meta.cpp.FMetaDef;
 import org.opendaylight.opflex.genie.content.model.mclass.MClass;
 import org.opendaylight.opflex.genie.content.model.mnaming.MNameComponent;
 import org.opendaylight.opflex.genie.content.model.mnaming.MNameRule;
@@ -284,6 +285,27 @@ public class FClassDef extends ItemFormatterTask
         }
     }
 
+    public static String getTypeAccessor(String aInPType)
+    {
+        if (aInPType.startsWith("Enum") ||
+                aInPType.equalsIgnoreCase("MAC") ||
+                aInPType.startsWith("UInt"))
+            aInPType = "UInt64";
+        else if (aInPType.equals("URI") ||
+                aInPType.equals("IP"))
+            aInPType = "String";
+        return aInPType;
+    }
+
+    public static String getCast(String aInPType, String aInSyntax)
+    {
+        if (aInPType.startsWith("Enum") ||
+                (aInPType.startsWith("UInt") &&
+                 !aInPType.equals("UInt64")))
+            return "(" + aInSyntax + ")";
+        return "";
+    }
+
     private void genProp(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx)
     {
         MProp lBaseProp = aInProp.getBase();
@@ -362,10 +384,7 @@ public class FClassDef extends ItemFormatterTask
             int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
             Collection<String> aInComments)
     {
-        String lPType = aInBaseType.getLID().getName().toUpperCase();
-        if (lPType.equals("URI")) {
-            lPType = "STRING";
-        }
+        String lPType = FMetaDef.getTypeName(aInBaseType);
         genPropCheck(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType,
                      aInComments, aInProp.getLID().getName(), 
                      lPType);
@@ -413,14 +432,9 @@ public class FClassDef extends ItemFormatterTask
     {
         String lName = aInProp.getLID().getName();
         String lPType = Strings.upFirstLetter(aInBaseType.getLID().getName());
-        String lCast = "";
         String lSyntax = aInBaseType.getLanguageBinding(Language.CPP).getSyntax();
-        if (lPType.startsWith("Enum")) {
-            lCast = "(" + lSyntax + ")";
-            lPType = "UInt64";
-        } else if (lPType.equals("URI")) {
-            lPType = "String";
-        }
+        String lCast = getCast(lPType, lSyntax);
+        lPType = getTypeAccessor(lPType);
         genPropAccessor(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType, aInComments, 
                         lName, lName, lSyntax, lPType, lCast, "");
     }
@@ -593,11 +607,7 @@ public class FClassDef extends ItemFormatterTask
     {
         String lName = aInProp.getLID().getName();
         String lPType = Strings.upFirstLetter(aInBaseType.getLID().getName());
-        if (lPType.startsWith("Enum")) {
-            lPType = "UInt64";
-        } else if (lPType.equals("URI")) {
-            lPType = "String";
-        }
+        lPType = getTypeAccessor(lPType);
         List<String> lComments = Arrays.asList(
             "Set " + lName + " to the specified value in the currently-active mutator.");
         genPropMutator(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType,
@@ -669,12 +679,8 @@ public class FClassDef extends ItemFormatterTask
     private void genPropUnset(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
             Collection<String> aInComments)
     {
-        String lPType = aInBaseType.getLID().getName().toUpperCase();
-        if (lPType.equals("URI")) {
-            lPType = "STRING";
-        }
         genPropUnset(aInIndent, aInClass, aInProp, aInPropIdx, aInType, aInBaseType, aInComments, 
-                     aInProp.getLID().getName(), lPType);
+                     aInProp.getLID().getName(), FMetaDef.getTypeName(aInBaseType));
     }
 
     private void genRefUnset(int aInIndent, MClass aInClass, MProp aInProp, int aInPropIdx, MType aInType, MType aInBaseType,
