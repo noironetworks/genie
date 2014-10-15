@@ -1113,9 +1113,9 @@ public class MClass
     /**
      * implicit callback
      */
-    public void loadModelCompleteCb()
+    public void postValidateCb()
     {
-        super.loadModelCompleteCb();
+        super.postValidateCb();
         initPropLocalIdx();
     }
 
